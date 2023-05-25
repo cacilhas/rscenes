@@ -11,6 +11,7 @@ use raylib::prelude::*;
 pub mod prelude {
     pub use super::{Scene, SceneManager, State};
     pub use chrono::Duration;
+    pub use raylib;
     pub use raylib::prelude::*;
 }
 
