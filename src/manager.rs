@@ -62,24 +62,25 @@ impl SceneManager {
 
         'mainloop: while !self.handle.window_should_close() {
             let new_tick = Utc::now();
+            let dt = new_tick - tick;
             let state = {
-                let draw = Rc::new(RefCell::new(self.handle.begin_drawing(&self.thread)));
-                if draw
-                    .clone()
-                    .borrow()
-                    .is_key_released(KeyboardKey::KEY_ESCAPE)
                 {
-                    self.scenes.pop();
+                    let draw = self.handle.begin_drawing(&self.thread);
+                    if draw.is_key_released(KeyboardKey::KEY_ESCAPE) {
+                        self.scenes.pop();
+                    }
+                    let scene = match self.scenes.last() {
+                        Some(scene) => scene,
+                        None => break 'mainloop,
+                    };
+                    scene.borrow_mut().read(&draw, dt)?;
                 }
-                let scene = match self.scenes.last() {
-                    Some(scene) => scene,
-                    None => break 'mainloop,
-                };
-                let dt = new_tick - tick;
-                scene.borrow_mut().read(&draw.clone().borrow(), dt)?;
-                scene
-                    .borrow_mut()
-                    .update(&mut draw.clone().borrow_mut(), dt)?
+                {
+                    // If there’s no more scenes, it won’t get here
+                    let scene = self.scenes.last().unwrap();
+                    let mut draw = self.handle.begin_drawing(&self.thread);
+                    scene.borrow_mut().update(&mut draw, dt)?
+                }
             };
             match state {
                 State::New(scene) => {
