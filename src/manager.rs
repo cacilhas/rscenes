@@ -75,7 +75,11 @@ impl SceneManager {
                     Some(scene) => scene,
                     None => break 'mainloop,
                 };
-                scene.borrow_mut().update(draw, new_tick - tick)?
+                let dt = new_tick - tick;
+                scene.borrow_mut().read(&draw.clone().borrow(), dt)?;
+                scene
+                    .borrow_mut()
+                    .update(&mut draw.clone().borrow_mut(), dt)?
             };
             match state {
                 State::New(scene) => {
