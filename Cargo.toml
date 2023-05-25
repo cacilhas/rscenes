@@ -1,0 +1,21 @@
+[package]
+name = "rscenes"
+version = "1.0.0"
+authors     = ["Rodrigo Cacilhας <montegasppa@cacilhas.info"]
+license     = "BSD-3-Clause"
+readme      = "README.md"
+homepage    = "https://github.com/cacilhas/rscenes"
+repository  = "https://github.com/cacilhas/rscenes"
+keywords    = ["raylib"]
+description = "Scene package for Raylib"
+edition     = "2021"
+
+[dependencies]
+anyhow = "1.0"
+chrono = "0.4"
+thiserror = "1.0"
+
+[dependencies.raylib]
+version = "4.5"
+git = "https://github.com/litten2up/raylib-rs"
+branch = "4.5.0"
