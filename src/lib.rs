@@ -29,7 +29,7 @@ pub trait Scene {
 
     fn update(
         &mut self,
-        draw: Rc<RefCell<&mut RaylibDrawHandle>>,
+        draw: Rc<RefCell<RaylibDrawHandle>>,
         dt: Duration,
     ) -> anyhow::Result<State>;
 }

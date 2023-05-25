@@ -63,17 +63,19 @@ impl SceneManager {
         'mainloop: while !self.handle.window_should_close() {
             let new_tick = Utc::now();
             let state = {
-                let mut draw = self.handle.begin_drawing(&self.thread);
-                if draw.is_key_released(KeyboardKey::KEY_ESCAPE) {
+                let draw = Rc::new(RefCell::new(self.handle.begin_drawing(&self.thread)));
+                if draw
+                    .clone()
+                    .borrow()
+                    .is_key_released(KeyboardKey::KEY_ESCAPE)
+                {
                     self.scenes.pop();
                 }
                 let scene = match self.scenes.last() {
                     Some(scene) => scene,
                     None => break 'mainloop,
                 };
-                scene
-                    .borrow_mut()
-                    .update(Rc::new(RefCell::new(&mut draw)), new_tick - tick)?
+                scene.borrow_mut().update(draw, new_tick - tick)?
             };
             match state {
                 State::New(scene) => {
