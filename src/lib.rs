@@ -8,6 +8,12 @@ pub use crate::state::State;
 use chrono::Duration;
 use raylib::prelude::*;
 
+pub mod prelude {
+    pub use super::{Scene, SceneManager, State};
+    pub use chrono::Duration;
+    pub use raylib::prelude::*;
+}
+
 pub trait Scene {
     #[allow(unused_variables)]
     fn init(
