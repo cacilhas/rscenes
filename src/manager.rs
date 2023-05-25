@@ -74,7 +74,10 @@ impl SceneManager {
                 scene.borrow_mut().update(&mut draw, new_tick - tick)?
             };
             match state {
-                State::New(scene) => scene_init!(scene.borrow_mut(), self)?,
+                State::New(scene) => {
+                    scene_init!(scene.borrow_mut(), self)?;
+                    self.scenes.push(scene);
+                }
                 State::Previous(pop) => {
                     for _ in 0..pop {
                         if self.scenes.pop().is_none() {
