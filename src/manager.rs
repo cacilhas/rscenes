@@ -64,17 +64,14 @@ impl SceneManager {
             let new_tick = Utc::now();
             let dt = new_tick - tick;
             let state = {
-                let draw = self.handle.begin_drawing(&self.thread);
-                {
-                    // Separated block to avoid borrowing it immutable
-                    if draw.is_key_released(KeyboardKey::KEY_ESCAPE) {
-                        self.scenes.pop();
-                    }
+                if self.handle.is_key_released(KeyboardKey::KEY_ESCAPE) {
+                    self.scenes.pop();
                 }
                 let scene = match self.scenes.last() {
                     Some(scene) => scene,
                     None => break 'mainloop,
                 };
+                let draw = self.handle.begin_drawing(&self.thread);
                 scene.borrow_mut().update(draw, dt)?
             };
             match state {
