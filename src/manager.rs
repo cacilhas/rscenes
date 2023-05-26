@@ -65,8 +65,11 @@ impl SceneManager {
             let dt = new_tick - tick;
             let state = {
                 let draw = self.handle.begin_drawing(&self.thread);
-                if draw.is_key_released(KeyboardKey::KEY_ESCAPE) {
-                    self.scenes.pop();
+                {
+                    // Separated block to avoid borrowing it immutable
+                    if draw.is_key_released(KeyboardKey::KEY_ESCAPE) {
+                        self.scenes.pop();
+                    }
                 }
                 let scene = match self.scenes.last() {
                     Some(scene) => scene,
