@@ -22,6 +22,14 @@ macro_rules! scene_init {
     };
 }
 
+macro_rules! reinit_last_scene {
+    ($wrap: expr) => {
+        if let Some(scene) = $wrap.scenes.last() {
+            scene_init!(scene.borrow_mut(), $wrap)?;
+        }
+    };
+}
+
 pub struct SceneManager {
     handle: RaylibHandle,
     thread: RaylibThread,
@@ -66,11 +74,13 @@ impl SceneManager {
             let state = {
                 if self.handle.is_key_released(KeyboardKey::KEY_ESCAPE) {
                     self.scenes.pop();
+                    reinit_last_scene!(self);
                 }
                 let scene = match self.scenes.last() {
                     Some(scene) => scene,
                     None => break 'mainloop,
                 };
+                scene.borrow_mut().read(handle_thr!(self), dt)?;
                 scene
                     .borrow_mut()
                     .update(self.handle.begin_drawing(&self.thread), dt)?
@@ -86,6 +96,7 @@ impl SceneManager {
                             break 'mainloop;
                         }
                     }
+                    reinit_last_scene!(self);
                 }
                 State::Keep => (),
             }

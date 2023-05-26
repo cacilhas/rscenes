@@ -27,5 +27,14 @@ pub trait Scene {
         Ok(())
     }
 
+    #[allow(unused_variables)]
+    fn read(
+        &mut self,
+        handle: (&mut RaylibHandle, &RaylibThread),
+        dt: Duration,
+    ) -> anyhow::Result<()> {
+        Ok(())
+    }
+
     fn update(&mut self, draw: RaylibDrawHandle, dt: Duration) -> anyhow::Result<State>;
 }
