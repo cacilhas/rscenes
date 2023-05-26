@@ -71,8 +71,9 @@ impl SceneManager {
                     Some(scene) => scene,
                     None => break 'mainloop,
                 };
-                let draw = self.handle.begin_drawing(&self.thread);
-                scene.borrow_mut().update(draw, dt)?
+                scene
+                    .borrow_mut()
+                    .update(self.handle.begin_drawing(&self.thread), dt)?
             };
             match state {
                 State::New(scene) => {
