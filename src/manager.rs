@@ -53,7 +53,7 @@ impl SceneManager {
             screen,
             font: font.map(|font| Rc::new(font)),
             audio: audio.map(|audio| Rc::new(RefCell::new(audio))),
-            scenes: vec![],
+            scenes: Vec::with_capacity(4),
         }
     }
 
