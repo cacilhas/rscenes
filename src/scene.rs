@@ -3,12 +3,15 @@ use std::{fmt, rc::Rc};
 use crate::state::State;
 use raylib::prelude::*;
 
+/// Trait to make scenes usable.
 pub trait Scene: fmt::Debug {
+    /// Initialises the scene from RaylibHandle.
     #[allow(unused_variables)]
     fn init(&mut self, handle: &mut RaylibHandle, thread: &RaylibThread) -> anyhow::Result<()> {
         Ok(())
     }
 
+    /// Updates the scene each frame.
     fn update(
         &mut self,
         rl: (&mut RaylibHandle, &RaylibThread),
@@ -16,6 +19,7 @@ pub trait Scene: fmt::Debug {
         audio: Option<Rc<&mut RaylibAudio>>,
     ) -> anyhow::Result<State>;
 
+    /// Draws the scene each frame.
     fn draw(
         &mut self,
         handle: &mut RaylibDrawHandle,

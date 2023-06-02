@@ -4,6 +4,7 @@ use raylib::prelude::*;
 
 use crate::{scene::Scene, state::State};
 
+/// SceneManager manages multiple scenes.
 #[derive(Debug)]
 pub struct SceneManager {
     handle: (RaylibHandle, RaylibThread),
@@ -13,6 +14,7 @@ pub struct SceneManager {
 }
 
 impl SceneManager {
+    /// Creates a new SceneManager from a RaylibBuilder, which ownership must be taken.
     pub fn new(builder: RaylibBuilder) -> Self {
         let (mut handle, thread) = builder.build();
         handle.set_target_fps(60);
@@ -25,18 +27,23 @@ impl SceneManager {
         }
     }
 
+    /// Allows to reconfigure the inner RaylibHandle.
     pub fn config<T>(&mut self, callback: impl Fn(&mut RaylibHandle, &RaylibThread) -> T) -> T {
         callback(&mut self.handle.0, &self.handle.1)
     }
 
+    /// Sets the font passed to scenes.
     pub fn set_font(&mut self, font: &Rc<Font>) {
         self.font = Some(font.clone());
     }
 
-    pub fn init_audio_device(&mut self) {
+    /// Enables audio by initialising the default audio device.
+    pub fn enable_audio(&mut self) {
         self.audio = Some(RaylibAudio::init_audio_device());
     }
 
+    /// Adds the first scene to the stack.
+    #[must_use]
     pub fn add_first_scene(&mut self, scene: Box<dyn Scene>) {
         if !self.scenes.is_empty() {
             self.scenes.clear();
@@ -44,6 +51,7 @@ impl SceneManager {
         self.scenes.push(scene);
     }
 
+    /// Starts Raylib main loop.
     pub fn start(&mut self) -> anyhow::Result<()> {
         let (handle, thread) = (&mut self.handle.0, &self.handle.1);
         let audio = self.audio.as_mut().map(|a| Rc::new(a));
