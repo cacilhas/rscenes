@@ -12,6 +12,7 @@ pub trait Scene: fmt::Debug {
     }
 
     /// Updates the scene each frame.
+    #[must_use]
     fn update(
         &mut self,
         rl: (&mut RaylibHandle, &RaylibThread),

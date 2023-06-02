@@ -15,6 +15,7 @@ pub struct SceneManager {
 
 impl SceneManager {
     /// Creates a new SceneManager from a RaylibBuilder, which ownership must be taken.
+    #[must_use]
     pub fn new(builder: RaylibBuilder) -> Self {
         let (mut handle, thread) = builder.build();
         handle.set_target_fps(60);
@@ -43,7 +44,6 @@ impl SceneManager {
     }
 
     /// Adds the first scene to the stack.
-    #[must_use]
     pub fn add_first_scene(&mut self, scene: Box<dyn Scene>) {
         if !self.scenes.is_empty() {
             self.scenes.clear();
