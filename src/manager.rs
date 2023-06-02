@@ -13,7 +13,7 @@ pub struct SceneManager {
 }
 
 impl SceneManager {
-    pub fn new(builder: &mut RaylibBuilder) -> Self {
+    pub fn new(builder: RaylibBuilder) -> Self {
         let (mut handle, thread) = builder.build();
         handle.set_target_fps(60);
         handle.set_exit_key(None);
