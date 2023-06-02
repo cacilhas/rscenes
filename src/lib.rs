@@ -1,11 +1,12 @@
 mod manager;
 mod scene;
-mod status;
+mod state;
 
 pub mod prelude {
     pub use crate::manager::SceneManager;
     pub use crate::scene::Scene;
-    pub use crate::status::Status;
+    pub use crate::state::State;
     pub use raylib;
+    pub use raylib::consts;
     pub use raylib::prelude::*;
 }

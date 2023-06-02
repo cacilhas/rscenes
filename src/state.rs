@@ -1,5 +1,5 @@
 #[derive(Debug)]
-pub enum Status {
+pub enum State {
     Keep,
     New(Box<dyn crate::scene::Scene>),
     Previous(usize),

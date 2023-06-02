@@ -1,6 +1,6 @@
 use std::{fmt, rc::Rc};
 
-use crate::status::Status;
+use crate::state::State;
 use raylib::prelude::*;
 
 pub trait Scene: fmt::Debug {
@@ -14,7 +14,7 @@ pub trait Scene: fmt::Debug {
         rl: (&mut RaylibHandle, &RaylibThread),
         dt: f32,
         audio: Option<Rc<&mut RaylibAudio>>,
-    ) -> anyhow::Result<Status>;
+    ) -> anyhow::Result<State>;
 
     fn draw(
         &mut self,

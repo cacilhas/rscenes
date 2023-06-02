@@ -2,7 +2,7 @@ use std::{fmt, rc::Rc};
 
 use raylib::prelude::*;
 
-use crate::{scene::Scene, status::Status};
+use crate::{scene::Scene, state::State};
 
 #[derive(Debug)]
 pub struct SceneManager {
@@ -13,7 +13,7 @@ pub struct SceneManager {
 }
 
 impl SceneManager {
-    pub fn new(builder: RaylibBuilder) -> Self {
+    pub fn new(builder: &mut RaylibBuilder) -> Self {
         let (mut handle, thread) = builder.build();
         handle.set_target_fps(60);
         handle.set_exit_key(None);
@@ -63,7 +63,7 @@ impl SceneManager {
             let state = {
                 let state = if handle.is_key_released(KeyboardKey::KEY_ESCAPE) {
                     let _ = handle.begin_drawing(thread);
-                    Status::Previous(1)
+                    State::Previous(1)
                 } else {
                     let scene = match self.scenes.last_mut() {
                         Some(scene) => scene,
@@ -71,11 +71,11 @@ impl SceneManager {
                     };
                     let dt = handle.get_frame_time();
                     let state = match scene.update((handle, thread), dt, audio.clone())? {
-                        Status::Keep => {
+                        State::Keep => {
                             let mut handle = handle.begin_drawing(thread);
                             let _ =
                                 scene.draw(&mut handle, screen, self.font.clone(), audio.clone());
-                            Status::Keep
+                            State::Keep
                         }
                         status => status,
                     };
@@ -85,12 +85,12 @@ impl SceneManager {
             };
 
             match state {
-                Status::New(mut scene) => {
+                State::New(mut scene) => {
                     scene.init(handle, thread)?;
                     self.scenes.push(scene);
                 }
 
-                Status::Previous(prev) => {
+                State::Previous(prev) => {
                     for _ in 0..prev {
                         if let None = self.scenes.pop() {
                             break 'mainloop;
@@ -125,17 +125,10 @@ impl fmt::Display for NoSceneLoaded {
 //     use raylib::{consts::TraceLogLevel, logging::set_trace_log};
 //
 //     #[test]
-//     fn manager_should_take_ownership_of_builder() {
-//         set_trace_log(TraceLogLevel::LOG_ERROR);
-//         let builder = raylib::init();
-//         let _ = SceneManager::new(builder);
-//         // TODO: grant builder ownership was taken
-//     }
-//
-//     #[test]
 //     fn manager_should_start_empty() {
 //         set_trace_log(TraceLogLevel::LOG_ERROR);
-//         let manager = SceneManager::new(raylib::init());
+//         let builder = raylib::init();
+//         let manager = SceneManager::new(builder);
 //         assert!(manager.scenes.is_empty());
 //         assert!(manager.font.is_none());
 //         assert!(manager.audio.is_none());
@@ -144,7 +137,8 @@ impl fmt::Display for NoSceneLoaded {
 //     #[test]
 //     fn default_fps_should_be_60fps() {
 //         set_trace_log(TraceLogLevel::LOG_ERROR);
-//         let mut manager = SceneManager::new(raylib::init());
+//         let builder = raylib::init();
+//         let manager = SceneManager::new(builder);
 //         manager.config(|handle, _| {
 //             assert_eq!(60, handle.get_fps());
 //         });
