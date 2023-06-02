@@ -4,6 +4,7 @@ use raylib::prelude::*;
 
 use crate::{scene::Scene, status::Status};
 
+#[derive(Debug)]
 pub struct SceneManager {
     handle: (RaylibHandle, RaylibThread),
     scenes: Vec<Box<dyn Scene>>,
@@ -49,7 +50,7 @@ impl SceneManager {
         let audio = self.audio.as_mut().map(|a| Rc::new(a));
 
         match self.scenes.last_mut() {
-            Some(scene) => scene.init((handle, thread))?,
+            Some(scene) => scene.init(handle, thread)?,
             None => return Err(NoSceneLoaded.into()),
         }
 
@@ -86,7 +87,7 @@ impl SceneManager {
 
             match state {
                 Status::New(mut scene) => {
-                    scene.init((handle, thread))?;
+                    scene.init(handle, thread)?;
                     self.scenes.push(scene);
                 }
 
@@ -97,7 +98,7 @@ impl SceneManager {
                         }
                     }
                     if let Some(scene) = self.scenes.last_mut() {
-                        scene.init((handle, thread))?;
+                        scene.init(handle, thread)?;
                     }
                 }
 

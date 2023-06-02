@@ -1,17 +1,17 @@
-use std::rc::Rc;
+use std::{fmt, rc::Rc};
 
 use crate::status::Status;
 use raylib::prelude::*;
 
-pub trait Scene {
+pub trait Scene: fmt::Debug {
     #[allow(unused_variables)]
-    fn init(&mut self, handle: (&mut RaylibHandle, &RaylibThread)) -> anyhow::Result<()> {
+    fn init(&mut self, handle: &mut RaylibHandle, thread: &RaylibThread) -> anyhow::Result<()> {
         Ok(())
     }
 
     fn update(
         &mut self,
-        handle: (&mut RaylibHandle, &RaylibThread),
+        rl: (&mut RaylibHandle, &RaylibThread),
         dt: f32,
         audio: Option<Rc<&mut RaylibAudio>>,
     ) -> anyhow::Result<Status>;
