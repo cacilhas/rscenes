@@ -1,4 +1,4 @@
-use std::{cell::RefCell, fmt, rc::Rc};
+use std::{fmt, rc::Rc};
 
 use raylib::prelude::*;
 
@@ -8,7 +8,7 @@ pub struct SceneManager {
     handle: (RaylibHandle, RaylibThread),
     scenes: Vec<Box<dyn Scene>>,
     font: Option<Rc<Font>>,
-    audio: Option<Rc<RefCell<RaylibAudio>>>,
+    audio: Option<RaylibAudio>,
 }
 
 impl SceneManager {
@@ -34,7 +34,7 @@ impl SceneManager {
     }
 
     pub fn init_audio_device(&mut self) {
-        self.audio = Some(Rc::new(RefCell::new(RaylibAudio::init_audio_device())));
+        self.audio = Some(RaylibAudio::init_audio_device());
     }
 
     pub fn add_first_scene(&mut self, scene: Box<dyn Scene>) {
@@ -46,6 +46,7 @@ impl SceneManager {
 
     pub fn start(&mut self) -> anyhow::Result<()> {
         let (handle, thread) = (&mut self.handle.0, &self.handle.1);
+        let audio = self.audio.as_mut().map(|a| Rc::new(a));
 
         match self.scenes.last_mut() {
             Some(scene) => scene.init((handle, thread))?,
@@ -69,15 +70,11 @@ impl SceneManager {
                         None => break 'mainloop,
                     };
                     let dt = handle.get_frame_time();
-                    let state = match scene.update((handle, thread), dt, self.audio.clone())? {
+                    let state = match scene.update((handle, thread), dt, audio.clone())? {
                         Status::Keep => {
                             let mut handle = handle.begin_drawing(thread);
-                            let _ = scene.draw(
-                                &mut handle,
-                                screen,
-                                self.font.clone(),
-                                self.audio.clone(),
-                            );
+                            let _ =
+                                scene.draw(&mut handle, screen, self.font.clone(), audio.clone());
                             Status::Keep
                         }
                         status => status,

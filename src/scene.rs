@@ -1,4 +1,4 @@
-use std::{cell::RefCell, rc::Rc};
+use std::rc::Rc;
 
 use crate::status::Status;
 use raylib::prelude::*;
@@ -13,7 +13,7 @@ pub trait Scene {
         &mut self,
         handle: (&mut RaylibHandle, &RaylibThread),
         dt: f32,
-        audio: Option<Rc<RefCell<RaylibAudio>>>,
+        audio: Option<Rc<&mut RaylibAudio>>,
     ) -> anyhow::Result<Status>;
 
     fn draw(
@@ -21,6 +21,6 @@ pub trait Scene {
         handle: &mut RaylibDrawHandle,
         screen: Rectangle,
         font: Option<Rc<Font>>,
-        audio: Option<Rc<RefCell<RaylibAudio>>>,
+        audio: Option<Rc<&mut RaylibAudio>>,
     ) -> anyhow::Result<()>;
 }
