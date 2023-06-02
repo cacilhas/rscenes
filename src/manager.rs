@@ -13,7 +13,7 @@ pub struct SceneManager {
 }
 
 impl SceneManager {
-    pub fn new(builder: &mut RaylibBuilder) -> Self {
+    pub fn new(builder: RaylibBuilder) -> Self {
         let (mut handle, thread) = builder.build();
         handle.set_target_fps(60);
         handle.set_exit_key(None);
@@ -26,8 +26,7 @@ impl SceneManager {
     }
 
     pub fn config<T>(&mut self, callback: impl Fn(&mut RaylibHandle, &RaylibThread) -> T) -> T {
-        let (handle, thread) = (&mut self.handle.0, &self.handle.1);
-        callback(handle, thread)
+        callback(&mut self.handle.0, &self.handle.1)
     }
 
     pub fn set_font(&mut self, font: &Rc<Font>) {
@@ -118,3 +117,36 @@ impl fmt::Display for NoSceneLoaded {
         write!(f, "no scene loaded")
     }
 }
+
+// TODO: how to test multiple Raylib instances?
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use raylib::{consts::TraceLogLevel, logging::set_trace_log};
+//
+//     #[test]
+//     fn manager_should_take_ownership_of_builder() {
+//         set_trace_log(TraceLogLevel::LOG_ERROR);
+//         let builder = raylib::init();
+//         let _ = SceneManager::new(builder);
+//         // TODO: grant builder ownership was taken
+//     }
+//
+//     #[test]
+//     fn manager_should_start_empty() {
+//         set_trace_log(TraceLogLevel::LOG_ERROR);
+//         let manager = SceneManager::new(raylib::init());
+//         assert!(manager.scenes.is_empty());
+//         assert!(manager.font.is_none());
+//         assert!(manager.audio.is_none());
+//     }
+//
+//     #[test]
+//     fn default_fps_should_be_60fps() {
+//         set_trace_log(TraceLogLevel::LOG_ERROR);
+//         let mut manager = SceneManager::new(raylib::init());
+//         manager.config(|handle, _| {
+//             assert_eq!(60, handle.get_fps());
+//         });
+//     }
+// }
