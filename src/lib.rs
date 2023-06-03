@@ -2,9 +2,15 @@
 //!
 //! Rscene is a scene manager for [Raylib](https://crates.io/crates/raylib).
 //!
+//! ## Installation
+//!
+//! ```sh
+//! cargo add rscenes
+//! ```
+//!
 //! ## Sample
 //!
-//! You don’t need to include `raylib`, only the following line is enough:
+//! You don’t need to include `raylib`, the following line alone is enough:
 //!
 //! ```rust
 //! use rscene.prelude::*
@@ -26,7 +32,7 @@
 //! manager.start()?;
 //! ```
 //!
-//! The scene is like:
+//! The scene should be implemented like:
 //!
 //! ```rust
 //! #[derive(Debug, Default)]
@@ -68,6 +74,11 @@
 //! - [`Scene`](./prelude/trait.Scene.html)
 //! - [`SceneManager`](./prelude/struct.SceneManager.html)
 //! - [`State`](./prelude/enum.State.html)
+//!
+//! ## License
+//!
+//! - [The 3-Clause BSD License](https://opensource.org/license/bsd-3-clause/)
+//! - [COPYING](https://github.com/cacilhas/rscenes/blob/master/COPYING)
 
 mod colors;
 mod manager;
