@@ -1,6 +1,10 @@
+//! [COPYING]: https://github.com/cacilhas/rscenes/blob/master/COPYING
+//! [The 3-Clause BSD License]: https://opensource.org/license/bsd-3-clause/
+//! [Raylib]: https://crates.io/crates/raylib
+//!
 //! # Rscene
 //!
-//! Rscene is a scene manager for [Raylib](https://crates.io/crates/raylib).
+//! Rscene is a scene manager for [Raylib][].
 //!
 //! ## Installation
 //!
@@ -77,8 +81,8 @@
 //!
 //! ## License
 //!
-//! - [The 3-Clause BSD License](https://opensource.org/license/bsd-3-clause/)
-//! - [COPYING](https://github.com/cacilhas/rscenes/blob/master/COPYING)
+//! - [The 3-Clause BSD License][]
+//! - [COPYING][]
 
 mod colors;
 mod manager;

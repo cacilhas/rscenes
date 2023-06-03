@@ -1,20 +1,16 @@
 [package]
 name          = "rscenes"
-version       = "0.1.6"
+version       = "0.1.7"
 authors       = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info"]
 license       = "BSD-3-Clause"
 readme        = "README.md"
+description   = "Scenes manager for Raylib."
 documentation = "https://docs.rs/rscenes"
-homepage      = "https://github.com/cacilhas/rscenes"
 repository    = "https://github.com/cacilhas/rscenes"
+homepage      = "https://crates.io/crates/rscenes"
+categories    = ["api-bindings", "game-engines", "graphics"]
 keywords      = ["raylib", "scenes"]
-description   = "Scenes manager for Raylib"
 edition       = "2021"
-
-[lib]
-name = "rscenes"
-path = "src/lib.rs"
-documentation = true
 
 [dependencies]
 anyhow = "1.0"

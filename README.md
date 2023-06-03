@@ -1,8 +1,12 @@
 # rscenes
 
+[COPYING]: https://github.com/cacilhas/rscenes/blob/master/COPYING
+[The 3-Clause BSD License]: https://opensource.org/license/bsd-3-clause/
+[Raylib]: https://crates.io/crates/raylib
+
 ## Rscene
 
-Rscene is a scene manager for [Raylib](https://crates.io/crates/raylib).
+Rscene is a scene manager for [Raylib][].
 
 ### Installation
 
@@ -77,7 +81,9 @@ The most important resources are:
 - [`SceneManager`](./prelude/struct.SceneManager.html)
 - [`State`](./prelude/enum.State.html)
 
-## License
+### License
 
-- [The 3-Clause BSD License](https://opensource.org/license/bsd-3-clause/)
-- [COPYING](https://github.com/cacilhas/rscenes/blob/master/COPYING)
+- [The 3-Clause BSD License][]
+- [COPYING][]
+
+License: BSD-3-Clause
