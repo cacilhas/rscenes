@@ -3,6 +3,7 @@
 [COPYING]: https://github.com/cacilhas/rscenes/blob/master/COPYING
 [The 3-Clause BSD License]: https://opensource.org/license/bsd-3-clause/
 [Raylib]: https://crates.io/crates/raylib
+[raylib::prelude]: https://docs.rs/raylib/3.7.0/raylib/prelude/
 
 ## Rscene
 
@@ -75,11 +76,14 @@ impl Scene for MyScene {
 }
 ```
 
-The most important resources are:
+The main resources are:
 
 - [`Scene`](./prelude/trait.Scene.html)
 - [`SceneManager`](./prelude/struct.SceneManager.html)
 - [`State`](./prelude/enum.State.html)
+- [`colors`](./prelude/colors)
+
+Everything else comes from [`raylib::prelude`][raylib::prelude].
 
 ### License
 
