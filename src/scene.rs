@@ -1,4 +1,4 @@
-use std::{fmt, rc::Rc};
+use std::{collections::HashMap, fmt, rc::Rc};
 
 use crate::state::State;
 use raylib::prelude::*;
@@ -25,7 +25,7 @@ pub trait Scene: fmt::Debug {
         &mut self,
         handle: &mut RaylibDrawHandle,
         screen: Rectangle,
-        font: Vec<Rc<Font>>,
+        font: HashMap<String, Rc<Font>>,
         audio: Option<Rc<&mut RaylibAudio>>,
     ) -> anyhow::Result<()>;
 }

@@ -1,4 +1,4 @@
-use std::{fmt, rc::Rc};
+use std::{collections::HashMap, fmt, rc::Rc};
 
 use raylib::prelude::*;
 
@@ -9,7 +9,7 @@ use crate::{scene::Scene, state::State};
 pub struct SceneManager {
     handle: (RaylibHandle, RaylibThread),
     scenes: Vec<Box<dyn Scene>>,
-    font: Vec<Rc<Font>>,
+    fonts: HashMap<String, Rc<Font>>,
     audio: Option<RaylibAudio>,
 }
 
@@ -23,7 +23,7 @@ impl SceneManager {
         Self {
             handle: (handle, thread),
             scenes: Vec::with_capacity(4),
-            font: Vec::with_capacity(2),
+            fonts: HashMap::with_capacity(2),
             audio: None,
         }
     }
@@ -34,8 +34,8 @@ impl SceneManager {
     }
 
     /// Sets the font passed to scenes.
-    pub fn push_font(&mut self, font: &Rc<Font>) {
-        self.font.push(font.clone());
+    pub fn push_font(&mut self, name: &str, font: &Rc<Font>) {
+        self.fonts.insert(name.to_owned(), font.clone());
     }
 
     /// Enables audio by initialising the default audio device.
@@ -80,13 +80,13 @@ impl SceneManager {
                     let dt = handle.get_frame_time();
                     let state = match scene.update((handle, thread), dt, audio.clone())? {
                         State::Keep => {
+                            let mut fonts =
+                                HashMap::<String, Rc<Font>>::with_capacity(self.fonts.len());
+                            for key in self.fonts.keys() {
+                                fonts.insert(key.to_owned(), self.fonts[key].clone());
+                            }
                             let mut handle = handle.begin_drawing(thread);
-                            let _ = scene.draw(
-                                &mut handle,
-                                screen,
-                                self.font.iter().map(|f| f.clone()).collect(),
-                                audio.clone(),
-                            );
+                            let _ = scene.draw(&mut handle, screen, fonts, audio.clone());
                             State::Keep
                         }
                         status => status,
