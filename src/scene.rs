@@ -25,7 +25,7 @@ pub trait Scene: fmt::Debug {
         &mut self,
         handle: &mut RaylibDrawHandle,
         screen: Rectangle,
-        font: Option<Rc<Font>>,
+        font: Vec<Rc<Font>>,
         audio: Option<Rc<&mut RaylibAudio>>,
     ) -> anyhow::Result<()>;
 }
