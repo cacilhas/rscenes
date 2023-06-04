@@ -9,7 +9,7 @@ use crate::{scene::Scene, state::State};
 pub struct SceneManager {
     handle: (RaylibHandle, RaylibThread),
     scenes: Vec<Box<dyn Scene>>,
-    fonts: HashMap<String, Rc<Font>>,
+    fonts: HashMap<&'static str, Rc<Font>>,
     audio: Option<RaylibAudio>,
 }
 
@@ -34,8 +34,8 @@ impl SceneManager {
     }
 
     /// Sets the font passed to scenes.
-    pub fn push_font(&mut self, name: &str, font: &Rc<Font>) {
-        self.fonts.insert(name.to_owned(), font.clone());
+    pub fn push_font(&mut self, name: &'static str, font: &Rc<Font>) {
+        self.fonts.insert(name, font.clone());
     }
 
     /// Enables audio by initialising the default audio device.
@@ -81,9 +81,9 @@ impl SceneManager {
                     let state = match scene.update((handle, thread), dt, audio.clone())? {
                         State::Keep => {
                             let mut fonts =
-                                HashMap::<String, Rc<Font>>::with_capacity(self.fonts.len());
-                            for key in self.fonts.keys() {
-                                fonts.insert(key.to_owned(), self.fonts[key].clone());
+                                HashMap::<&'static str, Rc<Font>>::with_capacity(self.fonts.len());
+                            for &key in self.fonts.keys() {
+                                fonts.insert(key, self.fonts[key].clone());
                             }
                             let mut handle = handle.begin_drawing(thread);
                             let _ = scene.draw(&mut handle, screen, fonts, audio.clone());

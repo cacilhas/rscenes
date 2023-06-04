@@ -25,7 +25,7 @@ pub trait Scene: fmt::Debug {
         &mut self,
         handle: &mut RaylibDrawHandle,
         screen: Rectangle,
-        font: HashMap<String, Rc<Font>>,
+        font: HashMap<&'static str, Rc<Font>>,
         audio: Option<Rc<&mut RaylibAudio>>,
     ) -> anyhow::Result<()>;
 }
