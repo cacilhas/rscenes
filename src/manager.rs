@@ -14,6 +14,8 @@ pub struct SceneManager<R = ()> {
 
 impl<R> SceneManager<R> {
     /// Creates a new SceneManager from a RaylibBuilder, which ownership must be taken.
+    /// `resources` can be anything you’d like to share between scenes, like fonts and audio
+    /// devices.
     #[must_use]
     pub fn new(builder: RaylibBuilder, resources: R) -> Self {
         let (mut handle, thread) = builder.build();
@@ -27,6 +29,9 @@ impl<R> SceneManager<R> {
     }
 
     /// Allows to reconfigure the inner RaylibHandle.
+    ///
+    /// Callback parameters are the Raylib handle, the Raylib thread, and the resources supplied to
+    /// ::new().
     pub fn config<T>(
         &mut self,
         callback: impl Fn(&mut RaylibHandle, &RaylibThread, &mut R) -> T,

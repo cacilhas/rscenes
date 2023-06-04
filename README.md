@@ -4,6 +4,10 @@
 [The 3-Clause BSD License]: https://opensource.org/license/bsd-3-clause/
 [Raylib]: https://crates.io/crates/raylib
 [raylib::prelude]: https://docs.rs/raylib/3.7.0/raylib/prelude/
+[Scene]: https://docs.rs/rscenes/latest/rscenes/prelude/trait.Scene.html)
+[SceneManager]: https://docs.rs/rscenes/latest/rscenes/prelude/struct.SceneManager.html
+[State]: https://docs.rs/rscenes/latest/rscenes/prelude/enum.State.html
+[colors]: https://docs.rs/rscenes/latest/rscenes/prelude/colors/
 
 ## Rscene
 
@@ -28,12 +32,17 @@ Then, in your function, instantiate the builder and the manager:
 ```rust
 let mut builder = raylib::init();
 builder.title("my-game"); // this sets WM_CLASS
-let mut manager = SceneManager::new(builder);
-manager.config(|handle, thread| {
+let font: Option<Font> = None;
+let mut manager = SceneManager::new(builder, font);
+manager.config(|handle, thread, font| {
     // Here you set the window title, otherwise it’s gonna be the same as
     // the WM_CLASS.
     handle.set_window_title(thread, "My Game");
     // You can call any handle method you need here.
+    // For instance, the default framerate is 60fps, you can change it here:
+    handle.set_target_fps(30);
+    // Or you can load a font:
+    font.insert(handle.load_font(thread, handle).unwrap());
 });
 manager.add_first_scene(Box::new(MyScene::default()));
 manager.start()?;
@@ -45,7 +54,7 @@ The scene should be implemented like:
 #[derive(Debug, Default)]
 struct MyScene;
 
-impl Scene for MyScene {
+impl Scene<Option<Font>> for MyScene {
     fn init(&mut self, handle: &mut RaylibHandle, thread: &RaylibThread) -> anyhow::Result<()> {
         // Perform any initialisation you need here
         Ok(())
@@ -55,8 +64,8 @@ impl Scene for MyScene {
         &mut self,
         (handle, thread): (&mut RaylibHandle, &RaylibThread),
         dt: f32,
-        audio: Option<Rc<&mut RaylibAudio>>,
-    ) -> anyhow::Result<State> {
+        resources: &mut Option<Font>,
+    ) -> anyhow::Result<State<Option<Font>>> {
         // Per frame update:
         // dt is time since last frame in seconds.
         Ok(State::Keep)
@@ -66,8 +75,7 @@ impl Scene for MyScene {
         &mut self,
         handle: &mut RaylibDrawHandle,
         screen: Rectangle,
-        font: Option<Rc<Font>>,
-        audio: Option<Rc<&mut RaylibAudio>>,
+        resources: &Option<Font>,
     ) -> anyhow::Result<()> {
         // Instantiate your RaylibMode2D or RaylibMode3D and draw here.
         // This is rendered once per frame.
@@ -78,10 +86,10 @@ impl Scene for MyScene {
 
 The main resources are:
 
-- [`Scene`](./prelude/trait.Scene.html)
-- [`SceneManager`](./prelude/struct.SceneManager.html)
-- [`State`](./prelude/enum.State.html)
-- [`colors`](./prelude/colors)
+- [`Scene`][Scene]
+- [`SceneManager`][SceneManager]
+- [`State`][State]
+- [`colors`][colors]
 
 Everything else comes from [`raylib::prelude`][raylib::prelude].
 
