@@ -30,12 +30,14 @@
 //! ```rust
 //! let mut builder = raylib::init();
 //! builder.title("my-game"); // this sets WM_CLASS
-//! let mut manager = SceneManager::new(builder);
+//! let mut manager = SceneManager::new(builder, ());
 //! manager.config(|handle, thread| {
 //!     // Here you set the window title, otherwise it’s gonna be the same as
 //!     // the WM_CLASS.
 //!     handle.set_window_title(thread, "My Game");
 //!     // You can call any handle method you need here.
+//!     // For instance, the default framerate is 60fps, you can change it here:
+//!     handle.set_target_fps(30);
 //! });
 //! manager.add_first_scene(Box::new(MyScene::default()));
 //! manager.start()?;

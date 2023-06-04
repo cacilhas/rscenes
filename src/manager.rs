@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fmt, rc::Rc};
+use std::fmt;
 
 use raylib::prelude::*;
 
@@ -6,25 +6,23 @@ use crate::{scene::Scene, state::State};
 
 /// SceneManager manages multiple scenes.
 #[derive(Debug)]
-pub struct SceneManager {
+pub struct SceneManager<R = ()> {
     handle: (RaylibHandle, RaylibThread),
-    scenes: Vec<Box<dyn Scene>>,
-    fonts: HashMap<&'static str, Rc<Font>>,
-    audio: Option<RaylibAudio>,
+    scenes: Vec<Box<dyn Scene<R>>>,
+    resources: R,
 }
 
-impl SceneManager {
+impl<R> SceneManager<R> {
     /// Creates a new SceneManager from a RaylibBuilder, which ownership must be taken.
     #[must_use]
-    pub fn new(builder: RaylibBuilder) -> Self {
+    pub fn new(builder: RaylibBuilder, resources: R) -> Self {
         let (mut handle, thread) = builder.build();
         handle.set_target_fps(60);
         handle.set_exit_key(None);
         Self {
             handle: (handle, thread),
             scenes: Vec::with_capacity(4),
-            fonts: HashMap::with_capacity(2),
-            audio: None,
+            resources,
         }
     }
 
@@ -33,18 +31,8 @@ impl SceneManager {
         callback(&mut self.handle.0, &self.handle.1)
     }
 
-    /// Sets the font passed to scenes.
-    pub fn push_font(&mut self, name: &'static str, font: &Rc<Font>) {
-        self.fonts.insert(name, font.clone());
-    }
-
-    /// Enables audio by initialising the default audio device.
-    pub fn enable_audio(&mut self) {
-        self.audio = Some(RaylibAudio::init_audio_device());
-    }
-
     /// Adds the first scene to the stack.
-    pub fn add_first_scene(&mut self, scene: Box<dyn Scene>) {
+    pub fn add_first_scene(&mut self, scene: Box<dyn Scene<R>>) {
         if !self.scenes.is_empty() {
             self.scenes.clear();
         }
@@ -54,7 +42,6 @@ impl SceneManager {
     /// Starts Raylib main loop.
     pub fn start(&mut self) -> anyhow::Result<()> {
         let (handle, thread) = (&mut self.handle.0, &self.handle.1);
-        let audio = self.audio.as_mut().map(|a| Rc::new(a));
 
         match self.scenes.last_mut() {
             Some(scene) => scene.init(handle, thread)?,
@@ -67,37 +54,29 @@ impl SceneManager {
                 height: handle.get_screen_height() as f32,
                 ..Default::default()
             };
+            let scene = match self.scenes.last_mut() {
+                Some(scene) => scene,
+                None => break 'mainloop,
+            };
 
             let state = {
                 let state = if handle.is_key_released(KeyboardKey::KEY_ESCAPE) {
                     let _ = handle.begin_drawing(thread);
                     State::Previous(1)
                 } else {
-                    let scene = match self.scenes.last_mut() {
-                        Some(scene) => scene,
-                        None => break 'mainloop,
-                    };
                     let dt = handle.get_frame_time();
-                    let state = match scene.update((handle, thread), dt, audio.clone())? {
-                        State::Keep => {
-                            let mut fonts =
-                                HashMap::<&'static str, Rc<Font>>::with_capacity(self.fonts.len());
-                            for &key in self.fonts.keys() {
-                                fonts.insert(key, self.fonts[key].clone());
-                            }
-                            let mut handle = handle.begin_drawing(thread);
-                            let _ = scene.draw(&mut handle, screen, fonts, audio.clone());
-                            State::Keep
-                        }
-                        status => status,
-                    };
-                    state
+                    scene.update((handle, thread), dt, &mut self.resources)?
                 };
                 state
             };
 
             match state {
-                State::New(mut scene) => {
+                State::Keep => {
+                    let mut handle = handle.begin_drawing(thread);
+                    scene.draw(&mut handle, screen, &self.resources)?;
+                }
+
+                State::New::<R>(mut scene) => {
                     scene.init(handle, thread)?;
                     self.scenes.push(scene);
                 }
@@ -112,8 +91,6 @@ impl SceneManager {
                         scene.init(handle, thread)?;
                     }
                 }
-
-                _ => (),
             }
         }
 
