@@ -27,8 +27,11 @@ impl<R> SceneManager<R> {
     }
 
     /// Allows to reconfigure the inner RaylibHandle.
-    pub fn config<T>(&mut self, callback: impl Fn(&mut RaylibHandle, &RaylibThread) -> T) -> T {
-        callback(&mut self.handle.0, &self.handle.1)
+    pub fn config<T>(
+        &mut self,
+        callback: impl Fn(&mut RaylibHandle, &RaylibThread, &mut R) -> T,
+    ) -> T {
+        callback(&mut self.handle.0, &self.handle.1, &mut self.resources)
     }
 
     /// Adds the first scene to the stack.
