@@ -1,25 +1,14 @@
 # rscenes
 
-[COPYING]: https://github.com/cacilhas/rscenes/blob/master/COPYING
-[The 3-Clause BSD License]: https://opensource.org/license/bsd-3-clause/
-[Raylib]: https://crates.io/crates/raylib
-[raylib::prelude]: https://docs.rs/raylib/3.7.0/raylib/prelude/
-[Scene]: https://docs.rs/rscenes/latest/rscenes/prelude/trait.Scene.html)
-[SceneManager]: https://docs.rs/rscenes/latest/rscenes/prelude/struct.SceneManager.html
-[State]: https://docs.rs/rscenes/latest/rscenes/prelude/enum.State.html
-[colors]: https://docs.rs/rscenes/latest/rscenes/prelude/colors/
+Rscene is a scene manager for [Raylib](https://crates.io/crates/raylib).
 
-## Rscene
-
-Rscene is a scene manager for [Raylib][].
-
-### Installation
+## Installation
 
 ```sh
 cargo add rscenes
 ```
 
-### Sample
+## Sample
 
 You don’t need to include `raylib`, the following line alone is enough:
 
@@ -41,7 +30,7 @@ manager.config(|handle, thread, font| {
     // You can call any handle method you need here.
     // For instance, the default framerate is 60fps, you can change it here:
     handle.set_target_fps(30);
-    // Or you can load a font:
+    // Or load a font:
     font.insert(handle.load_font(thread, handle).unwrap());
 });
 manager.add_first_scene(Box::new(MyScene::default()));
@@ -86,16 +75,17 @@ impl Scene<Option<Font>> for MyScene {
 
 The main resources are:
 
-- [`Scene`][Scene]
-- [`SceneManager`][SceneManager]
-- [`State`][State]
-- [`colors`][colors]
+- [`Scene`](https://docs.rs/rscenes/latest/rscenes/prelude/trait.Scene.html)
+- [`SceneManager`](https://github.com/cacilhas/rscenes/blob/master/COPYING)
+- [`State`](https://docs.rs/rscenes/latest/rscenes/prelude/enum.State.html)
+- [`colors`](https://docs.rs/rscenes/latest/rscenes/prelude/colors/)
 
-Everything else comes from [`raylib::prelude`][raylib::prelude].
+Everything else comes from
+[`raylib::prelude`](https://docs.rs/raylib/3.7.0/raylib/prelude/).
 
-### License
+## License
 
-- [The 3-Clause BSD License][]
-- [COPYING][]
+- [The 3-Clause BSD License](https://opensource.org/license/bsd-3-clause/)
+- [`COPYING`](https://github.com/cacilhas/rscenes/blob/master/COPYING)
 
 License: BSD-3-Clause
