@@ -11,7 +11,7 @@
 //! You don’t need to include `raylib`, the following line alone is enough:
 //!
 //! ```rust
-//! use rscene.prelude::*
+//! use rscene::prelude::*
 //! ```
 //!
 //! Then, in your function, instantiate the builder and the manager:
@@ -29,7 +29,7 @@
 //!     // For instance, the default framerate is 60fps, you can change it here:
 //!     handle.set_target_fps(30);
 //!     // Or load a font:
-//!     font.insert(handle.load_font(thread, handle).unwrap());
+//!     font.insert(handle.load_font(thread, "font.ttf").unwrap());
 //! });
 //! manager.add_first_scene(Box::new(MyScene::default()));
 //! manager.start()?;
