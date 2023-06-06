@@ -1,6 +1,6 @@
 [package]
 name          = "rscenes"
-version       = "1.2.5"
+version       = "1.2.6"
 authors       = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info"]
 license       = "BSD-3-Clause"
 readme        = "README.md"
