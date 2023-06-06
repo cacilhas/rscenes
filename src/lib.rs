@@ -89,6 +89,7 @@
 
 mod colors;
 mod manager;
+mod mem;
 mod scene;
 mod state;
 
@@ -103,5 +104,10 @@ pub mod prelude {
     /// Raylib 4.5 colours
     pub mod colors {
         pub use crate::colors::*;
+    }
+
+    /// Raylib 4.5 resources from mem
+    pub mod mem {
+        pub use crate::mem::*;
     }
 }
