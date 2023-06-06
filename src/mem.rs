@@ -5,11 +5,10 @@ use raylib::prelude::*;
 // TODO: identify other *_from_mem functions missing in raylib 3.7
 
 /// Returns a Wave object from memory raw data.
-/// `filetype` must be the type extension, including the dot.
-/// For instance: `".wav"`
-pub fn load_wave(filetype: &'static str, bytes: &'static [u8]) -> Result<Wave, String> {
+/// For `filetype`, use `mem::WaveType`.
+pub fn load_wave(filetype: impl Into<&'static str>, bytes: &'static [u8]) -> Result<Wave, String> {
     let bytes = bytes.iter().map(|e| e.to_owned()).collect::<Vec<u8>>();
-    unsafe { load_wave_from_mem(filetype, &bytes, bytes.len() as i32) }
+    unsafe { load_wave_from_mem(filetype.into(), &bytes, bytes.len() as i32) }
 }
 
 unsafe fn load_wave_from_mem(filetype: &str, bytes: &Vec<u8>, size: i32) -> Result<Wave, String> {
@@ -20,4 +19,35 @@ unsafe fn load_wave_from_mem(filetype: &str, bytes: &Vec<u8>, size: i32) -> Resu
         return Err(format!("Wave data is null. Check provided buffer data"));
     };
     Ok(Wave::from_raw(w))
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum WaveType {
+    Aac,
+    Ape,
+    Au,
+    Flat,
+    Mp3,
+    M4a,
+    Ogg,
+    Opus,
+    Qoa,
+    Wav,
+}
+
+impl From<WaveType> for &'static str {
+    fn from(value: WaveType) -> Self {
+        match value {
+            WaveType::Aac => ".aac",
+            WaveType::Ape => ".ape",
+            WaveType::Au => ".au",
+            WaveType::Flat => ".flat",
+            WaveType::Mp3 => ".mp3",
+            WaveType::M4a => ".m4a",
+            WaveType::Ogg => ".ogg",
+            WaveType::Opus => ".opus",
+            WaveType::Qoa => ".qoa",
+            WaveType::Wav => ".wav",
+        }
+    }
 }
