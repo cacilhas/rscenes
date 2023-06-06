@@ -77,6 +77,7 @@
 //! - [`SceneManager`](https://docs.rs/rscenes/latest/rscenes/prelude/struct.SceneManager.html)
 //! - [`State`](https://docs.rs/rscenes/latest/rscenes/prelude/enum.State.html)
 //! - [`colors`](https://docs.rs/rscenes/latest/rscenes/prelude/colors/)
+//! - [`mem`](https://docs.rs/rscenes/latest/rscenes/prelude/mem/)
 //! - [`raylib`](https://docs.rs/raylib/3.7.0/raylib) (Raylib itself)
 //!
 //! Everything else is exposed from
