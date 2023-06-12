@@ -29,6 +29,7 @@ unsafe fn load_wave_from_mem(filetype: &str, bytes: &Vec<u8>, size: i32) -> Resu
     Ok(Wave::from_raw(w))
 }
 
+/// Popular audio file extensions – not all work with Raylib
 #[derive(Clone, Copy, Debug)]
 pub enum WaveType {
     Aac,
@@ -60,6 +61,7 @@ impl From<WaveType> for &'static str {
     }
 }
 
+/// Popular image file extensions – not all work with Raylib
 #[derive(Clone, Copy, Debug)]
 pub enum ImageType {
     Bitmap,
