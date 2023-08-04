@@ -2,7 +2,7 @@ use std::ffi::CString;
 
 use raylib::prelude::*;
 
-/// Returns an Image from memory ray data.
+/// Returns an Image from memory raw data.
 /// For `filetype`, use `mem::ImageType`.
 pub fn load_image(
     filetype: impl Into<&'static str>,
