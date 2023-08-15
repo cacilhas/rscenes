@@ -85,6 +85,16 @@ The main resources are:
 Everything else is exposed from
 [`raylib::prelude`](https://docs.rs/raylib/3.7.0/raylib/prelude/).
 
+### Features
+
+Enabling `ecs` feature, `rscenes::prelude::*` is gonna bring all resources from
+[`hecs`](https://crates.io/crates/hecs), like `Entity`, `Query*`, `Ref*`,
+`With`, and `World`.
+
+```rust
+rscenes = {version = "*", features = ["ecs"]}
+```
+
 ## License
 
 - [The 3-Clause BSD License](https://opensource.org/license/bsd-3-clause/)
