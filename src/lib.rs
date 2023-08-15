@@ -102,6 +102,9 @@ pub mod prelude {
     pub use raylib::consts;
     pub use raylib::prelude::*;
 
+    #[cfg(feature = "ecs")]
+    pub use hecs::*;
+
     /// Raylib 4.5 colours
     pub mod colors {
         pub use crate::colors::*;
