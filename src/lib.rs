@@ -83,6 +83,16 @@
 //! Everything else is exposed from
 //! [`raylib::prelude`](https://docs.rs/raylib/3.7.0/raylib/prelude/).
 //!
+//! ## Features
+//!
+//! Enabling `ecs` feature, `rscenes::prelude::*` is gonna bring all resources from
+//! [`hecs`](https://crates.io/crates/hecs), like `Entity`, `Query*`, `Ref*`,
+//! `With`, and `World`.
+//!
+//! ```
+//! rscenes = {version = "*", features = ["ecs"]}
+//! ```
+//!
 //! # License
 //!
 //! - [The 3-Clause BSD License](https://opensource.org/license/bsd-3-clause/)
@@ -101,6 +111,9 @@ pub mod prelude {
     pub use raylib;
     pub use raylib::consts;
     pub use raylib::prelude::*;
+
+    #[cfg(feature = "ecs")]
+    pub use hecs::*;
 
     /// Raylib 4.5 colours
     pub mod colors {
