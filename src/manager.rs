@@ -48,7 +48,7 @@ impl<R> SceneManager<R> {
     }
 
     /// Starts Raylib main loop.
-    pub fn start(&mut self) -> anyhow::Result<()> {
+    pub fn start(&mut self) -> eyre::Result<()> {
         let (handle, thread) = (&mut self.handle.0, &self.handle.1);
 
         match self.scenes.last_mut() {

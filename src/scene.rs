@@ -7,7 +7,7 @@ use raylib::prelude::*;
 pub trait Scene<R = ()>: fmt::Debug {
     /// Initialises the scene from RaylibHandle.
     #[allow(unused_variables)]
-    fn init(&mut self, handle: &mut RaylibHandle, thread: &RaylibThread) -> anyhow::Result<()> {
+    fn init(&mut self, handle: &mut RaylibHandle, thread: &RaylibThread) -> eyre::Result<()> {
         Ok(())
     }
 
@@ -18,7 +18,7 @@ pub trait Scene<R = ()>: fmt::Debug {
         rl: (&mut RaylibHandle, &RaylibThread),
         dt: f32,
         resources: &mut R,
-    ) -> anyhow::Result<State<R>>;
+    ) -> eyre::Result<State<R>>;
 
     /// Draws the scene each frame.
     fn draw(
@@ -26,5 +26,5 @@ pub trait Scene<R = ()>: fmt::Debug {
         handle: &mut RaylibDrawHandle,
         screen: Rectangle,
         resources: &R,
-    ) -> anyhow::Result<()>;
+    ) -> eyre::Result<()>;
 }
