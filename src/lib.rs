@@ -93,6 +93,19 @@
 //! rscenes = {version = "*", features = ["ecs"]}
 //! ```
 //!
+//! Enabling `eyre` feature, `rscenes` uses [`eyre`](https://crates.io/crates/eyre)
+//! instead  of [`anyhow`](https://crates.io/crates/anyhow).
+//!
+//! ```
+//! rscenes = {version = "*", default-features = false, features = ["eyre"]}
+//! ```
+//!
+//! You can combine both:
+//!
+//! ```
+//! rscenes = {version = "*", default-features = false, features = ["ecs", "eyre"]}
+//! ```
+//!
 //! # License
 //!
 //! - [The 3-Clause BSD License](https://opensource.org/license/bsd-3-clause/)

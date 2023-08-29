@@ -95,6 +95,19 @@ Enabling `ecs` feature, `rscenes::prelude::*` is gonna bring all resources from
 rscenes = {version = "*", features = ["ecs"]}
 ```
 
+Enabling `eyre` feature, `rscenes` uses [`eyre`](https://crates.io/crates/eyre)
+instead  of [`anyhow`](https://crates.io/crates/anyhow).
+
+```rust
+rscenes = {version = "*", default-features = false, features = ["eyre"]}
+```
+
+You can combine both:
+
+```rust
+rscenes = {version = "*", default-features = false, features = ["ecs", "eyre"]}
+```
+
 ## License
 
 - [The 3-Clause BSD License](https://opensource.org/license/bsd-3-clause/)
