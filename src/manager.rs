@@ -4,6 +4,9 @@ use raylib::prelude::*;
 
 use crate::{scene::Scene, state::State};
 
+#[cfg(feature = "eyre")]
+use eyre as anyhow;
+
 /// SceneManager manages multiple scenes.
 #[derive(Debug)]
 pub struct SceneManager<R = ()> {
@@ -48,7 +51,7 @@ impl<R> SceneManager<R> {
     }
 
     /// Starts Raylib main loop.
-    pub fn start(&mut self) -> eyre::Result<()> {
+    pub fn start(&mut self) -> anyhow::Result<()> {
         let (handle, thread) = (&mut self.handle.0, &self.handle.1);
 
         match self.scenes.last_mut() {

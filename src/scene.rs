@@ -3,11 +3,14 @@ use std::fmt;
 use crate::state::State;
 use raylib::prelude::*;
 
+#[cfg(feature = "eyre")]
+use eyre as anyhow;
+
 /// Trait to make scenes usable.
 pub trait Scene<R = ()>: fmt::Debug {
     /// Initialises the scene from RaylibHandle.
     #[allow(unused_variables)]
-    fn init(&mut self, handle: &mut RaylibHandle, thread: &RaylibThread) -> eyre::Result<()> {
+    fn init(&mut self, handle: &mut RaylibHandle, thread: &RaylibThread) -> anyhow::Result<()> {
         Ok(())
     }
 
@@ -18,7 +21,7 @@ pub trait Scene<R = ()>: fmt::Debug {
         rl: (&mut RaylibHandle, &RaylibThread),
         dt: f32,
         resources: &mut R,
-    ) -> eyre::Result<State<R>>;
+    ) -> anyhow::Result<State<R>>;
 
     /// Draws the scene each frame.
     fn draw(
@@ -26,5 +29,5 @@ pub trait Scene<R = ()>: fmt::Debug {
         handle: &mut RaylibDrawHandle,
         screen: Rectangle,
         resources: &R,
-    ) -> eyre::Result<()>;
+    ) -> anyhow::Result<()>;
 }

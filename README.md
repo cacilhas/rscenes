@@ -44,7 +44,7 @@ The scene should be implemented like:
 struct MyScene;
 
 impl Scene<Option<Font>> for MyScene {
-    fn init(&mut self, handle: &mut RaylibHandle, thread: &RaylibThread) -> eyre::Result<()> {
+    fn init(&mut self, handle: &mut RaylibHandle, thread: &RaylibThread) -> anyhow::Result<()> {
         // Perform any initialisation you need here
         Ok(())
     }
@@ -54,7 +54,7 @@ impl Scene<Option<Font>> for MyScene {
         (handle, thread): (&mut RaylibHandle, &RaylibThread),
         dt: f32,
         resources: &mut Option<Font>,
-    ) -> eyre::Result<State<Option<Font>>> {
+    ) -> anyhow::Result<State<Option<Font>>> {
         // Per frame update:
         // dt is time since last frame in seconds.
         Ok(State::Keep)
@@ -65,7 +65,7 @@ impl Scene<Option<Font>> for MyScene {
         handle: &mut RaylibDrawHandle,
         screen: Rectangle,
         resources: &Option<Font>,
-    ) -> eyre::Result<()> {
+    ) -> anyhow::Result<()> {
         // Instantiate your RaylibMode2D or RaylibMode3D and draw here.
         // This is rendered once per frame.
         Ok(())
