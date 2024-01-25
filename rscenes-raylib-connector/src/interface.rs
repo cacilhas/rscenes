@@ -5,13 +5,13 @@ use crate::vector::*;
 use raylib_ffi::*;
 
 #[derive(Clone, Copy, Debug)]
-pub struct Renderer {
+pub struct RaylibConnector {
     pub rcore: Rcore,
     pub rgestures: Rgestures,
     pub rcamera: Rcamera,
 }
 
-impl Renderer {
+impl RaylibConnector {
     pub fn new() -> Self {
         Self {
             rcore: Rcore,
@@ -138,7 +138,7 @@ mod tests {
 
     #[test]
     fn should_export_rcore() {
-        let renderer = Renderer::new();
+        let renderer = RaylibConnector::new();
         assert_eq!(renderer.rcore.type_id(), TypeId::of::<Rcore>())
     }
 }
