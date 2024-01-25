@@ -981,6 +981,64 @@ impl Rcore {
     }
 
     // Input-related methods: mouse
+
+    pub(crate) fn __is_mouse_button_pressed(button: impl Into<usize>) -> bool {
+        unsafe { IsMouseButtonPressed(button.into() as i32) }
+    }
+
+    pub(crate) fn __is_mouse_button_down(button: impl Into<usize>) -> bool {
+        unsafe { IsMouseButtonDown(button.into() as i32) }
+    }
+
+    pub(crate) fn __is_mouse_button_released(button: impl Into<usize>) -> bool {
+        unsafe { IsMouseButtonReleased(button.into() as i32) }
+    }
+
+    pub(crate) fn __is_mouse_button_up(button: impl Into<usize>) -> bool {
+        unsafe { IsMouseButtonUp(button.into() as i32) }
+    }
+
+    pub(crate) fn __get_mouse_x() -> i32 {
+        unsafe { GetMouseX() }
+    }
+
+    pub(crate) fn __get_mouse_y() -> i32 {
+        unsafe { GetMouseY() }
+    }
+
+    pub(crate) fn __get_mouse_position() -> Vector2 {
+        unsafe { GetMousePosition() }
+    }
+
+    pub(crate) fn __get_mouse_delta() -> Vector2 {
+        unsafe { GetMouseDelta() }
+    }
+
+    pub(crate) fn __set_mouse_position(x: i32, y: i32) {
+        unsafe { SetMousePosition(x, y) }
+    }
+
+    pub(crate) fn __set_mouse_offset(x: i32, y: i32) {
+        unsafe { SetMouseOffset(x, y) }
+    }
+
+    pub(crate) fn __set_mouse_scale(x: f32, y: f32) {
+        unsafe { SetMouseScale(x, y) }
+    }
+
+    pub(crate) fn __get_mouse_wheel_move() -> f32 {
+        unsafe { GetMouseWheelMove() }
+    }
+
+    pub(crate) fn __get_mouse_wheel_move_v() -> Vector2 {
+        unsafe { GetMouseWheelMoveV() }
+    }
+
+    pub(crate) fn __set_mouse_cursor(cursor: impl Into<usize>) {
+        unsafe { SetMouseCursor(cursor.into() as i32) }
+    }
+
+    // Input-related functions: touch
 }
 
 /// Exported methods
@@ -1716,4 +1774,66 @@ impl Rcore {
     }
 
     // Input-related methods: mouse
+
+    /// button is supposed to be MouseButton
+    pub fn is_mouse_button_pressed(&self, button: impl Into<usize>) -> bool {
+        Self::__is_mouse_button_pressed(button)
+    }
+
+    /// button is supposed to be MouseButton
+    pub fn is_mouse_button_down(&self, button: impl Into<usize>) -> bool {
+        Self::__is_mouse_button_down(button)
+    }
+
+    /// button is supposed to be MouseButton
+    pub fn is_mouse_button_released(&self, button: impl Into<usize>) -> bool {
+        Self::__is_mouse_button_released(button)
+    }
+
+    /// button is supposed to be MouseButton
+    pub fn is_mouse_button_up(&self, button: impl Into<usize>) -> bool {
+        Self::__is_mouse_button_up(button)
+    }
+
+    pub fn get_mouse_x(&self) -> i32 {
+        Self::__get_mouse_x()
+    }
+
+    pub fn get_mouse_y(&self) -> i32 {
+        Self::__get_mouse_y()
+    }
+
+    pub fn get_mouse_position(&self) -> Vector2 {
+        Self::__get_mouse_position()
+    }
+
+    pub fn get_mouse_delta(&self) -> Vector2 {
+        Self::__get_mouse_delta()
+    }
+
+    pub fn set_mouse_position(&self, x: i32, y: i32) {
+        Self::__set_mouse_position(x, y)
+    }
+
+    pub fn set_mouse_offset(&self, x: i32, y: i32) {
+        Self::__set_mouse_offset(x, y)
+    }
+
+    pub fn set_mouse_scale(&self, x: f32, y: f32) {
+        Self::__set_mouse_scale(x, y)
+    }
+
+    pub fn get_mouse_wheel_move(&self) -> f32 {
+        Self::__get_mouse_wheel_move()
+    }
+
+    pub fn get_mouse_wheel_move_v(&self) -> Vector2 {
+        Self::__get_mouse_wheel_move_v()
+    }
+
+    pub fn set_mouse_cursor(&self, cursor: impl Into<usize>) {
+        Self::__set_mouse_cursor(cursor)
+    }
+
+    // Input-related functions: touch
 }
