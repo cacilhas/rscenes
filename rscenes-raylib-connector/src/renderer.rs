@@ -1,6 +1,5 @@
 use crate::rcore::Rcore;
 use crate::vector::*;
-use crate::vr;
 use raylib_ffi::*;
 
 #[derive(Clone, Copy, Debug)]
@@ -10,9 +9,7 @@ pub struct Renderer {
 
 impl Renderer {
     pub fn new() -> Self {
-        Self {
-            rcore: Rcore::new(),
-        }
+        Self { rcore: Rcore }
     }
 
     #[allow(non_snake_case)]
@@ -112,7 +109,7 @@ impl Renderer {
     }
 
     #[must_use]
-    pub fn vr_stereo_mode<F, R, E>(&self, config: &mut vr::VrStereoConfig, block: F) -> Result<R, E>
+    pub fn vr_stereo_mode<F, R, E>(&self, config: VrStereoConfig, block: F) -> Result<R, E>
     where
         F: FnOnce() -> Result<R, E>,
     {

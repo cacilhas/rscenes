@@ -1,17 +1,13 @@
-use crate::vr;
 use crate::window_handle::WindowHandle;
 use eyre::*;
 use raylib_ffi::*;
+use std::ffi::c_void;
 use std::ffi::{c_char, CString};
 
 #[derive(Clone, Copy, Debug)]
-pub struct Rcore {}
+pub struct Rcore;
 
 impl Rcore {
-    pub(crate) fn new() -> Self {
-        Self {}
-    }
-
     // Window-related methods
 
     pub fn init_window(&self, width: i32, height: i32, title: &str) {
@@ -304,11 +300,118 @@ impl Rcore {
         unsafe { EndScissorMode() }
     }
 
-    pub fn begin_vr_stereo_mode(&self, config: &mut vr::VrStereoConfig) {
-        unsafe { BeginVrStereoMode(config.0) }
+    pub fn begin_vr_stereo_mode(&self, config: VrStereoConfig) {
+        unsafe { BeginVrStereoMode(config) }
     }
 
     pub fn end_vr_stereo_mode(&self) {
         unsafe { EndVrStereoMode() }
+    }
+
+    // VR stereo config methods for VR simulator
+
+    pub fn load_vr_stereo_config(&self, device: VrDeviceInfo) -> VrStereoConfig {
+        unsafe { LoadVrStereoConfig(device) }
+    }
+
+    pub fn unload_vr_stereo_config(&self, config: VrStereoConfig) {
+        unsafe { UnloadVrStereoConfig(config) }
+    }
+
+    // Shader management functions
+
+    pub fn load_shader(&self, vs_filename: &str, fs_filename: &str) -> Shader {
+        unsafe { LoadShader(rl_str!(vs_filename), rl_str!(fs_filename)) }
+    }
+
+    pub fn load_shader_from_memory(&self, vs_code: &str, fs_code: &str) -> Shader {
+        unsafe { LoadShaderFromMemory(rl_str!(vs_code), rl_str!(fs_code)) }
+    }
+
+    pub fn is_shader_ready(&self, shader: Shader) -> bool {
+        unsafe { IsShaderReady(shader) }
+    }
+
+    pub fn get_shader_location(&self, shader: Shader, name: &str) -> i32 {
+        unsafe { GetShaderLocation(shader, rl_str!(name)) }
+    }
+
+    pub fn get_shader_location_attrib(
+        &self,
+        shader: Shader,
+        name: &str,
+    ) -> Result<enums::ShaderLocationIndex, String> {
+        unsafe {
+            match GetShaderLocationAttrib(shader, rl_str!(name)) {
+                0 => Ok(enums::ShaderLocationIndex::VertexPosition),
+                1 => Ok(enums::ShaderLocationIndex::VertexTexcoord01),
+                2 => Ok(enums::ShaderLocationIndex::VertexTexcoord02),
+                3 => Ok(enums::ShaderLocationIndex::VertexNormal),
+                4 => Ok(enums::ShaderLocationIndex::VertexTangent),
+                5 => Ok(enums::ShaderLocationIndex::VertexColor),
+                6 => Ok(enums::ShaderLocationIndex::MatrixMvp),
+                7 => Ok(enums::ShaderLocationIndex::MatrixView),
+                8 => Ok(enums::ShaderLocationIndex::MatrixProjection),
+                9 => Ok(enums::ShaderLocationIndex::MatrixModel),
+                10 => Ok(enums::ShaderLocationIndex::MatrixNormal),
+                11 => Ok(enums::ShaderLocationIndex::VectorView),
+                12 => Ok(enums::ShaderLocationIndex::ColorDiffuse),
+                13 => Ok(enums::ShaderLocationIndex::ColorSpecular),
+                14 => Ok(enums::ShaderLocationIndex::ColorAmbient),
+                15 => Ok(enums::ShaderLocationIndex::MapAlbedo),
+                16 => Ok(enums::ShaderLocationIndex::MapMetalness),
+                17 => Ok(enums::ShaderLocationIndex::MapNormal),
+                18 => Ok(enums::ShaderLocationIndex::MapRoughness),
+                19 => Ok(enums::ShaderLocationIndex::MapOcclusion),
+                20 => Ok(enums::ShaderLocationIndex::MapEmission),
+                21 => Ok(enums::ShaderLocationIndex::MapHeight),
+                22 => Ok(enums::ShaderLocationIndex::MapCubemap),
+                23 => Ok(enums::ShaderLocationIndex::MapIrradiance),
+                24 => Ok(enums::ShaderLocationIndex::MapPrefilter),
+                25 => Ok(enums::ShaderLocationIndex::MapBrdf),
+                num => Err(format!("could not translate location {}", num)),
+            }
+        }
+    }
+
+    pub fn set_shader_value<T>(
+        &self,
+        shader: Shader,
+        index: i32,
+        value: &T,
+        tpe: enums::ShaderUniformDataType,
+    ) {
+        unsafe {
+            let tpe: usize = tpe.into();
+            let value = value as *const T as *const c_void;
+            SetShaderValue(shader, index, value, tpe as i32)
+        }
+    }
+
+    pub fn set_shader_value_v<T>(
+        &self,
+        shader: Shader,
+        index: i32,
+        value: Vec<&T>,
+        tpe: enums::ShaderUniformDataType,
+    ) {
+        unsafe {
+            let tpe: usize = tpe.into();
+            let count = value.len() as i32;
+            let value = value.as_ptr() as *const c_void;
+            SetShaderValueV(shader, index, value, tpe as i32, count)
+        }
+    }
+
+    pub fn set_shader_value_matrix(&self, shader: Shader, loc: i32, mat: Matrix) {
+        unsafe { SetShaderValueMatrix(shader, loc, mat) }
+    }
+
+    pub fn set_shader_value_texture(&self, shader: Shader, index: i32, texture: Texture2D) {
+        unsafe { SetShaderValueTexture(shader, index, texture) }
+    }
+
+    pub fn unload_shader(&self, shader: Shader) {
+        unsafe { UnloadShader(shader) }
     }
 }
