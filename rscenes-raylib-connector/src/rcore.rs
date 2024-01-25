@@ -414,4 +414,45 @@ impl Rcore {
     pub fn unload_shader(&self, shader: Shader) {
         unsafe { UnloadShader(shader) }
     }
+
+    // Screen-space-related methods
+
+    pub fn get_mouse_ray(&self, mouse_position: Vector2, camera: Camera3D) -> Ray {
+        unsafe { GetMouseRay(mouse_position, camera) }
+    }
+
+    #[allow(non_snake_case)]
+    pub fn get_camera_matrix_2D(&self, camera: Camera2D) -> Matrix {
+        unsafe { GetCameraMatrix2D(camera) }
+    }
+    #[allow(non_snake_case)]
+    pub fn get_camera_matrix_3D(&self, camera: Camera3D) -> Matrix {
+        unsafe { GetCameraMatrix(camera) }
+    }
+
+    #[allow(non_snake_case)]
+    pub fn get_world_to_screen_2D(&self, position: Vector2, camera: Camera2D) -> Vector2 {
+        unsafe { GetWorldToScreen2D(position, camera) }
+    }
+
+    #[allow(non_snake_case)]
+    pub fn get_screen_to_world_2D(&self, position: Vector2, camera: Camera2D) -> Vector2 {
+        unsafe { GetScreenToWorld2D(position, camera) }
+    }
+
+    #[allow(non_snake_case)]
+    pub fn get_world_to_screen_3D(&self, position: Vector3, camera: Camera3D) -> Vector2 {
+        unsafe { GetWorldToScreen(position, camera) }
+    }
+
+    #[allow(non_snake_case)]
+    pub fn get_world_to_screen_3D_ex(
+        &self,
+        position: Vector3,
+        camera: Camera3D,
+        width: i32,
+        height: i32,
+    ) -> Vector2 {
+        unsafe { GetWorldToScreenEx(position, camera, width, height) }
+    }
 }
