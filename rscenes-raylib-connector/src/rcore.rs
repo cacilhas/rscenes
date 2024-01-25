@@ -11,6 +11,8 @@ impl Rcore {
         Self {}
     }
 
+    // Window-related methods
+
     pub fn init_window(&self, width: i32, height: i32, title: &str) {
         unsafe { InitWindow(width, height, rl_str!(title)) }
     }
@@ -207,5 +209,31 @@ impl Rcore {
 
     pub fn disable_event_waiting(&self) {
         unsafe { DisableEventWaiting() }
+    }
+
+    // Cursor-related methods
+
+    pub fn show_cursor(&self) {
+        unsafe { ShowCursor() }
+    }
+
+    pub fn hide_cursor(&self) {
+        unsafe { HideCursor() }
+    }
+
+    pub fn is_cursor_hiden(&self) -> bool {
+        unsafe { IsCursorHidden() }
+    }
+
+    pub fn enable_cursor(&self) {
+        unsafe { EnableCursor() }
+    }
+
+    pub fn disable_cursor(&self) {
+        unsafe { DisableCursor() }
+    }
+
+    pub fn is_cursor_on_screen(&self) -> bool {
+        unsafe { IsCursorOnScreen() }
     }
 }
