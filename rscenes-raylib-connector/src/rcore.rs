@@ -487,4 +487,17 @@ impl Rcore {
     pub fn wait_time(&self, seconds: f64) {
         unsafe { WaitTime(seconds) }
     }
+
+    // Random values generation functions
+
+    pub fn set_random_seed(&self, seed: u32) {
+        unsafe { SetRandomSeed(seed) }
+    }
+
+    pub fn get_random_value(&self, min: i32, max: i32) -> i32 {
+        unsafe { GetRandomValue(min, max) }
+    }
+
+    // TODO: LoadRandomSequence
+    // TODO: UnloadRandomSequence
 }
