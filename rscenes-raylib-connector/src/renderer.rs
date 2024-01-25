@@ -1,3 +1,4 @@
+use crate::rcamera::Rcamera;
 use crate::rcore::Rcore;
 use crate::rgestures::Rgestures;
 use crate::vector::*;
@@ -7,6 +8,7 @@ use raylib_ffi::*;
 pub struct Renderer {
     pub rcore: Rcore,
     pub rgestures: Rgestures,
+    pub rcamera: Rcamera,
 }
 
 impl Renderer {
@@ -14,6 +16,7 @@ impl Renderer {
         Self {
             rcore: Rcore,
             rgestures: Rgestures,
+            rcamera: Rcamera,
         }
     }
 

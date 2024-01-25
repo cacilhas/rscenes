@@ -1,9 +1,6 @@
 use crate::window_handle::WindowHandle;
 use eyre::*;
-use raylib_ffi::enums::{
-    GamepadAxis, GamepadButton, KeyboardKey, MouseButton, MouseCursor, TraceLogLevel,
-};
-use raylib_ffi::*;
+use raylib_ffi::{enums::*, *};
 use std::char;
 use std::{
     ffi::{c_char, c_uchar, c_void, CString},

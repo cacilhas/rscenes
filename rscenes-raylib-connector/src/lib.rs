@@ -1,13 +1,17 @@
+mod camera;
 mod color;
 mod key;
+mod rcamera;
 mod rcore;
 mod renderer;
 mod rgestures;
 mod vector;
 mod window_handle;
 
+pub use crate::camera::Camera3DExt;
 pub use crate::color::ColorExt;
 pub use crate::key::KeyboardKeyExt;
+pub use crate::rcamera::Rcamera;
 pub use crate::rcore::Rcore;
 pub use crate::renderer::Renderer;
 pub use crate::rgestures::Rgestures;
