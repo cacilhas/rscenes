@@ -1,6 +1,6 @@
 use crate::window_handle::WindowHandle;
 use eyre::*;
-use raylib_ffi::enums::{KeyboardKey, TraceLogLevel};
+use raylib_ffi::enums::{GamepadButton, KeyboardKey, TraceLogLevel};
 use raylib_ffi::*;
 use std::char;
 use std::{
@@ -321,7 +321,7 @@ impl Rcore {
         unsafe { UnloadVrStereoConfig(config) }
     }
 
-    // Shader management functions
+    // Shader management methods
 
     pub(crate) fn __load_shader(vs_filename: &str, fs_filename: &str) -> Shader {
         unsafe { LoadShader(rl_str!(vs_filename), rl_str!(fs_filename)) }
@@ -450,7 +450,7 @@ impl Rcore {
         unsafe { GetWorldToScreenEx(position, camera, width, height) }
     }
 
-    // Timing-related functions
+    // Timing-related methods
 
     pub(crate) fn __set_target_fps(fps: i32) {
         unsafe { SetTargetFPS(fps) }
@@ -468,7 +468,7 @@ impl Rcore {
         unsafe { GetFPS() }
     }
 
-    // Custom frame control functions
+    // Custom frame control methods
 
     pub(crate) fn __swap_screen_buffer() {
         unsafe { SwapScreenBuffer() }
@@ -482,7 +482,7 @@ impl Rcore {
         unsafe { WaitTime(seconds) }
     }
 
-    // Random values generation functions
+    // Random values generation methods
 
     pub(crate) fn __set_random_seed(seed: u32) {
         unsafe { SetRandomSeed(seed) }
@@ -495,7 +495,7 @@ impl Rcore {
     // TODO: LoadRandomSequence
     // TODO: UnloadRandomSequence
 
-    // Misc functions
+    // Misc methods
 
     pub(crate) fn __take_screenshot(filename: &str) {
         unsafe { TakeScreenshot(rl_str!(filename)) }
@@ -535,7 +535,7 @@ impl Rcore {
         unsafe { MemFree(ptr) }
     }
 
-    // Files management functions
+    // Files management methods
 
     pub(crate) fn __load_file_data(filename: &str) -> Vec<u8> {
         unsafe {
@@ -576,7 +576,7 @@ impl Rcore {
         unsafe { SaveFileText(rl_str!(filename), rl_str!(text) as *mut c_char) }
     }
 
-    // File system functions
+    // File system methods
 
     pub(crate) fn __file_exists(filename: &str) -> bool {
         unsafe { FileExists(rl_str!(filename)) }
@@ -763,7 +763,7 @@ impl Rcore {
         unsafe { PlayAutomationEvent(event) }
     }
 
-    // Input-related functions: keyboard
+    // Input-related methods: keyboard
 
     pub(crate) fn __is_key_pressed(key: impl Into<usize>) -> bool {
         unsafe { IsKeyPressed(key.into() as i32) }
@@ -913,6 +913,74 @@ impl Rcore {
     pub fn __set_exit_key(key: impl Into<usize>) {
         unsafe { SetExitKey(key.into() as i32) }
     }
+
+    // Input-related methods: gamepads
+
+    pub fn __is_gamepad_available(gamepad: i32) -> bool {
+        unsafe { IsGamepadAvailable(gamepad) }
+    }
+
+    pub fn __get_gamepad_name(gamepad: i32) -> Result<String> {
+        unsafe {
+            let res = GetGamepadName(gamepad) as *mut c_char;
+            Ok(CString::from_raw(res).into_string()?)
+        }
+    }
+
+    pub fn __is_gamepad_button_pressed(gamepad: i32, button: impl Into<usize>) -> bool {
+        unsafe { IsGamepadButtonPressed(gamepad, button.into() as i32) }
+    }
+
+    pub fn __is_gamepad_button_down(gamepad: i32, button: impl Into<usize>) -> bool {
+        unsafe { IsGamepadButtonDown(gamepad, button.into() as i32) }
+    }
+
+    pub fn __is_gamepad_button_released(gamepad: i32, button: impl Into<usize>) -> bool {
+        unsafe { IsGamepadButtonReleased(gamepad, button.into() as i32) }
+    }
+
+    pub fn __is_gamepad_button_up(gamepad: i32, button: impl Into<usize>) -> bool {
+        unsafe { IsGamepadButtonUp(gamepad, button.into() as i32) }
+    }
+
+    pub fn __get_gamepad_button_pressed() -> GamepadButton {
+        unsafe {
+            match GetGamepadButtonPressed() {
+                1 => GamepadButton::LeftFaceUp,
+                2 => GamepadButton::LeftFaceRight,
+                3 => GamepadButton::LeftFaceDown,
+                4 => GamepadButton::LeftFaceLeft,
+                5 => GamepadButton::RightFaceUp,
+                6 => GamepadButton::RightFaceRight,
+                7 => GamepadButton::RightFaceDown,
+                8 => GamepadButton::RightFaceLeft,
+                9 => GamepadButton::LeftTrigger1,
+                10 => GamepadButton::LeftTrigger2,
+                11 => GamepadButton::RightTrigger1,
+                12 => GamepadButton::RightTrigger2,
+                13 => GamepadButton::MiddleLeft,
+                14 => GamepadButton::Middle,
+                15 => GamepadButton::MiddleRight,
+                16 => GamepadButton::LeftThumb,
+                17 => GamepadButton::RightThumb,
+                _ => GamepadButton::Unknown,
+            }
+        }
+    }
+
+    pub fn __get_gamepad_axis_count(gamepad: i32) -> i32 {
+        unsafe { GetGamepadAxisCount(gamepad) }
+    }
+
+    pub fn __get_gamepad_axis_movement(gamepad: i32, axis: impl Into<usize>) -> f32 {
+        unsafe { GetGamepadAxisMovement(gamepad, axis.into() as i32) }
+    }
+
+    pub fn __set_gamepad_mappings(mappings: &str) -> i32 {
+        unsafe { SetGamepadMappings(rl_str!(mappings)) }
+    }
+
+    // Input-related methods: mouse
 }
 
 /// Exported methods
@@ -1217,7 +1285,7 @@ impl Rcore {
         Self::__unload_vr_stereo_config(config)
     }
 
-    // Shader management functions
+    // Shader management methods
 
     pub fn load_shader(&self, vs_filename: &str, fs_filename: &str) -> Shader {
         Self::__load_shader(vs_filename, fs_filename)
@@ -1316,7 +1384,7 @@ impl Rcore {
         Self::__get_world_to_screen_3d_ex(position, camera, width, height)
     }
 
-    // Timing-related functions
+    // Timing-related methods
 
     pub fn set_target_fps(&self, fps: i32) {
         Self::__set_target_fps(fps)
@@ -1334,7 +1402,7 @@ impl Rcore {
         Self::__get_fps()
     }
 
-    // Custom frame control functions
+    // Custom frame control methods
 
     pub fn swap_screen_buffer(&self) {
         Self::__swap_screen_buffer()
@@ -1348,7 +1416,7 @@ impl Rcore {
         Self::__wait_time(seconds)
     }
 
-    // Random values generation functions
+    // Random values generation methods
 
     pub fn set_random_seed(&self, seed: u32) {
         Self::__set_random_seed(seed)
@@ -1361,7 +1429,7 @@ impl Rcore {
     // TODO: LoadRandomSequence
     // TODO: UnloadRandomSequence
 
-    // Misc functions
+    // Misc methods
 
     pub fn take_screenshot(&self, filename: &str) {
         Self::__take_screenshot(filename)
@@ -1395,7 +1463,7 @@ impl Rcore {
         Self::__mem_free(ptr)
     }
 
-    // Files management functions
+    // Files management methods
 
     pub fn load_file_data(&self, filename: &str) -> Vec<u8> {
         Self::__load_file_data(filename)
@@ -1421,7 +1489,7 @@ impl Rcore {
         Self::__save_file_text(filename, text)
     }
 
-    // File system functions
+    // File system methods
 
     pub fn file_exists(&self, filename: &str) -> bool {
         Self::__file_exists(filename)
@@ -1560,24 +1628,29 @@ impl Rcore {
         Self::__play_automation_event(event)
     }
 
-    // Input-related functions: keyboard
+    // Input-related methods: keyboard
 
+    /// key is supposed to be KeyboardKey
     pub fn is_key_pressed(&self, key: impl Into<usize>) -> bool {
         Self::__is_key_pressed(key)
     }
 
+    /// key is supposed to be KeyboardKey
     pub fn is_key_pressed_repeat(&self, key: impl Into<usize>) -> bool {
         Self::__is_key_pressed_repeat(key)
     }
 
+    /// key is supposed to be KeyboardKey
     pub fn is_key_down(&self, key: impl Into<usize>) -> bool {
         Self::__is_key_down(key)
     }
 
+    /// key is supposed to be KeyboardKey
     pub fn is_key_released(&self, key: impl Into<usize>) -> bool {
         Self::__is_key_released(key)
     }
 
+    /// key is supposed to be KeyboardKey
     pub fn is_key_up(&self, key: impl Into<usize>) -> bool {
         Self::__is_key_up(key)
     }
@@ -1590,7 +1663,57 @@ impl Rcore {
         Self::__get_char_pressed()
     }
 
+    /// key is supposed to be KeyboardKey
     pub fn set_exit_key(&self, key: impl Into<usize>) {
         Self::__set_exit_key(key)
     }
+
+    // Input-related methods: gamepads
+
+    pub fn is_gamepad_available(&self, gamepad: i32) -> bool {
+        Self::__is_gamepad_available(gamepad)
+    }
+
+    pub fn get_gamepad_name(&self, gamepad: i32) -> Result<String> {
+        Self::__get_gamepad_name(gamepad)
+    }
+
+    /// button is supposed to be GamepadButton
+    pub fn is_gamepad_button_pressed(&self, gamepad: i32, button: impl Into<usize>) -> bool {
+        Self::__is_gamepad_button_pressed(gamepad, button)
+    }
+
+    /// button is supposed to be GamepadButton
+    pub fn is_gamepad_button_down(&self, gamepad: i32, button: impl Into<usize>) -> bool {
+        Self::__is_gamepad_button_down(gamepad, button)
+    }
+
+    /// button is supposed to be GamepadButton
+    pub fn is_gamepad_button_released(&self, gamepad: i32, button: impl Into<usize>) -> bool {
+        Self::__is_gamepad_button_released(gamepad, button)
+    }
+
+    /// button is supposed to be GamepadButton
+    pub fn is_gamepad_button_up(&self, gamepad: i32, button: impl Into<usize>) -> bool {
+        Self::__is_gamepad_button_up(gamepad, button)
+    }
+
+    pub fn get_gamepad_button_pressed(&self) -> GamepadButton {
+        Self::__get_gamepad_button_pressed()
+    }
+
+    pub fn get_gamepad_axis_count(&self, gamepad: i32) -> i32 {
+        Self::__get_gamepad_axis_count(gamepad)
+    }
+
+    /// axis is supposed to be GamepadAxis
+    pub fn get_gamepad_axis_movement(&self, gamepad: i32, axis: impl Into<usize>) -> f32 {
+        Self::__get_gamepad_axis_movement(gamepad, axis)
+    }
+
+    pub fn set_gamepad_mappings(&self, mappings: &str) -> i32 {
+        Self::__set_gamepad_mappings(mappings)
+    }
+
+    // Input-related methods: mouse
 }
