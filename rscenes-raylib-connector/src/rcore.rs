@@ -1,3 +1,4 @@
+use crate::vr;
 use crate::window_handle::WindowHandle;
 use eyre::*;
 use raylib_ffi::*;
@@ -303,8 +304,8 @@ impl Rcore {
         unsafe { EndScissorMode() }
     }
 
-    pub fn begin_vr_stereo_mode(&self, config: VrStereoConfig) {
-        unsafe { BeginVrStereoMode(config) }
+    pub fn begin_vr_stereo_mode(&self, config: &mut vr::VrStereoConfig) {
+        unsafe { BeginVrStereoMode(config.0) }
     }
 
     pub fn end_vr_stereo_mode(&self) {
