@@ -455,4 +455,22 @@ impl Rcore {
     ) -> Vector2 {
         unsafe { GetWorldToScreenEx(position, camera, width, height) }
     }
+
+    // Timing-related functions
+
+    pub fn set_target_fps(&self, fps: i32) {
+        unsafe { SetTargetFPS(fps) }
+    }
+
+    pub fn get_frame_time(&self) -> f32 {
+        unsafe { GetFrameTime() }
+    }
+
+    pub fn get_time(&self) -> f64 {
+        unsafe { GetTime() }
+    }
+
+    pub fn get_fps(&self) -> i32 {
+        unsafe { GetFPS() }
+    }
 }
