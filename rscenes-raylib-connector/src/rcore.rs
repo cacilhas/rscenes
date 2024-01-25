@@ -1040,7 +1040,27 @@ impl Rcore {
         unsafe { SetMouseCursor(cursor.into() as i32) }
     }
 
-    // Input-related functions: touch
+    // Input-related methods: touch
+
+    pub(crate) fn __get_touch_x() -> i32 {
+        unsafe { GetTouchX() }
+    }
+
+    pub(crate) fn __get_touch_y() -> i32 {
+        unsafe { GetTouchY() }
+    }
+
+    pub(crate) fn __get_touch_position(index: i32) -> Vector2 {
+        unsafe { GetTouchPosition(index) }
+    }
+
+    pub(crate) fn __get_touch_point_id(index: i32) -> i32 {
+        unsafe { GetTouchPointId(index) }
+    }
+
+    pub(crate) fn __get_touch_point_count() -> i32 {
+        unsafe { GetTouchPointCount() }
+    }
 }
 
 /// Exported methods
@@ -1822,5 +1842,25 @@ impl Rcore {
         Self::__set_mouse_cursor(cursor)
     }
 
-    // Input-related functions: touch
+    // Input-related methods: touch
+
+    pub fn get_touch_x(&self) -> i32 {
+        Self::__get_touch_x()
+    }
+
+    pub fn get_touch_y(&self) -> i32 {
+        Self::__get_touch_y()
+    }
+
+    pub fn get_touch_position(&self, index: i32) -> Vector2 {
+        Self::__get_touch_position(index)
+    }
+
+    pub fn get_touch_point_id(&self, index: i32) -> i32 {
+        Self::__get_touch_point_id(index)
+    }
+
+    pub fn get_touch_point_count(&self) -> i32 {
+        Self::__get_touch_point_count()
+    }
 }
