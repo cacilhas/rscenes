@@ -582,4 +582,112 @@ impl Rcore {
     pub fn save_file_text(&self, filename: &str, text: &str) -> bool {
         unsafe { SaveFileText(rl_str!(filename), rl_str!(text) as *mut c_char) }
     }
+
+    // File system functions
+
+    pub fn file_exists(&self, filename: &str) -> bool {
+        unsafe { FileExists(rl_str!(filename)) }
+    }
+
+    pub fn directory_exists(&self, dirname: &str) -> bool {
+        unsafe { DirectoryExists(rl_str!(dirname)) }
+    }
+
+    pub fn is_file_extension(&self, filename: &str, ext: &str) -> bool {
+        unsafe { IsFileExtension(rl_str!(filename), rl_str!(ext)) }
+    }
+
+    pub fn get_file_length(&self, filename: &str) -> i32 {
+        unsafe { GetFileLength(rl_str!(filename)) }
+    }
+
+    pub fn get_file_extenstion(&self, filename: &str) -> Result<String> {
+        unsafe {
+            let res = GetFileExtension(rl_str!(filename)) as *mut c_char;
+            Ok(CString::from_raw(res).into_string()?)
+        }
+    }
+
+    pub fn get_file_name(&self, path: &str) -> Result<String> {
+        unsafe {
+            let res = GetFileName(rl_str!(path)) as *mut c_char;
+            Ok(CString::from_raw(res).into_string()?)
+        }
+    }
+
+    pub fn get_file_name_without_ext(&self, path: &str) -> Result<String> {
+        unsafe {
+            let res = GetFileNameWithoutExt(rl_str!(path)) as *mut c_char;
+            Ok(CString::from_raw(res).into_string()?)
+        }
+    }
+
+    pub fn get_directory_path(&self, path: &str) -> Result<String> {
+        unsafe {
+            let res = GetDirectoryPath(rl_str!(path)) as *mut c_char;
+            Ok(CString::from_raw(res).into_string()?)
+        }
+    }
+
+    pub fn get_prev_directory_path(&self, path: &str) -> Result<String> {
+        unsafe {
+            let res = GetPrevDirectoryPath(rl_str!(path)) as *mut c_char;
+            Ok(CString::from_raw(res).into_string()?)
+        }
+    }
+
+    pub fn get_working_directory(&self) -> Result<String> {
+        unsafe {
+            let res = GetWorkingDirectory() as *mut c_char;
+            Ok(CString::from_raw(res).into_string()?)
+        }
+    }
+
+    pub fn get_application_directory(&self) -> Result<String> {
+        unsafe {
+            let res = GetApplicationDirectory() as *mut c_char;
+            Ok(CString::from_raw(res).into_string()?)
+        }
+    }
+
+    pub fn change_directory(&self, dir: &str) -> bool {
+        unsafe { ChangeDirectory(rl_str!(dir)) }
+    }
+
+    pub fn is_path_file(&self, path: &str) -> bool {
+        unsafe { IsPathFile(rl_str!(path)) }
+    }
+
+    pub fn load_directory_files(&self, path: &str) -> FilePathList {
+        unsafe { LoadDirectoryFiles(rl_str!(path)) }
+    }
+
+    pub fn load_directory_files_ex(
+        &self,
+        path: &str,
+        filter: &str,
+        scan_subdirs: bool,
+    ) -> FilePathList {
+        unsafe { LoadDirectoryFilesEx(rl_str!(path), rl_str!(filter), scan_subdirs) }
+    }
+
+    pub fn unload_directory_files(&self, files: FilePathList) {
+        unsafe { UnloadDirectoryFiles(files) }
+    }
+
+    pub fn is_file_dropped(&self) -> bool {
+        unsafe { IsFileDropped() }
+    }
+
+    pub fn load_dropped_files() -> FilePathList {
+        unsafe { LoadDroppedFiles() }
+    }
+
+    pub fn unload_dropped_files(&self, files: FilePathList) {
+        unsafe { UnloadDroppedFiles(files) }
+    }
+
+    pub fn get_file_mod_time(&self, filename: &str) -> i64 {
+        unsafe { GetFileModTime(rl_str!(filename)) }
+    }
 }
