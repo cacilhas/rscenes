@@ -2,7 +2,10 @@ use crate::window_handle::WindowHandle;
 use eyre::*;
 use raylib_ffi::enums::TraceLogLevel;
 use raylib_ffi::*;
-use std::ffi::{c_char, c_void, CString};
+use std::{
+    ffi::{c_char, c_uchar, c_void, CString},
+    ptr,
+};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Rcore;
@@ -190,8 +193,7 @@ impl Rcore {
     pub fn get_monitor_name(&self, monitor: i32) -> Result<String> {
         unsafe {
             let res = GetMonitorName(monitor) as *mut c_char;
-            let res = CString::from_raw(res);
-            Ok(res.into_string()?)
+            Ok(CString::from_raw(res).into_string()?)
         }
     }
 
@@ -538,5 +540,46 @@ impl Rcore {
 
     pub fn mem_free(&self, ptr: *mut c_void) {
         unsafe { MemFree(ptr) }
+    }
+
+    // Files management functions
+
+    pub fn load_file_data(&self, filename: &str) -> Vec<u8> {
+        unsafe {
+            let mut size: i32 = 0;
+            let data = LoadFileData(rl_str!(filename), &mut size);
+            let array = ptr::slice_from_raw_parts_mut(data, size as usize);
+            (*array).to_owned()
+        }
+    }
+
+    // TODO: UnloadFileData
+
+    pub fn save_file_data(&self, filename: &str, data: Vec<u8>) -> bool {
+        unsafe {
+            let size = data.len() as i32;
+            let data = data.as_ptr() as *mut c_void;
+            SaveFileData(rl_str!(filename), data, size)
+        }
+    }
+
+    pub fn export_data_as_code(&self, data: &str, filename: &str) -> bool {
+        unsafe {
+            let size = data.len() as i32;
+            ExportDataAsCode(rl_str!(data) as *const c_uchar, size, rl_str!(filename))
+        }
+    }
+
+    pub fn load_file_text(&self, filename: &str) -> Result<String> {
+        unsafe {
+            let res = LoadFileText(rl_str!(filename)) as *mut c_char;
+            Ok(CString::from_raw(res).into_string()?)
+        }
+    }
+
+    // TODO: UnloadFileText
+
+    pub fn save_file_text(&self, filename: &str, text: &str) -> bool {
+        unsafe { SaveFileText(rl_str!(filename), rl_str!(text) as *mut c_char) }
     }
 }
