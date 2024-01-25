@@ -902,7 +902,7 @@ impl Rcore {
         }
     }
 
-    pub fn __get_char_pressed() -> String {
+    pub(crate) fn __get_char_pressed() -> String {
         unsafe {
             char::from_u32(GetCharPressed() as u32)
                 .map(|c| c.to_string())
@@ -910,40 +910,40 @@ impl Rcore {
         }
     }
 
-    pub fn __set_exit_key(key: impl Into<usize>) {
+    pub(crate) fn __set_exit_key(key: impl Into<usize>) {
         unsafe { SetExitKey(key.into() as i32) }
     }
 
     // Input-related methods: gamepads
 
-    pub fn __is_gamepad_available(gamepad: i32) -> bool {
+    pub(crate) fn __is_gamepad_available(gamepad: i32) -> bool {
         unsafe { IsGamepadAvailable(gamepad) }
     }
 
-    pub fn __get_gamepad_name(gamepad: i32) -> Result<String> {
+    pub(crate) fn __get_gamepad_name(gamepad: i32) -> Result<String> {
         unsafe {
             let res = GetGamepadName(gamepad) as *mut c_char;
             Ok(CString::from_raw(res).into_string()?)
         }
     }
 
-    pub fn __is_gamepad_button_pressed(gamepad: i32, button: impl Into<usize>) -> bool {
+    pub(crate) fn __is_gamepad_button_pressed(gamepad: i32, button: impl Into<usize>) -> bool {
         unsafe { IsGamepadButtonPressed(gamepad, button.into() as i32) }
     }
 
-    pub fn __is_gamepad_button_down(gamepad: i32, button: impl Into<usize>) -> bool {
+    pub(crate) fn __is_gamepad_button_down(gamepad: i32, button: impl Into<usize>) -> bool {
         unsafe { IsGamepadButtonDown(gamepad, button.into() as i32) }
     }
 
-    pub fn __is_gamepad_button_released(gamepad: i32, button: impl Into<usize>) -> bool {
+    pub(crate) fn __is_gamepad_button_released(gamepad: i32, button: impl Into<usize>) -> bool {
         unsafe { IsGamepadButtonReleased(gamepad, button.into() as i32) }
     }
 
-    pub fn __is_gamepad_button_up(gamepad: i32, button: impl Into<usize>) -> bool {
+    pub(crate) fn __is_gamepad_button_up(gamepad: i32, button: impl Into<usize>) -> bool {
         unsafe { IsGamepadButtonUp(gamepad, button.into() as i32) }
     }
 
-    pub fn __get_gamepad_button_pressed() -> GamepadButton {
+    pub(crate) fn __get_gamepad_button_pressed() -> GamepadButton {
         unsafe {
             match GetGamepadButtonPressed() {
                 1 => GamepadButton::LeftFaceUp,
@@ -968,15 +968,15 @@ impl Rcore {
         }
     }
 
-    pub fn __get_gamepad_axis_count(gamepad: i32) -> i32 {
+    pub(crate) fn __get_gamepad_axis_count(gamepad: i32) -> i32 {
         unsafe { GetGamepadAxisCount(gamepad) }
     }
 
-    pub fn __get_gamepad_axis_movement(gamepad: i32, axis: impl Into<usize>) -> f32 {
+    pub(crate) fn __get_gamepad_axis_movement(gamepad: i32, axis: impl Into<usize>) -> f32 {
         unsafe { GetGamepadAxisMovement(gamepad, axis.into() as i32) }
     }
 
-    pub fn __set_gamepad_mappings(mappings: &str) -> i32 {
+    pub(crate) fn __set_gamepad_mappings(mappings: &str) -> i32 {
         unsafe { SetGamepadMappings(rl_str!(mappings)) }
     }
 
