@@ -1,4 +1,4 @@
-use crate::WindowHandle;
+use crate::window_handle::WindowHandle;
 use eyre::*;
 use raylib_ffi::*;
 use std::ffi::{c_char, CString};
@@ -235,5 +235,79 @@ impl Rcore {
 
     pub fn is_cursor_on_screen(&self) -> bool {
         unsafe { IsCursorOnScreen() }
+    }
+
+    // Drawing-related methods
+
+    pub fn clear_background(&self, color: Color) {
+        unsafe { ClearBackground(color) }
+    }
+
+    pub fn begin_drawing(&self) {
+        unsafe { BeginDrawing() }
+    }
+
+    pub fn end_drawing(&self) {
+        unsafe { EndDrawing() }
+    }
+
+    #[allow(non_snake_case)]
+    pub fn begin_mode_2D(&self, camera: Camera2D) {
+        unsafe { BeginMode2D(camera) }
+    }
+
+    #[allow(non_snake_case)]
+    pub fn end_mode_2D(&self) {
+        unsafe { EndMode2D() }
+    }
+
+    #[allow(non_snake_case)]
+    pub fn begin_mode_3D(&self, camera: Camera3D) {
+        unsafe { BeginMode3D(camera) }
+    }
+
+    #[allow(non_snake_case)]
+    pub fn end_mode_3D(&self) {
+        unsafe { EndMode3D() }
+    }
+
+    pub fn begin_texture_mode(&self, target: RenderTexture2D) {
+        unsafe { BeginTextureMode(target) }
+    }
+
+    pub fn end_texture_mode(&self) {
+        unsafe { EndTextureMode() }
+    }
+
+    pub fn begin_shader_mode(&self, shader: Shader) {
+        unsafe { BeginShaderMode(shader) }
+    }
+
+    pub fn end_shader_mode(&self) {
+        unsafe { EndShaderMode() }
+    }
+
+    pub fn begin_blend_mode(&self, mode: i32) {
+        unsafe { BeginBlendMode(mode) }
+    }
+
+    pub fn end_blend_mode(&self) {
+        unsafe { EndBlendMode() }
+    }
+
+    pub fn begin_scissor_mode(&self, x: i32, y: i32, width: i32, height: i32) {
+        unsafe { BeginScissorMode(x, y, width, height) }
+    }
+
+    pub fn end_scissor_mode(&self) {
+        unsafe { EndScissorMode() }
+    }
+
+    pub fn begin_vr_stereo_mode(&self, config: VrStereoConfig) {
+        unsafe { BeginVrStereoMode(config) }
+    }
+
+    pub fn end_vr_stereo_mode(&self) {
+        unsafe { EndVrStereoMode() }
     }
 }
