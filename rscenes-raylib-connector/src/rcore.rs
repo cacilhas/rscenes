@@ -1,6 +1,8 @@
 use crate::window_handle::WindowHandle;
 use eyre::*;
-use raylib_ffi::enums::{GamepadButton, KeyboardKey, TraceLogLevel};
+use raylib_ffi::enums::{
+    GamepadAxis, GamepadButton, KeyboardKey, MouseButton, MouseCursor, TraceLogLevel,
+};
 use raylib_ffi::*;
 use std::char;
 use std::{
@@ -1688,28 +1690,23 @@ impl Rcore {
 
     // Input-related methods: keyboard
 
-    /// key is supposed to be KeyboardKey
-    pub fn is_key_pressed(&self, key: impl Into<usize>) -> bool {
+    pub fn is_key_pressed(&self, key: KeyboardKey) -> bool {
         Self::__is_key_pressed(key)
     }
 
-    /// key is supposed to be KeyboardKey
-    pub fn is_key_pressed_repeat(&self, key: impl Into<usize>) -> bool {
+    pub fn is_key_pressed_repeat(&self, key: KeyboardKey) -> bool {
         Self::__is_key_pressed_repeat(key)
     }
 
-    /// key is supposed to be KeyboardKey
-    pub fn is_key_down(&self, key: impl Into<usize>) -> bool {
+    pub fn is_key_down(&self, key: KeyboardKey) -> bool {
         Self::__is_key_down(key)
     }
 
-    /// key is supposed to be KeyboardKey
-    pub fn is_key_released(&self, key: impl Into<usize>) -> bool {
+    pub fn is_key_released(&self, key: KeyboardKey) -> bool {
         Self::__is_key_released(key)
     }
 
-    /// key is supposed to be KeyboardKey
-    pub fn is_key_up(&self, key: impl Into<usize>) -> bool {
+    pub fn is_key_up(&self, key: KeyboardKey) -> bool {
         Self::__is_key_up(key)
     }
 
@@ -1721,8 +1718,7 @@ impl Rcore {
         Self::__get_char_pressed()
     }
 
-    /// key is supposed to be KeyboardKey
-    pub fn set_exit_key(&self, key: impl Into<usize>) {
+    pub fn set_exit_key(&self, key: KeyboardKey) {
         Self::__set_exit_key(key)
     }
 
@@ -1736,23 +1732,19 @@ impl Rcore {
         Self::__get_gamepad_name(gamepad)
     }
 
-    /// button is supposed to be GamepadButton
-    pub fn is_gamepad_button_pressed(&self, gamepad: i32, button: impl Into<usize>) -> bool {
+    pub fn is_gamepad_button_pressed(&self, gamepad: i32, button: GamepadButton) -> bool {
         Self::__is_gamepad_button_pressed(gamepad, button)
     }
 
-    /// button is supposed to be GamepadButton
-    pub fn is_gamepad_button_down(&self, gamepad: i32, button: impl Into<usize>) -> bool {
+    pub fn is_gamepad_button_down(&self, gamepad: i32, button: GamepadButton) -> bool {
         Self::__is_gamepad_button_down(gamepad, button)
     }
 
-    /// button is supposed to be GamepadButton
-    pub fn is_gamepad_button_released(&self, gamepad: i32, button: impl Into<usize>) -> bool {
+    pub fn is_gamepad_button_released(&self, gamepad: i32, button: GamepadButton) -> bool {
         Self::__is_gamepad_button_released(gamepad, button)
     }
 
-    /// button is supposed to be GamepadButton
-    pub fn is_gamepad_button_up(&self, gamepad: i32, button: impl Into<usize>) -> bool {
+    pub fn is_gamepad_button_up(&self, gamepad: i32, button: GamepadButton) -> bool {
         Self::__is_gamepad_button_up(gamepad, button)
     }
 
@@ -1764,8 +1756,7 @@ impl Rcore {
         Self::__get_gamepad_axis_count(gamepad)
     }
 
-    /// axis is supposed to be GamepadAxis
-    pub fn get_gamepad_axis_movement(&self, gamepad: i32, axis: impl Into<usize>) -> f32 {
+    pub fn get_gamepad_axis_movement(&self, gamepad: i32, axis: GamepadAxis) -> f32 {
         Self::__get_gamepad_axis_movement(gamepad, axis)
     }
 
@@ -1775,23 +1766,19 @@ impl Rcore {
 
     // Input-related methods: mouse
 
-    /// button is supposed to be MouseButton
-    pub fn is_mouse_button_pressed(&self, button: impl Into<usize>) -> bool {
+    pub fn is_mouse_button_pressed(&self, button: MouseButton) -> bool {
         Self::__is_mouse_button_pressed(button)
     }
 
-    /// button is supposed to be MouseButton
-    pub fn is_mouse_button_down(&self, button: impl Into<usize>) -> bool {
+    pub fn is_mouse_button_down(&self, button: MouseButton) -> bool {
         Self::__is_mouse_button_down(button)
     }
 
-    /// button is supposed to be MouseButton
-    pub fn is_mouse_button_released(&self, button: impl Into<usize>) -> bool {
+    pub fn is_mouse_button_released(&self, button: MouseButton) -> bool {
         Self::__is_mouse_button_released(button)
     }
 
-    /// button is supposed to be MouseButton
-    pub fn is_mouse_button_up(&self, button: impl Into<usize>) -> bool {
+    pub fn is_mouse_button_up(&self, button: MouseButton) -> bool {
         Self::__is_mouse_button_up(button)
     }
 
@@ -1831,7 +1818,7 @@ impl Rcore {
         Self::__get_mouse_wheel_move_v()
     }
 
-    pub fn set_mouse_cursor(&self, cursor: impl Into<usize>) {
+    pub fn set_mouse_cursor(&self, cursor: MouseCursor) {
         Self::__set_mouse_cursor(cursor)
     }
 
