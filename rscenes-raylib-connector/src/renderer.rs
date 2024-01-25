@@ -6,7 +6,7 @@ pub struct Renderer {
 }
 
 impl Renderer {
-    pub(crate) fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             rcore: Rcore::new(),
         }
