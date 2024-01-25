@@ -473,4 +473,18 @@ impl Rcore {
     pub fn get_fps(&self) -> i32 {
         unsafe { GetFPS() }
     }
+
+    // Custom frame control functions
+
+    pub fn swap_screen_buffer(&self) {
+        unsafe { SwapScreenBuffer() }
+    }
+
+    pub fn poll_input_events(&self) {
+        unsafe { PollInputEvents() }
+    }
+
+    pub fn wait_time(&self, seconds: f64) {
+        unsafe { WaitTime(seconds) }
+    }
 }
