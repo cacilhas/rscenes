@@ -118,6 +118,8 @@ impl Renderer {
         self.rcore.end_vr_stereo_mode();
         res
     }
+
+    // TODO: record automation event
 }
 
 #[cfg(test)]

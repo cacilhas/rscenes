@@ -733,4 +733,38 @@ impl Rcore {
             (*array).to_owned()
         }
     }
+
+    // Automation events functionality
+
+    pub fn load_automation_event_list(&self, filename: &str) -> AutomationEventList {
+        unsafe { LoadAutomationEventList(rl_str!(filename)) }
+    }
+
+    pub fn unload_automation_event_list(&self, mut list: AutomationEventList) {
+        unsafe { UnloadAutomationEventList(&mut list) }
+    }
+
+    pub fn export_automation_event_list(&self, list: AutomationEventList, filename: &str) -> bool {
+        unsafe { ExportAutomationEventList(list, rl_str!(filename)) }
+    }
+
+    pub fn set_automation_event_list(&self, mut list: AutomationEventList) {
+        unsafe { SetAutomationEventList(&mut list) }
+    }
+
+    pub fn set_automation_event_base_frame(&self, frame: i32) {
+        unsafe { SetAutomationEventBaseFrame(frame) }
+    }
+
+    pub fn start_automation_event_record(&self) {
+        unsafe { StartAutomationEventRecording() }
+    }
+
+    pub fn stop_automation_event_record(&self) {
+        unsafe { StopAutomationEventRecording() }
+    }
+
+    pub fn play_automation_event(&self, event: AutomationEvent) {
+        unsafe { PlayAutomationEvent(event) }
+    }
 }
