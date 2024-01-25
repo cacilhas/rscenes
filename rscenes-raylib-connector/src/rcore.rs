@@ -765,39 +765,24 @@ impl Rcore {
 
     // Input-related functions: keyboard
 
-    pub(crate) fn __is_key_pressed(key: KeyboardKey) -> bool {
-        unsafe {
-            let key: usize = key.into();
-            IsKeyPressed(key as i32)
-        }
+    pub(crate) fn __is_key_pressed(key: impl Into<usize>) -> bool {
+        unsafe { IsKeyPressed(key.into() as i32) }
     }
 
-    pub(crate) fn __is_key_pressed_repeat(key: KeyboardKey) -> bool {
-        unsafe {
-            let key: usize = key.into();
-            IsKeyPressedRepeat(key as i32)
-        }
+    pub(crate) fn __is_key_pressed_repeat(key: impl Into<usize>) -> bool {
+        unsafe { IsKeyPressedRepeat(key.into() as i32) }
     }
 
-    pub(crate) fn __is_key_down(key: KeyboardKey) -> bool {
-        unsafe {
-            let key: usize = key.into();
-            IsKeyDown(key as i32)
-        }
+    pub(crate) fn __is_key_down(key: impl Into<usize>) -> bool {
+        unsafe { IsKeyDown(key.into() as i32) }
     }
 
-    pub(crate) fn __is_key_released(key: KeyboardKey) -> bool {
-        unsafe {
-            let key: usize = key.into();
-            IsKeyReleased(key as i32)
-        }
+    pub(crate) fn __is_key_released(key: impl Into<usize>) -> bool {
+        unsafe { IsKeyReleased(key.into() as i32) }
     }
 
-    pub(crate) fn __is_key_up(key: KeyboardKey) -> bool {
-        unsafe {
-            let key: usize = key.into();
-            IsKeyUp(key as i32)
-        }
+    pub(crate) fn __is_key_up(key: impl Into<usize>) -> bool {
+        unsafe { IsKeyUp(key.into() as i32) }
     }
 
     pub(crate) fn __get_key_pressed() -> KeyboardKey {
@@ -925,11 +910,8 @@ impl Rcore {
         }
     }
 
-    pub fn __set_exit_key(key: KeyboardKey) {
-        unsafe {
-            let key = key as usize;
-            SetExitKey(key as i32)
-        }
+    pub fn __set_exit_key(key: impl Into<usize>) {
+        unsafe { SetExitKey(key.into() as i32) }
     }
 }
 
@@ -1580,23 +1562,23 @@ impl Rcore {
 
     // Input-related functions: keyboard
 
-    pub fn is_key_pressed(&self, key: KeyboardKey) -> bool {
+    pub fn is_key_pressed(&self, key: impl Into<usize>) -> bool {
         Self::__is_key_pressed(key)
     }
 
-    pub fn is_key_pressed_repeat(&self, key: KeyboardKey) -> bool {
+    pub fn is_key_pressed_repeat(&self, key: impl Into<usize>) -> bool {
         Self::__is_key_pressed_repeat(key)
     }
 
-    pub fn is_key_down(&self, key: KeyboardKey) -> bool {
+    pub fn is_key_down(&self, key: impl Into<usize>) -> bool {
         Self::__is_key_down(key)
     }
 
-    pub fn is_key_released(&self, key: KeyboardKey) -> bool {
+    pub fn is_key_released(&self, key: impl Into<usize>) -> bool {
         Self::__is_key_released(key)
     }
 
-    pub fn is_key_up(&self, key: KeyboardKey) -> bool {
+    pub fn is_key_up(&self, key: impl Into<usize>) -> bool {
         Self::__is_key_up(key)
     }
 
@@ -1608,7 +1590,7 @@ impl Rcore {
         Self::__get_char_pressed()
     }
 
-    pub fn set_exit_key(&self, key: KeyboardKey) {
+    pub fn set_exit_key(&self, key: impl Into<usize>) {
         Self::__set_exit_key(key)
     }
 }

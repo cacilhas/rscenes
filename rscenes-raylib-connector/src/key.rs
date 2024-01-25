@@ -6,7 +6,7 @@ use crate::Rcore;
 
 pub trait KeyboardKeyExt {
     fn get_pressed() -> Self;
-    fn get_char() -> String;
+    fn get_pressed_char() -> String;
     fn to_string(self) -> String;
     fn is_pressed(self) -> bool;
     fn is_pressed_repeat(self) -> bool;
@@ -20,7 +20,7 @@ impl KeyboardKeyExt for KeyboardKey {
         Rcore::__get_key_pressed()
     }
 
-    fn get_char() -> String {
+    fn get_pressed_char() -> String {
         Rcore::__get_char_pressed()
     }
 
