@@ -1,8 +1,8 @@
 use crate::window_handle::WindowHandle;
 use eyre::*;
+use raylib_ffi::enums::TraceLogLevel;
 use raylib_ffi::*;
-use std::ffi::c_void;
-use std::ffi::{c_char, CString};
+use std::ffi::{c_char, c_void, CString};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Rcore;
@@ -50,17 +50,16 @@ impl Rcore {
         unsafe { IsWindowResized() }
     }
 
-    pub fn is_window_state(&self, flag: enums::ConfigFlags) -> bool {
-        let flag: usize = flag.into();
+    pub fn is_window_state(&self, flag: usize) -> bool {
         unsafe { IsWindowState(flag as u32) }
     }
 
-    pub fn set_window_state(&self, flag: enums::ConfigFlags) {
+    pub fn set_window_state(&self, flag: usize) {
         let flag: usize = flag.into();
         unsafe { SetWindowState(flag as u32) }
     }
 
-    pub fn clear_window_state(&self, flag: enums::ConfigFlags) {
+    pub fn clear_window_state(&self, flag: usize) {
         let flag: usize = flag.into();
         unsafe { ClearWindowState(flag as u32) }
     }
@@ -500,4 +499,44 @@ impl Rcore {
 
     // TODO: LoadRandomSequence
     // TODO: UnloadRandomSequence
+
+    // Misc functions
+
+    pub fn take_screenshot(&self, filename: &str) {
+        unsafe { TakeScreenshot(rl_str!(filename)) }
+    }
+
+    pub fn set_config_flags(&self, flags: usize) {
+        unsafe { SetConfigFlags(flags as u32) }
+    }
+
+    pub fn open_url(&self, url: &str) {
+        unsafe { OpenURL(rl_str!(url)) }
+    }
+
+    pub fn trace_log(&self, level: TraceLogLevel, text: &str) {
+        unsafe {
+            let level: usize = level.into();
+            TraceLog(level as i32, rl_str!(text))
+        }
+    }
+
+    pub fn set_trace_log_level(&self, level: TraceLogLevel) {
+        unsafe {
+            let level: usize = level.into();
+            SetTraceLogLevel(level as i32)
+        }
+    }
+
+    pub fn mem_alloc(&self, size: usize) -> *mut c_void {
+        unsafe { MemAlloc(size as u32) }
+    }
+
+    pub fn mem_realloc(&self, ptr: *mut c_void, size: usize) -> *mut c_void {
+        unsafe { MemRealloc(ptr, size as u32) }
+    }
+
+    pub fn mem_free(&self, ptr: *mut c_void) {
+        unsafe { MemFree(ptr) }
+    }
 }
