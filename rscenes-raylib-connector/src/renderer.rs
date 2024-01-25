@@ -1,15 +1,20 @@
 use crate::rcore::Rcore;
+use crate::rgestures::Rgestures;
 use crate::vector::*;
 use raylib_ffi::*;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Renderer {
     pub rcore: Rcore,
+    pub rgestures: Rgestures,
 }
 
 impl Renderer {
     pub fn new() -> Self {
-        Self { rcore: Rcore }
+        Self {
+            rcore: Rcore,
+            rgestures: Rgestures,
+        }
     }
 
     #[allow(non_snake_case)]
