@@ -1,5 +1,4 @@
-use raylib_ffi::colors;
-pub use raylib_ffi::Color;
+use raylib_ffi::{colors, Color};
 
 pub trait ColorExt {
     const LIGHTGRAY: Self;
