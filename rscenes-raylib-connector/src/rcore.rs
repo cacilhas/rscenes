@@ -546,7 +546,7 @@ impl Rcore {
 
     pub fn load_file_data(&self, filename: &str) -> Vec<u8> {
         unsafe {
-            let mut size: i32 = 0;
+            let mut size = 0;
             let data = LoadFileData(rl_str!(filename), &mut size);
             let array = ptr::slice_from_raw_parts_mut(data, size as usize);
             (*array).to_owned()
@@ -689,5 +689,48 @@ impl Rcore {
 
     pub fn get_file_mod_time(&self, filename: &str) -> i64 {
         unsafe { GetFileModTime(rl_str!(filename)) }
+    }
+
+    // Compression/Encoding functionality
+
+    pub fn compress_data(&self, data: Vec<u8>) -> Vec<u8> {
+        unsafe {
+            let size = data.len() as i32;
+            let data = data.as_ptr() as *mut c_uchar;
+            let mut comp_size = 0;
+            let res = CompressData(data, size, &mut comp_size);
+            let array = ptr::slice_from_raw_parts_mut(res, comp_size as usize);
+            (*array).to_owned()
+        }
+    }
+
+    pub fn decompress_data(&self, data: Vec<u8>) -> Vec<u8> {
+        unsafe {
+            let size = data.len() as i32;
+            let data = data.as_ptr() as *mut c_uchar;
+            let mut decomp_size = 0;
+            let res = DecompressData(data, size, &mut decomp_size);
+            let array = ptr::slice_from_raw_parts_mut(res, decomp_size as usize);
+            (*array).to_owned()
+        }
+    }
+
+    pub fn encode_data_base64(&self, data: Vec<u8>) -> Result<String> {
+        unsafe {
+            let size = data.len() as i32;
+            let data = data.as_ptr() as *mut c_uchar;
+            let mut output_size = 0;
+            let res = EncodeDataBase64(data, size, &mut output_size) as *mut c_char;
+            Ok(CString::from_raw(res).into_string()?)
+        }
+    }
+
+    pub fn decode_data_base64(&self, data: &str) -> Vec<u8> {
+        unsafe {
+            let mut size = 0;
+            let res = DecodeDataBase64(rl_str!(data) as *const c_uchar, &mut size);
+            let array = ptr::slice_from_raw_parts_mut(res, size as usize);
+            (*array).to_owned()
+        }
     }
 }
