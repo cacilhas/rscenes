@@ -317,6 +317,154 @@ impl Rtextures {
     }
 
     // Image drawing methods
+
+    pub(crate) fn __image_clear_background(image: &mut Image, color: Color) {
+        unsafe { ImageClearBackground(image, color) }
+    }
+
+    pub(crate) fn __image_draw_pixel(image: &mut Image, x: i32, y: i32, color: Color) {
+        unsafe { ImageDrawPixel(image, x, y, color) }
+    }
+
+    pub(crate) fn __image_draw_pixel_v(image: &mut Image, position: Vector2, color: Color) {
+        unsafe { ImageDrawPixelV(image, position, color) }
+    }
+
+    pub(crate) fn __image_draw_line(
+        image: &mut Image,
+        start_x: i32,
+        start_y: i32,
+        end_x: i32,
+        end_y: i32,
+        color: Color,
+    ) {
+        unsafe { ImageDrawLine(image, start_x, start_y, end_x, end_y, color) }
+    }
+
+    pub(crate) fn __image_draw_line_v(
+        image: &mut Image,
+        start: Vector2,
+        end: Vector2,
+        color: Color,
+    ) {
+        unsafe { ImageDrawLineV(image, start, end, color) }
+    }
+
+    pub(crate) fn __image_draw_circle(
+        image: &mut Image,
+        center_x: i32,
+        center_y: i32,
+        radius: i32,
+        color: Color,
+    ) {
+        unsafe { ImageDrawCircle(image, center_x, center_y, radius, color) }
+    }
+
+    pub(crate) fn __image_draw_circle_v(
+        image: &mut Image,
+        center: Vector2,
+        radius: i32,
+        color: Color,
+    ) {
+        unsafe { ImageDrawCircleV(image, center, radius, color) }
+    }
+
+    pub(crate) fn __image_draw_circle_lines(
+        image: &mut Image,
+        center_x: i32,
+        center_y: i32,
+        radius: i32,
+        color: Color,
+    ) {
+        unsafe { ImageDrawCircleLines(image, center_x, center_y, radius, color) }
+    }
+
+    pub(crate) fn __image_draw_circle_lines_v(
+        image: &mut Image,
+        center: Vector2,
+        radius: i32,
+        color: Color,
+    ) {
+        unsafe { ImageDrawCircleLinesV(image, center, radius, color) }
+    }
+
+    pub(crate) fn __image_draw_rectangle(
+        image: &mut Image,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
+        color: Color,
+    ) {
+        unsafe { ImageDrawRectangle(image, x, y, width, height, color) }
+    }
+
+    pub(crate) fn __image_draw_rectangle_v(
+        image: &mut Image,
+        position: Vector2,
+        size: Vector2,
+        color: Color,
+    ) {
+        unsafe { ImageDrawRectangleV(image, position, size, color) }
+    }
+
+    pub(crate) fn __image_draw_rectangle_rec(image: &mut Image, rec: Rectangle, color: Color) {
+        unsafe { ImageDrawRectangleRec(image, rec, color) }
+    }
+
+    pub(crate) fn __image_draw_rectangle_lines(
+        image: &mut Image,
+        rec: Rectangle,
+        thick: i32,
+        color: Color,
+    ) {
+        unsafe { ImageDrawRectangleLines(image, rec, thick, color) }
+    }
+
+    pub(crate) fn __image_draw(
+        image: &mut Image,
+        src: Image,
+        src_rec: Rectangle,
+        dst_rec: Rectangle,
+        tint: Color,
+    ) {
+        unsafe { ImageDraw(image, src, src_rec, dst_rec, tint) }
+    }
+
+    pub(crate) fn __image_draw_text(
+        image: &mut Image,
+        text: impl Display,
+        x: i32,
+        y: i32,
+        font_size: i32,
+        color: Color,
+    ) {
+        unsafe { ImageDrawText(image, rl_str!(text), x, y, font_size, color) }
+    }
+
+    pub(crate) fn __image_draw_text_ex(
+        image: &mut Image,
+        font: Font,
+        text: impl Display,
+        position: Vector2,
+        font_size: f32,
+        spacing: f32,
+        tint: Color,
+    ) {
+        unsafe {
+            ImageDrawTextEx(
+                image,
+                font,
+                rl_str!(text),
+                position,
+                font_size,
+                spacing,
+                tint,
+            )
+        }
+    }
+
+    // Texture loading methods
 }
 
 /// Exported methods
@@ -611,4 +759,148 @@ impl Rtextures {
     }
 
     // Image drawing methods
+
+    pub fn image_clear_background(&self, image: &mut Image, color: Color) {
+        Self::__image_clear_background(image, color)
+    }
+
+    pub fn image_draw_pixel(&self, image: &mut Image, x: i32, y: i32, color: Color) {
+        Self::__image_draw_pixel(image, x, y, color)
+    }
+
+    pub fn image_draw_pixel_v(&self, image: &mut Image, position: Vector2, color: Color) {
+        Self::__image_draw_pixel_v(image, position, color)
+    }
+
+    pub fn image_draw_line(
+        &self,
+        image: &mut Image,
+        start_x: i32,
+        start_y: i32,
+        end_x: i32,
+        end_y: i32,
+        color: Color,
+    ) {
+        Self::__image_draw_line(image, start_x, start_y, end_x, end_y, color)
+    }
+
+    pub fn image_draw_line_v(&self, image: &mut Image, start: Vector2, end: Vector2, color: Color) {
+        Self::__image_draw_line_v(image, start, end, color)
+    }
+
+    pub fn image_draw_circle(
+        &self,
+        image: &mut Image,
+        center_x: i32,
+        center_y: i32,
+        radius: i32,
+        color: Color,
+    ) {
+        Self::__image_draw_circle(image, center_x, center_y, radius, color)
+    }
+
+    pub fn image_draw_circle_v(
+        &self,
+        image: &mut Image,
+        center: Vector2,
+        radius: i32,
+        color: Color,
+    ) {
+        Self::__image_draw_circle_v(image, center, radius, color)
+    }
+
+    pub fn image_draw_circle_lines(
+        &self,
+        image: &mut Image,
+        center_x: i32,
+        center_y: i32,
+        radius: i32,
+        color: Color,
+    ) {
+        Self::__image_draw_circle_lines(image, center_x, center_y, radius, color)
+    }
+
+    pub fn image_draw_circle_lines_v(
+        &self,
+        image: &mut Image,
+        center: Vector2,
+        radius: i32,
+        color: Color,
+    ) {
+        Self::__image_draw_circle_lines_v(image, center, radius, color)
+    }
+
+    pub fn image_draw_rectangle(
+        &self,
+        image: &mut Image,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
+        color: Color,
+    ) {
+        Self::__image_draw_rectangle(image, x, y, width, height, color)
+    }
+
+    pub fn image_draw_rectangle_v(
+        &self,
+        image: &mut Image,
+        position: Vector2,
+        size: Vector2,
+        color: Color,
+    ) {
+        Self::__image_draw_rectangle_v(image, position, size, color)
+    }
+
+    pub fn image_draw_rectangle_rec(&self, image: &mut Image, rec: Rectangle, color: Color) {
+        Self::__image_draw_rectangle_rec(image, rec, color)
+    }
+
+    pub fn image_draw_rectangle_lines(
+        &self,
+        image: &mut Image,
+        rec: Rectangle,
+        thick: i32,
+        color: Color,
+    ) {
+        Self::__image_draw_rectangle_lines(image, rec, thick, color)
+    }
+
+    pub fn image_draw(
+        &self,
+        image: &mut Image,
+        src: Image,
+        src_rec: Rectangle,
+        dst_rec: Rectangle,
+        tint: Color,
+    ) {
+        Self::__image_draw(image, src, src_rec, dst_rec, tint)
+    }
+
+    pub fn image_draw_text(
+        &self,
+        image: &mut Image,
+        text: impl Display,
+        x: i32,
+        y: i32,
+        font_size: i32,
+        color: Color,
+    ) {
+        Self::__image_draw_text(image, text, x, y, font_size, color)
+    }
+
+    pub fn image_draw_text_ex(
+        &self,
+        image: &mut Image,
+        font: Font,
+        text: impl Display,
+        position: Vector2,
+        font_size: f32,
+        spacing: f32,
+        tint: Color,
+    ) {
+        Self::__image_draw_text_ex(image, font, text, position, font_size, spacing, tint)
+    }
+
+    // Texture loading methods
 }
