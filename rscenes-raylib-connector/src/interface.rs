@@ -2,6 +2,7 @@ use crate::rcamera::Rcamera;
 use crate::rcore::Rcore;
 use crate::rgestures::Rgestures;
 use crate::rshapes::Rshapes;
+use crate::rtextures::Rtextures;
 use raylib_ffi::*;
 
 #[derive(Clone, Copy, Debug)]
@@ -10,6 +11,7 @@ pub struct RaylibConnector {
     pub rgestures: Rgestures,
     pub rcamera: Rcamera,
     pub rshapes: Rshapes,
+    pub rtextures: Rtextures,
 }
 
 impl RaylibConnector {
@@ -19,6 +21,7 @@ impl RaylibConnector {
             rgestures: Rgestures,
             rcamera: Rcamera,
             rshapes: Rshapes,
+            rtextures: Rtextures,
         }
     }
 
