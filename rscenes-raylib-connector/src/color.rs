@@ -1,4 +1,5 @@
-use raylib_ffi::{colors, Color};
+use crate::rtextures::Rtextures;
+use raylib_ffi::{colors, Color, Vector3, Vector4};
 
 pub trait ColorExt {
     const LIGHTGRAY: Self;
@@ -27,6 +28,16 @@ pub trait ColorExt {
     const BLANK: Self;
     const MAGENTA: Self;
     const RAYWHITE: Self;
+
+    fn fade(self, alpha: f32) -> Self;
+    fn to_int(self) -> i32;
+    fn normalize(self) -> Vector4;
+    fn to_hsv(self) -> Vector3;
+    fn tint(self, tint: Self) -> Self;
+    fn brightness(self, factor: f32) -> Self;
+    fn contrast(self, contrast: f32) -> Self;
+    fn alpha(self, alpha: f32) -> Self;
+    fn alpha_blend(self, src: Self, tint: Self) -> Self;
 }
 
 impl ColorExt for Color {
@@ -56,4 +67,40 @@ impl ColorExt for Color {
     const BLANK: Self = colors::BLANK;
     const MAGENTA: Self = colors::MAGENTA;
     const RAYWHITE: Self = colors::RAYWHITE;
+
+    fn fade(self, alpha: f32) -> Self {
+        Rtextures::__fade(self, alpha)
+    }
+
+    fn to_int(self) -> i32 {
+        Rtextures::__color_to_int(self)
+    }
+
+    fn normalize(self) -> Vector4 {
+        Rtextures::__color_normalize(self)
+    }
+
+    fn to_hsv(self) -> Vector3 {
+        Rtextures::__color_to_hsv(self)
+    }
+
+    fn tint(self, tint: Self) -> Self {
+        Rtextures::__color_tint(self, tint)
+    }
+
+    fn brightness(self, factor: f32) -> Self {
+        Rtextures::__color_brightness(self, factor)
+    }
+
+    fn contrast(self, contrast: f32) -> Self {
+        Rtextures::__color_contrast(self, contrast)
+    }
+
+    fn alpha(self, alpha: f32) -> Self {
+        Rtextures::__color_alpha(self, alpha)
+    }
+
+    fn alpha_blend(self, src: Self, tint: Self) -> Self {
+        Rtextures::__color_alpha_blend(self, src, tint)
+    }
 }

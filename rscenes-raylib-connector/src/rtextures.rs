@@ -577,6 +577,66 @@ impl Rtextures {
     }
 
     // Color/pixel related met
+
+    pub(crate) fn __fade(color: Color, alpha: f32) -> Color {
+        unsafe { Fade(color, alpha) }
+    }
+
+    pub(crate) fn __color_to_int(color: Color) -> i32 {
+        unsafe { ColorToInt(color) }
+    }
+
+    pub(crate) fn __color_normalize(color: Color) -> Vector4 {
+        unsafe { ColorNormalize(color) }
+    }
+
+    pub(crate) fn __color_from_normalized(normalized: Vector4) -> Color {
+        unsafe { ColorFromNormalized(normalized) }
+    }
+
+    pub(crate) fn __color_to_hsv(color: Color) -> Vector3 {
+        unsafe { ColorToHSV(color) }
+    }
+
+    pub(crate) fn __color_from_hsv(hue: f32, saturation: f32, value: f32) -> Color {
+        unsafe { ColorFromHSV(hue, saturation, value) }
+    }
+
+    pub(crate) fn __color_tint(color: Color, tint: Color) -> Color {
+        unsafe { ColorTint(color, tint) }
+    }
+
+    pub(crate) fn __color_brightness(color: Color, factor: f32) -> Color {
+        unsafe { ColorBrightness(color, factor) }
+    }
+
+    pub(crate) fn __color_contrast(color: Color, contrast: f32) -> Color {
+        unsafe { ColorContrast(color, contrast) }
+    }
+
+    pub(crate) fn __color_alpha(color: Color, alpha: f32) -> Color {
+        unsafe { ColorAlpha(color, alpha) }
+    }
+
+    pub(crate) fn __color_alpha_blend(dst: Color, src: Color, tint: Color) -> Color {
+        unsafe { ColorAlphaBlend(dst, src, tint) }
+    }
+
+    pub(crate) fn __get_color(hex_value: u32) -> Color {
+        unsafe { GetColor(hex_value) }
+    }
+
+    pub(crate) fn __get_pixel_color(ptr: Vec<u8>, format: impl Into<usize>) -> Color {
+        unsafe { GetPixelColor(ptr.as_ptr() as *mut c_void, format.into() as i32) }
+    }
+
+    pub(crate) fn __set_pixel_color(ptr: &mut Vec<u8>, color: Color, format: impl Into<usize>) {
+        unsafe { SetPixelColor(ptr.as_ptr() as *mut c_void, color, format.into() as i32) }
+    }
+
+    pub(crate) fn __get_pixel_data_size(width: i32, height: i32, format: impl Into<usize>) -> i32 {
+        unsafe { GetPixelDataSize(width, height, format.into() as i32) }
+    }
 }
 
 /// Exported methods
@@ -1126,4 +1186,64 @@ impl Rtextures {
     }
 
     // Color/pixel related methods
+
+    pub fn fade(&self, color: Color, alpha: f32) -> Color {
+        Self::__fade(color, alpha)
+    }
+
+    pub fn color_to_int(&self, color: Color) -> i32 {
+        Self::__color_to_int(color)
+    }
+
+    pub fn color_normalize(&self, color: Color) -> Vector4 {
+        Self::__color_normalize(color)
+    }
+
+    pub fn color_from_normalized(&self, normalized: Vector4) -> Color {
+        Self::__color_from_normalized(normalized)
+    }
+
+    pub fn color_to_hsv(&self, color: Color) -> Vector3 {
+        Self::__color_to_hsv(color)
+    }
+
+    pub fn color_from_hsv(&self, hue: f32, saturation: f32, value: f32) -> Color {
+        Self::__color_from_hsv(hue, saturation, value)
+    }
+
+    pub fn color_tint(&self, color: Color, tint: Color) -> Color {
+        Self::__color_tint(color, tint)
+    }
+
+    pub fn color_brightness(&self, color: Color, factor: f32) -> Color {
+        Self::__color_brightness(color, factor)
+    }
+
+    pub fn color_contrast(&self, color: Color, contrast: f32) -> Color {
+        Self::__color_contrast(color, contrast)
+    }
+
+    pub fn color_alpha(&self, color: Color, alpha: f32) -> Color {
+        Self::__color_alpha(color, alpha)
+    }
+
+    pub fn color_alpha_blend(&self, dst: Color, src: Color, tint: Color) -> Color {
+        Self::__color_alpha_blend(dst, src, tint)
+    }
+
+    pub fn get_color(&self, hex_value: u32) -> Color {
+        Self::__get_color(hex_value)
+    }
+
+    pub fn get_pixel_color(&self, ptr: Vec<u8>, format: PixelFormat) -> Color {
+        Self::__get_pixel_color(ptr, format)
+    }
+
+    pub fn set_pixel_color(&self, ptr: &mut Vec<u8>, color: Color, format: PixelFormat) {
+        Self::__set_pixel_color(ptr, color, format)
+    }
+
+    pub fn get_pixel_data_size(&self, width: i32, height: i32, format: impl Into<usize>) -> i32 {
+        Self::__get_pixel_data_size(width, height, format)
+    }
 }
