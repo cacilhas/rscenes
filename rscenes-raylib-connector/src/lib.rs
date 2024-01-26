@@ -8,6 +8,7 @@ mod rcore;
 mod rgestures;
 mod rshapes;
 mod rtextures;
+mod texture;
 mod vector;
 mod window_handle;
 
@@ -21,6 +22,7 @@ pub use crate::rcore::Rcore;
 pub use crate::rgestures::Rgestures;
 pub use crate::rshapes::Rshapes;
 pub use crate::rtextures::Rtextures;
+pub use crate::texture::{RenderTextureExt, TextureExt};
 pub use crate::vector::{Vector2Ext, Vector3Ext};
 pub use crate::window_handle::WindowHandle;
 pub use raylib_ffi::{

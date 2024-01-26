@@ -1,5 +1,10 @@
 use raylib_ffi::{enums::*, *};
-use std::{f32::consts::PI, ffi::c_uchar, fmt::Display, slice};
+use std::{
+    f32::consts::PI,
+    ffi::{c_uchar, c_void},
+    fmt::Display,
+    slice,
+};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Rtextures;
@@ -465,6 +470,48 @@ impl Rtextures {
     }
 
     // Texture loading methods
+
+    pub(crate) fn __load_texture(filename: impl Display) -> Texture2D {
+        unsafe { LoadTexture(rl_str!(filename)) }
+    }
+
+    pub(crate) fn __load_texture_from_image(image: Image) -> Texture2D {
+        unsafe { LoadTextureFromImage(image) }
+    }
+
+    pub(crate) fn __load_texture_cubemap(image: Image, layout: impl Into<usize>) -> TextureCubemap {
+        unsafe { LoadTextureCubemap(image, layout.into() as i32) }
+    }
+
+    pub(crate) fn __load_render_texture(width: i32, height: i32) -> RenderTexture2D {
+        unsafe { LoadRenderTexture(width, height) }
+    }
+
+    pub(crate) fn __is_texture_ready(texture: Texture2D) -> bool {
+        unsafe { IsTextureReady(texture) }
+    }
+
+    pub(crate) fn __unload_texture(texture: Texture2D) {
+        unsafe { UnloadTexture(texture) }
+    }
+
+    pub(crate) fn __is_render_texture_ready(target: RenderTexture2D) -> bool {
+        unsafe { IsRenderTextureReady(target) }
+    }
+
+    pub(crate) fn __unload_render_texture(target: RenderTexture2D) {
+        unsafe { UnloadRenderTexture(target) }
+    }
+
+    pub(crate) fn __update_texture(texture: Texture2D, pixels: Vec<u8>) {
+        unsafe { UpdateTexture(texture, pixels.as_ptr() as *const c_void) }
+    }
+
+    pub(crate) fn __update_texture_rec(texture: Texture2D, rec: Rectangle, pixels: Vec<u8>) {
+        unsafe { UpdateTextureRec(texture, rec, pixels.as_ptr() as *const c_void) }
+    }
+
+    // Texture configuration methods
 }
 
 /// Exported methods
@@ -903,4 +950,46 @@ impl Rtextures {
     }
 
     // Texture loading methods
+
+    pub fn load_texture(&self, filename: impl Display) -> Texture2D {
+        Self::__load_texture(filename)
+    }
+
+    pub fn load_texture_from_image(&self, image: Image) -> Texture2D {
+        Self::__load_texture_from_image(image)
+    }
+
+    pub fn load_texture_cubemap(&self, image: Image, layout: CubemapLayout) -> TextureCubemap {
+        Self::__load_texture_cubemap(image, layout)
+    }
+
+    pub fn load_render_texture(&self, width: i32, height: i32) -> RenderTexture2D {
+        Self::__load_render_texture(width, height)
+    }
+
+    pub fn is_texture_ready(&self, texture: Texture2D) -> bool {
+        Self::__is_texture_ready(texture)
+    }
+
+    pub fn unload_texture(&self, texture: Texture2D) {
+        Self::__unload_texture(texture)
+    }
+
+    pub fn is_render_texture_ready(&self, target: RenderTexture2D) -> bool {
+        Self::__is_render_texture_ready(target)
+    }
+
+    pub fn unload_render_texture(&self, target: RenderTexture2D) {
+        Self::__unload_render_texture(target)
+    }
+
+    pub fn update_texture(&self, texture: Texture2D, pixels: Vec<u8>) {
+        Self::__update_texture(texture, pixels)
+    }
+
+    pub fn update_texture_rec(&self, texture: Texture2D, rec: Rectangle, pixels: Vec<u8>) {
+        Self::__update_texture_rec(texture, rec, pixels)
+    }
+
+    // Texture configuration methods
 }
