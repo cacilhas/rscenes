@@ -302,6 +302,52 @@ impl Rmodels {
     }
 
     // Mesh generation methods
+
+    pub(crate) fn __gen_mesh_poly(sides: i32, radius: f32) -> Mesh {
+        unsafe { GenMeshPoly(sides, radius) }
+    }
+
+    pub(crate) fn __gen_mesh_plane(width: f32, height: f32, x: i32, z: i32) -> Mesh {
+        unsafe { GenMeshPlane(width, height, x, z) }
+    }
+
+    pub(crate) fn __gen_mesh_cube(width: f32, height: f32, length: f32) -> Mesh {
+        unsafe { GenMeshCube(width, height, length) }
+    }
+
+    pub(crate) fn __gen_mesh_sphere(radius: f32, rings: i32, slices: i32) -> Mesh {
+        unsafe { GenMeshSphere(radius, rings, slices) }
+    }
+
+    pub(crate) fn __gen_mesh_hemisphere(radius: f32, rings: i32, slices: i32) -> Mesh {
+        unsafe { GenMeshHemiSphere(radius, rings, slices) }
+    }
+
+    pub(crate) fn __gen_mesh_cylinder(radius: f32, height: f32, slices: i32) -> Mesh {
+        unsafe { GenMeshCylinder(radius, height, slices) }
+    }
+
+    pub(crate) fn __gen_mesh_cone(radius: f32, height: f32, slices: i32) -> Mesh {
+        unsafe { GenMeshCone(radius, height, slices) }
+    }
+
+    pub(crate) fn __gen_mesh_torus(radius: f32, size: f32, rad_seg: i32, sides: i32) -> Mesh {
+        unsafe { GenMeshTorus(radius, size, rad_seg, sides) }
+    }
+
+    pub(crate) fn __gen_mesh_knot(radius: f32, size: f32, rad_seg: i32, sides: i32) -> Mesh {
+        unsafe { GenMeshKnot(radius, size, rad_seg, sides) }
+    }
+
+    pub(crate) fn __gen_mesh_heightmap(heightmap: Image, size: Vector3) -> Mesh {
+        unsafe { GenMeshHeightmap(heightmap, size) }
+    }
+
+    pub(crate) fn __gen_mesh_cubicmap(heightmap: Image, size: Vector3) -> Mesh {
+        unsafe { GenMeshCubicmap(heightmap, size) }
+    }
+
+    // Material loading/unloading methods
 }
 
 /// Exported methods
@@ -599,4 +645,50 @@ impl Rmodels {
     }
 
     // Mesh generation methods
+
+    pub fn gen_mesh_poly(&self, sides: i32, radius: f32) -> Mesh {
+        Self::__gen_mesh_poly(sides, radius)
+    }
+
+    pub fn gen_mesh_plane(&self, width: f32, height: f32, x: i32, z: i32) -> Mesh {
+        Self::__gen_mesh_plane(width, height, x, z)
+    }
+
+    pub fn gen_mesh_cube(&self, width: f32, height: f32, length: f32) -> Mesh {
+        Self::__gen_mesh_cube(width, height, length)
+    }
+
+    pub fn gen_mesh_sphere(&self, radius: f32, rings: i32, slices: i32) -> Mesh {
+        Self::__gen_mesh_sphere(radius, rings, slices)
+    }
+
+    pub fn gen_mesh_hemisphere(&self, radius: f32, rings: i32, slices: i32) -> Mesh {
+        Self::__gen_mesh_hemisphere(radius, rings, slices)
+    }
+
+    pub fn gen_mesh_cylinder(&self, radius: f32, height: f32, slices: i32) -> Mesh {
+        Self::__gen_mesh_cylinder(radius, height, slices)
+    }
+
+    pub fn gen_mesh_cone(&self, radius: f32, height: f32, slices: i32) -> Mesh {
+        Self::__gen_mesh_cone(radius, height, slices)
+    }
+
+    pub fn gen_mesh_torus(&self, radius: f32, size: f32, rad_seg: i32, sides: i32) -> Mesh {
+        Self::__gen_mesh_torus(radius, size, rad_seg, sides)
+    }
+
+    pub fn gen_mesh_knot(&self, radius: f32, size: f32, rad_seg: i32, sides: i32) -> Mesh {
+        Self::__gen_mesh_knot(radius, size, rad_seg, sides)
+    }
+
+    pub fn gen_mesh_heightmap(&self, heightmap: Image, size: Vector3) -> Mesh {
+        Self::__gen_mesh_heightmap(heightmap, size)
+    }
+
+    pub fn gen_mesh_cubicmap(&self, heightmap: Image, size: Vector3) -> Mesh {
+        Self::__gen_mesh_cubicmap(heightmap, size)
+    }
+
+    // Material loading/unloading methods
 }
