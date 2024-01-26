@@ -4,6 +4,7 @@ pub mod color;
 pub mod font;
 pub mod image;
 pub mod key;
+pub mod model;
 pub mod texture;
 pub mod vector;
 pub mod window_handle;

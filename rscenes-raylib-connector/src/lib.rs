@@ -15,6 +15,7 @@ pub use crate::ext::color::ColorExt;
 pub use crate::ext::font::FontExt;
 pub use crate::ext::image::ImageExt;
 pub use crate::ext::key::KeyboardKeyExt;
+pub use crate::ext::model::ModelExt;
 pub use crate::ext::texture::{RenderTextureExt, TextureExt};
 pub use crate::ext::vector::{Vector2Ext, Vector3Ext};
 pub use crate::ext::window_handle::WindowHandle;

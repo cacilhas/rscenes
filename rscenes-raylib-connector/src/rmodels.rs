@@ -1,4 +1,5 @@
 use raylib_ffi::*;
+use std::fmt::Display;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Rmodels;
@@ -168,6 +169,28 @@ impl Rmodels {
     }
 
     // Model management methods
+
+    pub(crate) fn __load_model(filename: impl Display) -> Model {
+        unsafe { LoadModel(rl_str!(filename)) }
+    }
+
+    pub(crate) fn __load_model_from_mesh(mesh: Mesh) -> Model {
+        unsafe { LoadModelFromMesh(mesh) }
+    }
+
+    pub(crate) fn __is_model_ready(model: Model) -> bool {
+        unsafe { IsModelReady(model) }
+    }
+
+    pub(crate) fn __unload_model(model: Model) {
+        unsafe { UnloadModel(model) }
+    }
+
+    pub(crate) fn __get_model_bounding_box(model: Model) -> BoundingBox {
+        unsafe { GetModelBoundingBox(model) }
+    }
+
+    // Model drawing methods
 }
 
 /// Exported methods
@@ -335,4 +358,26 @@ impl Rmodels {
     }
 
     // Model management methods
+
+    pub fn load_model(&self, filename: impl Display) -> Model {
+        Self::__load_model(filename)
+    }
+
+    pub fn load_model_from_mesh(&self, mesh: Mesh) -> Model {
+        Self::__load_model_from_mesh(mesh)
+    }
+
+    pub fn is_model_ready(&self, model: Model) -> bool {
+        Self::__is_model_ready(model)
+    }
+
+    pub fn unload_model(&self, model: Model) {
+        Self::__unload_model(model)
+    }
+
+    pub fn get_model_bounding_box(&self, model: Model) -> BoundingBox {
+        Self::__get_model_bounding_box(model)
+    }
+
+    // Model drawing methods
 }
