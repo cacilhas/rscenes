@@ -1,4 +1,4 @@
-use crate::vector::*;
+use crate::ext::vector::*;
 use raylib_ffi::{enums::*, *};
 
 #[derive(Clone, Copy, Debug)]

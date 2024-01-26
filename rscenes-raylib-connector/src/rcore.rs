@@ -1,4 +1,4 @@
-use crate::window_handle::WindowHandle;
+use crate::ext::window_handle::WindowHandle;
 use eyre::*;
 use raylib_ffi::{enums::*, *};
 use std::char;

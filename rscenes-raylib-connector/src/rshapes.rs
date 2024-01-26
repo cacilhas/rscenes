@@ -1,4 +1,4 @@
-use crate::vector::Vector2Ext;
+use crate::ext::vector::Vector2Ext;
 use raylib_ffi::*;
 
 #[derive(Clone, Copy, Debug)]
