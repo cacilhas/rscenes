@@ -2,6 +2,7 @@ use crate::window_handle::WindowHandle;
 use eyre::*;
 use raylib_ffi::{enums::*, *};
 use std::char;
+use std::fmt::Display;
 use std::{
     ffi::{c_char, c_uchar, c_void, CString},
     ptr,
@@ -14,7 +15,7 @@ pub struct Rcore;
 impl Rcore {
     // Window-related methods
 
-    pub(crate) fn __init_window(width: i32, height: i32, title: &str) {
+    pub(crate) fn __init_window(width: i32, height: i32, title: impl Display) {
         unsafe { InitWindow(width, height, rl_str!(title)) }
     }
 
@@ -99,7 +100,7 @@ impl Rcore {
         }
     }
 
-    pub(crate) fn __set_window_title(title: &str) {
+    pub(crate) fn __set_window_title(title: impl Display) {
         unsafe { SetWindowTitle(rl_str!(title)) }
     }
 
@@ -198,7 +199,7 @@ impl Rcore {
         }
     }
 
-    pub(crate) fn __set_clipboard_text(text: &str) {
+    pub(crate) fn __set_clipboard_text(text: impl Display) {
         unsafe { SetClipboardText(rl_str!(text)) }
     }
 
@@ -322,11 +323,14 @@ impl Rcore {
 
     // Shader management methods
 
-    pub(crate) fn __load_shader(vs_filename: &str, fs_filename: &str) -> Shader {
+    pub(crate) fn __load_shader(vs_filename: impl Display, fs_filename: impl Display) -> Shader {
         unsafe { LoadShader(rl_str!(vs_filename), rl_str!(fs_filename)) }
     }
 
-    pub(crate) fn __load_shader_from_memory(vs_code: &str, fs_code: &str) -> Shader {
+    pub(crate) fn __load_shader_from_memory(
+        vs_code: impl Display,
+        fs_code: impl Display,
+    ) -> Shader {
         unsafe { LoadShaderFromMemory(rl_str!(vs_code), rl_str!(fs_code)) }
     }
 
@@ -334,13 +338,13 @@ impl Rcore {
         unsafe { IsShaderReady(shader) }
     }
 
-    pub(crate) fn __get_shader_location(shader: Shader, name: &str) -> i32 {
+    pub(crate) fn __get_shader_location(shader: Shader, name: impl Display) -> i32 {
         unsafe { GetShaderLocation(shader, rl_str!(name)) }
     }
 
     pub(crate) fn __get_shader_location_attrib(
         shader: Shader,
-        name: &str,
+        name: impl Display,
     ) -> Result<enums::ShaderLocationIndex, String> {
         unsafe {
             match GetShaderLocationAttrib(shader, rl_str!(name)) {
@@ -496,7 +500,7 @@ impl Rcore {
 
     // Misc methods
 
-    pub(crate) fn __take_screenshot(filename: &str) {
+    pub(crate) fn __take_screenshot(filename: impl Display) {
         unsafe { TakeScreenshot(rl_str!(filename)) }
     }
 
@@ -504,11 +508,11 @@ impl Rcore {
         unsafe { SetConfigFlags(flags as u32) }
     }
 
-    pub(crate) fn __open_url(url: &str) {
+    pub(crate) fn __open_url(url: impl Display) {
         unsafe { OpenURL(rl_str!(url)) }
     }
 
-    pub(crate) fn __trace_log(level: TraceLogLevel, text: &str) {
+    pub(crate) fn __trace_log(level: TraceLogLevel, text: impl Display) {
         unsafe {
             let level: usize = level.into();
             TraceLog(level as i32, rl_str!(text))
@@ -536,7 +540,7 @@ impl Rcore {
 
     // Files management methods
 
-    pub(crate) fn __load_file_data(filename: &str) -> Vec<u8> {
+    pub(crate) fn __load_file_data(filename: impl Display) -> Vec<u8> {
         unsafe {
             let mut size = 0;
             let data = LoadFileData(rl_str!(filename), &mut size);
@@ -547,7 +551,7 @@ impl Rcore {
 
     // TODO: UnloadFileData
 
-    pub(crate) fn __save_file_data(filename: &str, data: Vec<u8>) -> bool {
+    pub(crate) fn __save_file_data(filename: impl Display, data: Vec<u8>) -> bool {
         unsafe {
             let size = data.len() as i32;
             let data = data.as_ptr() as *mut c_void;
@@ -555,14 +559,14 @@ impl Rcore {
         }
     }
 
-    pub(crate) fn __export_data_as_code(data: &str, filename: &str) -> bool {
+    pub(crate) fn __export_data_as_code(data: &str, filename: impl Display) -> bool {
         unsafe {
             let size = data.len() as i32;
             ExportDataAsCode(rl_str!(data) as *const c_uchar, size, rl_str!(filename))
         }
     }
 
-    pub(crate) fn __load_file_text(filename: &str) -> Result<String> {
+    pub(crate) fn __load_file_text(filename: impl Display) -> Result<String> {
         unsafe {
             let res = LoadFileText(rl_str!(filename)) as *mut c_char;
             Ok(CString::from_raw(res).into_string()?)
@@ -571,57 +575,57 @@ impl Rcore {
 
     // TODO: UnloadFileText
 
-    pub(crate) fn __save_file_text(filename: &str, text: &str) -> bool {
+    pub(crate) fn __save_file_text(filename: impl Display, text: impl Display) -> bool {
         unsafe { SaveFileText(rl_str!(filename), rl_str!(text) as *mut c_char) }
     }
 
     // File system methods
 
-    pub(crate) fn __file_exists(filename: &str) -> bool {
+    pub(crate) fn __file_exists(filename: impl Display) -> bool {
         unsafe { FileExists(rl_str!(filename)) }
     }
 
-    pub(crate) fn __directory_exists(dirname: &str) -> bool {
+    pub(crate) fn __directory_exists(dirname: impl Display) -> bool {
         unsafe { DirectoryExists(rl_str!(dirname)) }
     }
 
-    pub(crate) fn __is_file_extension(filename: &str, ext: &str) -> bool {
+    pub(crate) fn __is_file_extension(filename: impl Display, ext: impl Display) -> bool {
         unsafe { IsFileExtension(rl_str!(filename), rl_str!(ext)) }
     }
 
-    pub(crate) fn __get_file_length(filename: &str) -> i32 {
+    pub(crate) fn __get_file_length(filename: impl Display) -> i32 {
         unsafe { GetFileLength(rl_str!(filename)) }
     }
 
-    pub(crate) fn __get_file_extenstion(filename: &str) -> Result<String> {
+    pub(crate) fn __get_file_extenstion(filename: impl Display) -> Result<String> {
         unsafe {
             let res = GetFileExtension(rl_str!(filename)) as *mut c_char;
             Ok(CString::from_raw(res).into_string()?)
         }
     }
 
-    pub(crate) fn __get_file_name(path: &str) -> Result<String> {
+    pub(crate) fn __get_file_name(path: impl Display) -> Result<String> {
         unsafe {
             let res = GetFileName(rl_str!(path)) as *mut c_char;
             Ok(CString::from_raw(res).into_string()?)
         }
     }
 
-    pub(crate) fn __get_file_name_without_ext(path: &str) -> Result<String> {
+    pub(crate) fn __get_file_name_without_ext(path: impl Display) -> Result<String> {
         unsafe {
             let res = GetFileNameWithoutExt(rl_str!(path)) as *mut c_char;
             Ok(CString::from_raw(res).into_string()?)
         }
     }
 
-    pub(crate) fn __get_directory_path(path: &str) -> Result<String> {
+    pub(crate) fn __get_directory_path(path: impl Display) -> Result<String> {
         unsafe {
             let res = GetDirectoryPath(rl_str!(path)) as *mut c_char;
             Ok(CString::from_raw(res).into_string()?)
         }
     }
 
-    pub(crate) fn __get_prev_directory_path(path: &str) -> Result<String> {
+    pub(crate) fn __get_prev_directory_path(path: impl Display) -> Result<String> {
         unsafe {
             let res = GetPrevDirectoryPath(rl_str!(path)) as *mut c_char;
             Ok(CString::from_raw(res).into_string()?)
@@ -642,21 +646,21 @@ impl Rcore {
         }
     }
 
-    pub(crate) fn __change_directory(dir: &str) -> bool {
+    pub(crate) fn __change_directory(dir: impl Display) -> bool {
         unsafe { ChangeDirectory(rl_str!(dir)) }
     }
 
-    pub(crate) fn __is_path_file(path: &str) -> bool {
+    pub(crate) fn __is_path_file(path: impl Display) -> bool {
         unsafe { IsPathFile(rl_str!(path)) }
     }
 
-    pub(crate) fn __load_directory_files(path: &str) -> FilePathList {
+    pub(crate) fn __load_directory_files(path: impl Display) -> FilePathList {
         unsafe { LoadDirectoryFiles(rl_str!(path)) }
     }
 
     pub(crate) fn __load_directory_files_ex(
-        path: &str,
-        filter: &str,
+        path: impl Display,
+        filter: impl Display,
         scan_subdirs: bool,
     ) -> FilePathList {
         unsafe { LoadDirectoryFilesEx(rl_str!(path), rl_str!(filter), scan_subdirs) }
@@ -678,7 +682,7 @@ impl Rcore {
         unsafe { UnloadDroppedFiles(files) }
     }
 
-    pub(crate) fn __get_file_mod_time(filename: &str) -> i64 {
+    pub(crate) fn __get_file_mod_time(filename: impl Display) -> i64 {
         unsafe { GetFileModTime(rl_str!(filename)) }
     }
 
@@ -727,7 +731,7 @@ impl Rcore {
 
     // Automation events functionality
 
-    pub(crate) fn __load_automation_event_list(filename: &str) -> AutomationEventList {
+    pub(crate) fn __load_automation_event_list(filename: impl Display) -> AutomationEventList {
         unsafe { LoadAutomationEventList(rl_str!(filename)) }
     }
 
@@ -737,7 +741,7 @@ impl Rcore {
 
     pub(crate) fn __export_automation_event_list(
         list: AutomationEventList,
-        filename: &str,
+        filename: impl Display,
     ) -> bool {
         unsafe { ExportAutomationEventList(list, rl_str!(filename)) }
     }
@@ -975,7 +979,7 @@ impl Rcore {
         unsafe { GetGamepadAxisMovement(gamepad, axis.into() as i32) }
     }
 
-    pub(crate) fn __set_gamepad_mappings(mappings: &str) -> i32 {
+    pub(crate) fn __set_gamepad_mappings(mappings: impl Display) -> i32 {
         unsafe { SetGamepadMappings(rl_str!(mappings)) }
     }
 
@@ -1064,7 +1068,7 @@ impl Rcore {
 impl Rcore {
     // Window-related methods
 
-    pub fn init_window(&self, width: i32, height: i32, title: &str) {
+    pub fn init_window(&self, width: i32, height: i32, title: impl Display) {
         Self::__init_window(width, height, title)
     }
 
@@ -1144,7 +1148,7 @@ impl Rcore {
         Self::__set_window_icons(images)
     }
 
-    pub fn set_window_title(&self, title: &str) {
+    pub fn set_window_title(&self, title: impl Display) {
         Self::__set_window_title(title)
     }
 
@@ -1240,7 +1244,7 @@ impl Rcore {
         Self::__get_monitor_name(monitor)
     }
 
-    pub fn set_clipboard_text(&self, text: &str) {
+    pub fn set_clipboard_text(&self, text: impl Display) {
         Self::__set_clipboard_text(text)
     }
 
@@ -1364,11 +1368,11 @@ impl Rcore {
 
     // Shader management methods
 
-    pub fn load_shader(&self, vs_filename: &str, fs_filename: &str) -> Shader {
+    pub fn load_shader(&self, vs_filename: impl Display, fs_filename: impl Display) -> Shader {
         Self::__load_shader(vs_filename, fs_filename)
     }
 
-    pub fn load_shader_from_memory(&self, vs_code: &str, fs_code: &str) -> Shader {
+    pub fn load_shader_from_memory(&self, vs_code: impl Display, fs_code: impl Display) -> Shader {
         Self::__load_shader_from_memory(vs_code, fs_code)
     }
 
@@ -1376,14 +1380,14 @@ impl Rcore {
         Self::__is_shader_ready(shader)
     }
 
-    pub fn get_shader_location(&self, shader: Shader, name: &str) -> i32 {
+    pub fn get_shader_location(&self, shader: Shader, name: impl Display) -> i32 {
         Self::__get_shader_location(shader, name)
     }
 
     pub fn get_shader_location_attrib(
         &self,
         shader: Shader,
-        name: &str,
+        name: impl Display,
     ) -> Result<enums::ShaderLocationIndex, String> {
         Self::__get_shader_location_attrib(shader, name)
     }
@@ -1508,7 +1512,7 @@ impl Rcore {
 
     // Misc methods
 
-    pub fn take_screenshot(&self, filename: &str) {
+    pub fn take_screenshot(&self, filename: impl Display) {
         Self::__take_screenshot(filename)
     }
 
@@ -1516,11 +1520,11 @@ impl Rcore {
         Self::__set_config_flags(flags)
     }
 
-    pub fn open_url(&self, url: &str) {
+    pub fn open_url(&self, url: impl Display) {
         Self::__open_url(url)
     }
 
-    pub fn trace_log(&self, level: TraceLogLevel, text: &str) {
+    pub fn trace_log(&self, level: TraceLogLevel, text: impl Display) {
         Self::__trace_log(level, text)
     }
 
@@ -1542,65 +1546,65 @@ impl Rcore {
 
     // Files management methods
 
-    pub fn load_file_data(&self, filename: &str) -> Vec<u8> {
+    pub fn load_file_data(&self, filename: impl Display) -> Vec<u8> {
         Self::__load_file_data(filename)
     }
 
     // TODO: UnloadFileData
 
-    pub fn save_file_data(&self, filename: &str, data: Vec<u8>) -> bool {
+    pub fn save_file_data(&self, filename: impl Display, data: Vec<u8>) -> bool {
         Self::__save_file_data(filename, data)
     }
 
-    pub fn export_data_as_code(&self, data: &str, filename: &str) -> bool {
+    pub fn export_data_as_code(&self, data: &str, filename: impl Display) -> bool {
         Self::__export_data_as_code(data, filename)
     }
 
-    pub fn load_file_text(&self, filename: &str) -> Result<String> {
+    pub fn load_file_text(&self, filename: impl Display) -> Result<String> {
         Self::__load_file_text(filename)
     }
 
     // TODO: UnloadFileText
 
-    pub fn save_file_text(&self, filename: &str, text: &str) -> bool {
+    pub fn save_file_text(&self, filename: impl Display, text: impl Display) -> bool {
         Self::__save_file_text(filename, text)
     }
 
     // File system methods
 
-    pub fn file_exists(&self, filename: &str) -> bool {
+    pub fn file_exists(&self, filename: impl Display) -> bool {
         Self::__file_exists(filename)
     }
 
-    pub fn directory_exists(&self, dirname: &str) -> bool {
+    pub fn directory_exists(&self, dirname: impl Display) -> bool {
         Self::__directory_exists(dirname)
     }
 
-    pub fn is_file_extension(&self, filename: &str, ext: &str) -> bool {
+    pub fn is_file_extension(&self, filename: impl Display, ext: impl Display) -> bool {
         Self::__is_file_extension(filename, ext)
     }
 
-    pub fn get_file_length(&self, filename: &str) -> i32 {
+    pub fn get_file_length(&self, filename: impl Display) -> i32 {
         Self::__get_file_length(filename)
     }
 
-    pub fn get_file_extenstion(&self, filename: &str) -> Result<String> {
+    pub fn get_file_extenstion(&self, filename: impl Display) -> Result<String> {
         Self::__get_file_extenstion(filename)
     }
 
-    pub fn get_file_name(&self, path: &str) -> Result<String> {
+    pub fn get_file_name(&self, path: impl Display) -> Result<String> {
         Self::__get_file_name(path)
     }
 
-    pub fn get_file_name_without_ext(&self, path: &str) -> Result<String> {
+    pub fn get_file_name_without_ext(&self, path: impl Display) -> Result<String> {
         Self::__get_file_name_without_ext(path)
     }
 
-    pub fn get_directory_path(&self, path: &str) -> Result<String> {
+    pub fn get_directory_path(&self, path: impl Display) -> Result<String> {
         Self::__get_directory_path(path)
     }
 
-    pub fn get_prev_directory_path(&self, path: &str) -> Result<String> {
+    pub fn get_prev_directory_path(&self, path: impl Display) -> Result<String> {
         Self::__get_prev_directory_path(path)
     }
 
@@ -1612,22 +1616,22 @@ impl Rcore {
         Self::__get_application_directory()
     }
 
-    pub fn change_directory(&self, dir: &str) -> bool {
+    pub fn change_directory(&self, dir: impl Display) -> bool {
         Self::__change_directory(dir)
     }
 
-    pub fn is_path_file(&self, path: &str) -> bool {
+    pub fn is_path_file(&self, path: impl Display) -> bool {
         Self::__is_path_file(path)
     }
 
-    pub fn load_directory_files(&self, path: &str) -> FilePathList {
+    pub fn load_directory_files(&self, path: impl Display) -> FilePathList {
         Self::__load_directory_files(path)
     }
 
     pub fn load_directory_files_ex(
         &self,
-        path: &str,
-        filter: &str,
+        path: impl Display,
+        filter: impl Display,
         scan_subdirs: bool,
     ) -> FilePathList {
         Self::__load_directory_files_ex(path, filter, scan_subdirs)
@@ -1649,7 +1653,7 @@ impl Rcore {
         Self::__unload_dropped_files(files)
     }
 
-    pub fn get_file_mod_time(&self, filename: &str) -> i64 {
+    pub fn get_file_mod_time(&self, filename: impl Display) -> i64 {
         Self::__get_file_mod_time(filename)
     }
 
@@ -1673,7 +1677,7 @@ impl Rcore {
 
     // Automation events functionality
 
-    pub fn load_automation_event_list(&self, filename: &str) -> AutomationEventList {
+    pub fn load_automation_event_list(&self, filename: impl Display) -> AutomationEventList {
         Self::__load_automation_event_list(filename)
     }
 
@@ -1681,7 +1685,11 @@ impl Rcore {
         Self::__unload_automation_event_list(list)
     }
 
-    pub fn export_automation_event_list(&self, list: AutomationEventList, filename: &str) -> bool {
+    pub fn export_automation_event_list(
+        &self,
+        list: AutomationEventList,
+        filename: impl Display,
+    ) -> bool {
         Self::__export_automation_event_list(list, filename)
     }
 
@@ -1777,7 +1785,7 @@ impl Rcore {
         Self::__get_gamepad_axis_movement(gamepad, axis)
     }
 
-    pub fn set_gamepad_mappings(&self, mappings: &str) -> i32 {
+    pub fn set_gamepad_mappings(&self, mappings: impl Display) -> i32 {
         Self::__set_gamepad_mappings(mappings)
     }
 
