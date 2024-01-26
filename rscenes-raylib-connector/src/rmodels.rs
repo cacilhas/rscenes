@@ -191,6 +191,81 @@ impl Rmodels {
     }
 
     // Model drawing methods
+
+    pub(crate) fn __draw_model(model: Model, position: Vector3, scale: f32, tint: Color) {
+        unsafe { DrawModel(model, position, scale, tint) }
+    }
+
+    pub(crate) fn __draw_model_ex(
+        model: Model,
+        position: Vector3,
+        rotation_axis: Vector3,
+        rotation_angle: f32,
+        scale: Vector3,
+        tint: Color,
+    ) {
+        unsafe { DrawModelEx(model, position, rotation_axis, rotation_angle, scale, tint) }
+    }
+
+    pub(crate) fn __draw_model_wires(model: Model, position: Vector3, scale: f32, tint: Color) {
+        unsafe { DrawModelWires(model, position, scale, tint) }
+    }
+
+    pub(crate) fn __draw_model_wires_ex(
+        model: Model,
+        position: Vector3,
+        rotation_axis: Vector3,
+        rotation_angle: f32,
+        scale: Vector3,
+        tint: Color,
+    ) {
+        unsafe { DrawModelWiresEx(model, position, rotation_axis, rotation_angle, scale, tint) }
+    }
+
+    pub(crate) fn __draw_bounding_box(box_: BoundingBox, color: Color) {
+        unsafe { DrawBoundingBox(box_, color) }
+    }
+
+    pub(crate) fn __draw_billboard(
+        camera: Camera3D,
+        texture: Texture2D,
+        position: Vector3,
+        size: f32,
+        tint: Color,
+    ) {
+        unsafe { DrawBillboard(camera, texture, position, size, tint) }
+    }
+
+    pub(crate) fn __draw_billboard_rec(
+        camera: Camera3D,
+        texture: Texture2D,
+        source: Rectangle,
+        position: Vector3,
+        size: Vector2,
+        tint: Color,
+    ) {
+        unsafe { DrawBillboardRec(camera, texture, source, position, size, tint) }
+    }
+
+    pub(crate) fn __draw_billboard_pro(
+        camera: Camera3D,
+        texture: Texture2D,
+        source: Rectangle,
+        position: Vector3,
+        up: Vector3,
+        size: Vector2,
+        origin: Vector2,
+        rotation: f32,
+        tint: Color,
+    ) {
+        unsafe {
+            DrawBillboardPro(
+                camera, texture, source, position, up, size, origin, rotation, tint,
+            )
+        }
+    }
+
+    // Mesh management methods
 }
 
 /// Exported methods
@@ -380,4 +455,82 @@ impl Rmodels {
     }
 
     // Model drawing methods
+
+    pub fn draw_model(&self, model: Model, position: Vector3, scale: f32, tint: Color) {
+        Self::__draw_model(model, position, scale, tint)
+    }
+
+    pub fn draw_model_ex(
+        &self,
+        model: Model,
+        position: Vector3,
+        rotation_axis: Vector3,
+        rotation_angle: f32,
+        scale: Vector3,
+        tint: Color,
+    ) {
+        Self::__draw_model_ex(model, position, rotation_axis, rotation_angle, scale, tint)
+    }
+
+    pub fn draw_model_wires(&self, model: Model, position: Vector3, scale: f32, tint: Color) {
+        Self::__draw_model_wires(model, position, scale, tint)
+    }
+
+    pub fn draw_model_wires_ex(
+        &self,
+        model: Model,
+        position: Vector3,
+        rotation_axis: Vector3,
+        rotation_angle: f32,
+        scale: Vector3,
+        tint: Color,
+    ) {
+        Self::__draw_model_wires_ex(model, position, rotation_axis, rotation_angle, scale, tint)
+    }
+
+    pub fn draw_bounding_box(&self, box_: BoundingBox, color: Color) {
+        Self::__draw_bounding_box(box_, color)
+    }
+
+    pub fn draw_billboard(
+        &self,
+        camera: Camera3D,
+        texture: Texture2D,
+        position: Vector3,
+        size: f32,
+        tint: Color,
+    ) {
+        Self::__draw_billboard(camera, texture, position, size, tint)
+    }
+
+    pub fn draw_billboard_rec(
+        &self,
+        camera: Camera3D,
+        texture: Texture2D,
+        source: Rectangle,
+        position: Vector3,
+        size: Vector2,
+        tint: Color,
+    ) {
+        Self::__draw_billboard_rec(camera, texture, source, position, size, tint)
+    }
+
+    pub fn draw_billboard_pro(
+        &self,
+        camera: Camera3D,
+        texture: Texture2D,
+        source: Rectangle,
+        position: Vector3,
+        up: Vector3,
+        size: Vector2,
+        origin: Vector2,
+        rotation: f32,
+        tint: Color,
+    ) {
+        Self::__draw_billboard_pro(
+            camera, texture, source, position, up, size, origin, rotation, tint,
+        )
+    }
+
+    // Mesh management methods
 }
