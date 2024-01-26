@@ -72,6 +72,76 @@ impl Rtext {
     }
 
     // Text drawing methods
+
+    pub(crate) fn __draw_fps(x: i32, y: i32) {
+        unsafe { DrawFPS(x, y) }
+    }
+
+    pub(crate) fn __draw_text(text: impl Display, x: i32, y: i32, font_size: i32, color: Color) {
+        unsafe { DrawText(rl_str!(text), x, y, font_size, color) }
+    }
+
+    pub(crate) fn __draw_text_ex(
+        font: Font,
+        text: impl Display,
+        position: Vector2,
+        font_size: f32,
+        spacing: f32,
+        tint: Color,
+    ) {
+        unsafe { DrawTextEx(font, rl_str!(text), position, font_size, spacing, tint) }
+    }
+
+    pub(crate) fn __draw_text_pro(
+        font: Font,
+        text: impl Display,
+        position: Vector2,
+        origin: Vector2,
+        rotation: f32,
+        font_size: f32,
+        spacing: f32,
+        tint: Color,
+    ) {
+        unsafe {
+            DrawTextPro(
+                font,
+                rl_str!(text),
+                position,
+                origin,
+                rotation,
+                font_size,
+                spacing,
+                tint,
+            )
+        }
+    }
+
+    pub(crate) fn __draw_text_codepoint(
+        font: Font,
+        codepoint: i32,
+        position: Vector2,
+        font_size: f32,
+        tint: Color,
+    ) {
+        unsafe { DrawTextCodepoint(font, codepoint, position, font_size, tint) }
+    }
+
+    pub(crate) fn __draw_text_codepoints(
+        font: Font,
+        codepoints: Vec<i32>,
+        position: Vector2,
+        font_size: f32,
+        spacing: f32,
+        tint: Color,
+    ) {
+        unsafe {
+            let count = codepoints.len() as i32;
+            let codepoints = codepoints.as_ptr() as *mut i32;
+            DrawTextCodepoints(font, codepoints, count, position, font_size, spacing, tint)
+        }
+    }
+
+    // Text font info methods
 }
 
 /// Exported methods
@@ -122,4 +192,65 @@ impl Rtext {
     }
 
     // Text drawing methods
+
+    pub fn draw_fps(&self, x: i32, y: i32) {
+        Self::__draw_fps(x, y)
+    }
+
+    pub fn draw_text(&self, text: impl Display, x: i32, y: i32, font_size: i32, color: Color) {
+        Self::__draw_text(text, x, y, font_size, color)
+    }
+
+    pub fn draw_text_ex(
+        &self,
+        font: Font,
+        text: impl Display,
+        position: Vector2,
+        font_size: f32,
+        spacing: f32,
+        tint: Color,
+    ) {
+        Self::__draw_text_ex(font, text, position, font_size, spacing, tint)
+    }
+
+    pub fn draw_text_pro(
+        &self,
+        font: Font,
+        text: impl Display,
+        position: Vector2,
+        origin: Vector2,
+        rotation: f32,
+        font_size: f32,
+        spacing: f32,
+        tint: Color,
+    ) {
+        Self::__draw_text_pro(
+            font, text, position, origin, rotation, font_size, spacing, tint,
+        )
+    }
+
+    pub fn draw_text_codepoint(
+        &self,
+        font: Font,
+        codepoint: i32,
+        position: Vector2,
+        font_size: f32,
+        tint: Color,
+    ) {
+        Self::__draw_text_codepoint(font, codepoint, position, font_size, tint)
+    }
+
+    pub fn draw_text_codepoints(
+        &self,
+        font: Font,
+        codepoints: Vec<i32>,
+        position: Vector2,
+        font_size: f32,
+        spacing: f32,
+        tint: Color,
+    ) {
+        Self::__draw_text_codepoints(font, codepoints, position, font_size, spacing, tint)
+    }
+
+    // Text font info methods
 }
