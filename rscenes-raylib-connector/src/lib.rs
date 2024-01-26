@@ -1,4 +1,5 @@
 mod camera;
+mod codepoints;
 mod color;
 mod font;
 mod image;
@@ -15,6 +16,7 @@ mod vector;
 mod window_handle;
 
 pub use crate::camera::Camera3DExt;
+pub use crate::codepoints::Codepoints;
 pub use crate::color::ColorExt;
 pub use crate::font::FontExt;
 pub use crate::image::ImageExt;

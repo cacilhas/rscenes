@@ -1,6 +1,11 @@
-use std::{ffi::c_uchar, fmt::Display};
-
+use crate::codepoints::Codepoints;
+use eyre::*;
 use raylib_ffi::*;
+use std::{
+    ffi::{c_uchar, CString},
+    fmt::Display,
+    slice,
+};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Rtext;
@@ -20,12 +25,11 @@ impl Rtext {
     pub(crate) fn __load_font_ex(
         filename: impl Display,
         font_size: i32,
-        codepoints: Vec<i32>,
+        codepoints: Codepoints,
     ) -> Font {
         unsafe {
-            let count = codepoints.len() as i32;
-            let codepoints = codepoints.as_ptr() as *mut i32;
-            LoadFontEx(rl_str!(filename), font_size, codepoints, count)
+            let count = codepoints.count as i32;
+            LoadFontEx(rl_str!(filename), font_size, codepoints.into(), count)
         }
     }
 
@@ -37,19 +41,18 @@ impl Rtext {
         tpe: impl Display,
         data: Vec<u8>,
         font_size: i32,
-        codepoints: Vec<i32>,
+        codepoints: Codepoints,
     ) -> Font {
         unsafe {
             let data_size = data.len() as i32;
             let codepoints_count = codepoints.len() as i32;
             let data = data.as_ptr() as *mut c_uchar;
-            let codepoints = codepoints.as_ptr() as *mut i32;
             LoadFontFromMemory(
                 rl_str!(tpe),
                 data,
                 data_size,
                 font_size,
-                codepoints,
+                codepoints.into(),
                 codepoints_count,
             )
         }
@@ -128,7 +131,7 @@ impl Rtext {
 
     pub(crate) fn __draw_text_codepoints(
         font: Font,
-        codepoints: Vec<i32>,
+        codepoints: Codepoints,
         position: Vector2,
         font_size: f32,
         spacing: f32,
@@ -136,8 +139,15 @@ impl Rtext {
     ) {
         unsafe {
             let count = codepoints.len() as i32;
-            let codepoints = codepoints.as_ptr() as *mut i32;
-            DrawTextCodepoints(font, codepoints, count, position, font_size, spacing, tint)
+            DrawTextCodepoints(
+                font,
+                codepoints.into(),
+                count,
+                position,
+                font_size,
+                spacing,
+                tint,
+            )
         }
     }
 
@@ -173,6 +183,85 @@ impl Rtext {
     }
 
     // Text codepoints management methods (unicode characters)
+
+    pub(crate) fn __load_utf8(codepoints: Codepoints) -> Result<String> {
+        unsafe {
+            let length = codepoints.len() as i32;
+            Ok(CString::from_raw(LoadUTF8(codepoints.into(), length)).into_string()?)
+        }
+    }
+
+    // TOD: UnloadUTF8
+
+    pub(crate) fn __load_codepoints(text: impl Display) -> Codepoints {
+        unsafe {
+            let text = rl_str!(text);
+            let mut count: i32 = 0;
+            let ptr = LoadCodepoints(text, &mut count);
+            Codepoints::new(ptr, count)
+        }
+    }
+
+    pub(crate) fn __unload_codepoints(codepoints: impl Into<*mut i32>) {
+        unsafe { UnloadCodepoints(codepoints.into()) }
+    }
+
+    pub(crate) fn __get_codepoint_count(text: impl Display) -> i32 {
+        unsafe { GetCodepointCount(rl_str!(text)) }
+    }
+
+    pub(crate) fn __get_codepoint(text: impl Display) -> Result<(i32, usize)> {
+        unsafe {
+            let mut size: i32 = 0;
+            let cp = GetCodepoint(rl_str!(text), &mut size);
+            if cp == 0x3f {
+                Err(eyre!("error trying to get codepoint"))
+            } else if size == 0 {
+                Err(eyre!("no codepoint found"))
+            } else {
+                Ok((cp, size as usize))
+            }
+        }
+    }
+
+    pub(crate) fn __get_codepoint_next(text: impl Display) -> Result<(i32, usize)> {
+        unsafe {
+            let mut size: i32 = 0;
+            let cp = GetCodepointNext(rl_str!(text), &mut size);
+            if cp == 0x3f {
+                Err(eyre!("error trying to get codepoint"))
+            } else if size == 0 {
+                Err(eyre!("no codepoint found"))
+            } else {
+                Ok((cp, size as usize))
+            }
+        }
+    }
+
+    pub(crate) fn __get_codepoint_previous(text: impl Display) -> Result<(i32, usize)> {
+        unsafe {
+            let mut size: i32 = 0;
+            let cp = GetCodepointPrevious(rl_str!(text), &mut size);
+            if cp == 0x3f {
+                Err(eyre!("error trying to get codepoint"))
+            } else if size == 0 {
+                Err(eyre!("no codepoint found"))
+            } else {
+                Ok((cp, size as usize))
+            }
+        }
+    }
+
+    pub(crate) fn __codepoint_to_utf8(codepoint: i32) -> Result<String> {
+        unsafe {
+            let mut size: i32 = 0;
+            let res = CodepointToUTF8(codepoint, &mut size) as *const u8;
+            let bytes = slice::from_raw_parts(res, size as usize);
+            Ok(std::str::from_utf8(bytes).map(|s| s.to_owned())?)
+        }
+    }
+
+    // Text strings management methods (no UTF-8 strings, only byte chars)
 }
 
 /// Exported methods
@@ -191,7 +280,7 @@ impl Rtext {
         &self,
         filename: impl Display,
         font_size: i32,
-        codepoints: Vec<i32>,
+        codepoints: Codepoints,
     ) -> Font {
         Self::__load_font_ex(filename, font_size, codepoints)
     }
@@ -205,7 +294,7 @@ impl Rtext {
         tpe: impl Display,
         data: Vec<u8>,
         font_size: i32,
-        codepoints: Vec<i32>,
+        codepoints: Codepoints,
     ) -> Font {
         Self::__load_font_from_memory(tpe, data, font_size, codepoints)
     }
@@ -274,7 +363,7 @@ impl Rtext {
     pub fn draw_text_codepoints(
         &self,
         font: Font,
-        codepoints: Vec<i32>,
+        codepoints: Codepoints,
         position: Vector2,
         font_size: f32,
         spacing: f32,
@@ -316,4 +405,38 @@ impl Rtext {
     }
 
     // Text codepoints management methods (unicode characters)
+
+    pub fn load_utf8(&self, codepoints: Codepoints) -> Result<String> {
+        Self::__load_utf8(codepoints)
+    }
+
+    pub fn load_codepoints(&self, text: impl Display) -> Codepoints {
+        Self::__load_codepoints(text)
+    }
+
+    pub fn unload_codepoints(&self, codepoints: Codepoints) {
+        Self::__unload_codepoints(codepoints)
+    }
+
+    pub fn get_codepoint_count(&self, text: impl Display) -> i32 {
+        Self::__get_codepoint_count(text)
+    }
+
+    pub fn get_codepoint(&self, text: impl Display) -> Result<(i32, usize)> {
+        Self::__get_codepoint(text)
+    }
+
+    pub fn get_codepoint_next(&self, text: impl Display) -> Result<(i32, usize)> {
+        Self::__get_codepoint_next(text)
+    }
+
+    pub fn get_codepoint_previous(&self, text: impl Display) -> Result<(i32, usize)> {
+        Self::__get_codepoint_previous(text)
+    }
+
+    pub fn codepoint_to_utf8(&self, codepoint: i32) -> Result<String> {
+        Self::__codepoint_to_utf8(codepoint)
+    }
+
+    // Text strings management methods (no UTF-8 strings, only byte chars)
 }
