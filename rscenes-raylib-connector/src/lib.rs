@@ -17,6 +17,7 @@ pub mod assets {
     pub use crate::ext::font::FontExt;
     pub use crate::ext::image::ImageExt;
     pub use crate::ext::key::KeyboardKeyExt;
+    pub use crate::ext::mesh::MeshExt;
     pub use crate::ext::model::ModelExt;
     pub use crate::ext::texture::{RenderTextureExt, TextureExt};
     pub use crate::ext::vector::{Vector2Ext, Vector3Ext};

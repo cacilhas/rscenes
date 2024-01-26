@@ -1,5 +1,5 @@
 use raylib_ffi::*;
-use std::fmt::Display;
+use std::{ffi::c_void, fmt::Display};
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Rmodels;
@@ -266,6 +266,42 @@ impl Rmodels {
     }
 
     // Mesh management methods
+
+    pub(crate) fn __upload_mesh(mesh: &mut Mesh, dynamic: bool) {
+        unsafe { UploadMesh(mesh, dynamic) }
+    }
+
+    pub(crate) fn __update_mesh_buffer(mesh: Mesh, index: i32, data: Vec<u8>, offset: i32) {
+        unsafe {
+            let size = data.len() as i32;
+            let data = data.as_ptr() as *mut c_void;
+            UpdateMeshBuffer(mesh, index, data, size, offset)
+        }
+    }
+
+    pub(crate) fn __unload_mesh(mesh: Mesh) {
+        unsafe { UnloadMesh(mesh) }
+    }
+
+    pub(crate) fn __draw_mesh(mesh: Mesh, material: Material, transform: Matrix) {
+        unsafe { DrawMesh(mesh, material, transform) }
+    }
+
+    // TODO: DrawMeshInstanced
+
+    pub(crate) fn __export_mesh(mesh: Mesh, filename: impl Display) -> bool {
+        unsafe { ExportMesh(mesh, rl_str!(filename)) }
+    }
+
+    pub(crate) fn __get_mesh_bounding_box(mesh: Mesh) -> BoundingBox {
+        unsafe { GetMeshBoundingBox(mesh) }
+    }
+
+    pub(crate) fn __gen_mesh_tangents(mesh: &mut Mesh) {
+        unsafe { GenMeshTangents(mesh) }
+    }
+
+    // Mesh generation methods
 }
 
 /// Exported methods
@@ -533,4 +569,34 @@ impl Rmodels {
     }
 
     // Mesh management methods
+
+    pub fn upload_mesh(&self, mesh: &mut Mesh, dynamic: bool) {
+        Self::__upload_mesh(mesh, dynamic)
+    }
+
+    pub fn update_mesh_buffer(&self, mesh: Mesh, index: i32, data: Vec<u8>, offset: i32) {
+        Self::__update_mesh_buffer(mesh, index, data, offset)
+    }
+
+    pub fn unload_mesh(&self, mesh: Mesh) {
+        Self::__unload_mesh(mesh)
+    }
+
+    pub fn draw_mesh(&self, mesh: Mesh, material: Material, transform: Matrix) {
+        Self::__draw_mesh(mesh, material, transform)
+    }
+
+    pub fn export_mesh(&self, mesh: Mesh, filename: impl Display) -> bool {
+        Self::__export_mesh(mesh, filename)
+    }
+
+    pub fn get_mesh_bounding_box(&self, mesh: Mesh) -> BoundingBox {
+        Self::__get_mesh_bounding_box(mesh)
+    }
+
+    pub fn gen_mesh_tangents(&self, mesh: &mut Mesh) {
+        Self::__gen_mesh_tangents(mesh)
+    }
+
+    // Mesh generation methods
 }
