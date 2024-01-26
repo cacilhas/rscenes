@@ -142,6 +142,37 @@ impl Rtext {
     }
 
     // Text font info methods
+
+    pub(crate) fn __set_text_line_space(spacing: i32) {
+        unsafe { SetTextLineSpacing(spacing) }
+    }
+
+    pub(crate) fn __measure_text(text: impl Display, font_size: i32) -> i32 {
+        unsafe { MeasureText(rl_str!(text), font_size) }
+    }
+
+    pub(crate) fn __measure_text_ex(
+        font: Font,
+        text: impl Display,
+        font_size: f32,
+        spacing: f32,
+    ) -> Vector2 {
+        unsafe { MeasureTextEx(font, rl_str!(text), font_size, spacing) }
+    }
+
+    pub(crate) fn __get_glyph_index(font: Font, codepoint: i32) -> i32 {
+        unsafe { GetGlyphIndex(font, codepoint) }
+    }
+
+    pub(crate) fn __get_glyph_info(font: Font, codepoint: i32) -> GlyphInfo {
+        unsafe { GetGlyphInfo(font, codepoint) }
+    }
+
+    pub(crate) fn __get_glyph_atlas_rec(font: Font, codepoint: i32) -> Rectangle {
+        unsafe { GetGlyphAtlasRec(font, codepoint) }
+    }
+
+    // Text codepoints management methods (unicode characters)
 }
 
 /// Exported methods
@@ -253,4 +284,36 @@ impl Rtext {
     }
 
     // Text font info methods
+
+    pub fn set_text_line_space(&self, spacing: i32) {
+        Self::__set_text_line_space(spacing)
+    }
+
+    pub fn measure_text(&self, text: impl Display, font_size: i32) -> i32 {
+        Self::__measure_text(text, font_size)
+    }
+
+    pub fn measure_text_ex(
+        &self,
+        font: Font,
+        text: impl Display,
+        font_size: f32,
+        spacing: f32,
+    ) -> Vector2 {
+        Self::__measure_text_ex(font, text, font_size, spacing)
+    }
+
+    pub fn get_glyph_index(&self, font: Font, codepoint: i32) -> i32 {
+        Self::__get_glyph_index(font, codepoint)
+    }
+
+    pub fn get_glyph_info(&self, font: Font, codepoint: i32) -> GlyphInfo {
+        Self::__get_glyph_info(font, codepoint)
+    }
+
+    pub fn get_glyph_atlas_rec(&self, font: Font, codepoint: i32) -> Rectangle {
+        Self::__get_glyph_atlas_rec(font, codepoint)
+    }
+
+    // Text codepoints management methods (unicode characters)
 }
