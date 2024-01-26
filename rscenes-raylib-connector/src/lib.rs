@@ -1,5 +1,6 @@
 mod ext;
 mod interface;
+mod raudio;
 mod rcamera;
 mod rcore;
 mod rgestures;
@@ -18,6 +19,7 @@ pub use crate::ext::texture::{RenderTextureExt, TextureExt};
 pub use crate::ext::vector::{Vector2Ext, Vector3Ext};
 pub use crate::ext::window_handle::WindowHandle;
 pub use crate::interface::RaylibConnector;
+pub use crate::raudio::Raudio;
 pub use crate::rcamera::Rcamera;
 pub use crate::rcore::Rcore;
 pub use crate::rgestures::Rgestures;

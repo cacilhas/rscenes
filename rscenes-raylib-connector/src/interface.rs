@@ -1,4 +1,4 @@
-// use crate::raudio::Raudio;
+use crate::raudio::Raudio;
 use crate::rcamera::Rcamera;
 use crate::rcore::Rcore;
 use crate::rgestures::Rgestures;
@@ -17,7 +17,7 @@ pub struct RaylibConnector {
     pub rtextures: Rtextures,
     pub rtext: Rtext,
     pub rmodels: Rmodels,
-    // pub raudio: Raudio,
+    pub raudio: Raudio,
 }
 
 /// TODO: the methods implemented bellow should be in the rscenes crate
@@ -158,9 +158,9 @@ mod tests {
         assert_eq!(renderer.rmodels.type_id(), TypeId::of::<Rmodels>())
     }
 
-    // #[test]
-    // fn should_export_raudio() {
-    //     let renderer = RaylibConnector::default();
-    //     assert_eq!(renderer.raudio.type_id(), TypeId::of::<Raudio>())
-    // }
+    #[test]
+    fn should_export_raudio() {
+        let renderer = RaylibConnector::default();
+        assert_eq!(renderer.raudio.type_id(), TypeId::of::<Raudio>())
+    }
 }
