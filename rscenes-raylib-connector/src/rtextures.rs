@@ -1,5 +1,5 @@
 use raylib_ffi::{enums::*, *};
-use std::{ffi::c_uchar, fmt::Display, slice};
+use std::{f32::consts::PI, ffi::c_uchar, fmt::Display, slice};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Rtextures;
@@ -87,6 +87,78 @@ impl Rtextures {
     }
 
     // Image generation methods
+
+    pub(crate) fn __gen_image_color(width: i32, height: i32, color: Color) -> Image {
+        unsafe { GenImageColor(width, height, color) }
+    }
+
+    pub(crate) fn __gen_image_gradient_linear(
+        width: i32,
+        height: i32,
+        angle: f32,
+        start: Color,
+        end: Color,
+    ) -> Image {
+        unsafe {
+            let direction = (angle * PI / 180.0) as i32;
+            GenImageGradientLinear(width, height, direction, start, end)
+        }
+    }
+
+    pub(crate) fn __gen_image_gradient_radial(
+        width: i32,
+        height: i32,
+        density: f32,
+        inner: Color,
+        outer: Color,
+    ) -> Image {
+        unsafe { GenImageGradientRadial(width, height, density, inner, outer) }
+    }
+
+    pub(crate) fn __gen_image_gradient_square(
+        width: i32,
+        height: i32,
+        density: f32,
+        inner: Color,
+        outer: Color,
+    ) -> Image {
+        unsafe { GenImageGradientSquare(width, height, density, inner, outer) }
+    }
+
+    pub(crate) fn __gen_image_checked(
+        width: i32,
+        height: i32,
+        checks_x: i32,
+        checks_y: i32,
+        col1: Color,
+        col2: Color,
+    ) -> Image {
+        unsafe { GenImageChecked(width, height, checks_x, checks_y, col1, col2) }
+    }
+
+    pub(crate) fn __gen_image_white_noise(width: i32, height: i32, factor: f32) -> Image {
+        unsafe { GenImageWhiteNoise(width, height, factor) }
+    }
+
+    pub(crate) fn __gen_image_perlin_noise(
+        width: i32,
+        height: i32,
+        offset_x: i32,
+        offset_y: i32,
+        scale: f32,
+    ) -> Image {
+        unsafe { GenImagePerlinNoise(width, height, offset_x, offset_y, scale) }
+    }
+
+    pub(crate) fn __gen_image_cellular(width: i32, height: i32, tile_size: i32) -> Image {
+        unsafe { GenImageCellular(width, height, tile_size) }
+    }
+
+    pub(crate) fn __gen_image_text(width: i32, height: i32, text: impl Display) -> Image {
+        unsafe { GenImageText(width, height, rl_str!(text)) }
+    }
+
+    // Image manipulation methods
 }
 
 /// Exported methods
@@ -154,4 +226,78 @@ impl Rtextures {
     }
 
     // Image generation methods
+
+    pub fn gen_image_color(&self, width: i32, height: i32, color: Color) -> Image {
+        Self::__gen_image_color(width, height, color)
+    }
+
+    pub fn gen_image_gradient_linear(
+        &self,
+        width: i32,
+        height: i32,
+        angle: f32,
+        start: Color,
+        end: Color,
+    ) -> Image {
+        Self::__gen_image_gradient_linear(width, height, angle, start, end)
+    }
+
+    pub fn gen_image_gradient_radial(
+        &self,
+        width: i32,
+        height: i32,
+        density: f32,
+        inner: Color,
+        outer: Color,
+    ) -> Image {
+        Self::__gen_image_gradient_radial(width, height, density, inner, outer)
+    }
+
+    pub fn gen_image_gradient_square(
+        &self,
+        width: i32,
+        height: i32,
+        density: f32,
+        inner: Color,
+        outer: Color,
+    ) -> Image {
+        Self::__gen_image_gradient_square(width, height, density, inner, outer)
+    }
+
+    pub fn gen_image_checked(
+        &self,
+        width: i32,
+        height: i32,
+        checks_x: i32,
+        checks_y: i32,
+        col1: Color,
+        col2: Color,
+    ) -> Image {
+        Self::__gen_image_checked(width, height, checks_x, checks_y, col1, col2)
+    }
+
+    pub fn gen_image_white_noise(&self, width: i32, height: i32, factor: f32) -> Image {
+        Self::__gen_image_white_noise(width, height, factor)
+    }
+
+    pub fn gen_image_perlin_noise(
+        &self,
+        width: i32,
+        height: i32,
+        offset_x: i32,
+        offset_y: i32,
+        scale: f32,
+    ) -> Image {
+        Self::__gen_image_perlin_noise(width, height, offset_x, offset_y, scale)
+    }
+
+    pub fn gen_image_cellular(&self, width: i32, height: i32, tile_size: i32) -> Image {
+        Self::__gen_image_cellular(width, height, tile_size)
+    }
+
+    pub fn gen_image_text(&self, width: i32, height: i32, text: impl Display) -> Image {
+        Self::__gen_image_text(width, height, text)
+    }
+
+    // Image manipulation methods
 }
