@@ -526,6 +526,57 @@ impl Rtextures {
     }
 
     // Texture drawing methods
+
+    pub(crate) fn __draw_texture(texture: Texture2D, x: i32, y: i32, tint: Color) {
+        unsafe { DrawTexture(texture, x, y, tint) }
+    }
+
+    pub(crate) fn __draw_texture_v(texture: Texture2D, position: Vector2, tint: Color) {
+        unsafe { DrawTextureV(texture, position, tint) }
+    }
+
+    pub(crate) fn __draw_texture_ex(
+        texture: Texture2D,
+        position: Vector2,
+        rotation: f32,
+        scale: f32,
+        tint: Color,
+    ) {
+        unsafe { DrawTextureEx(texture, position, rotation, scale, tint) }
+    }
+
+    pub(crate) fn __draw_texture_rec(
+        texture: Texture2D,
+        source: Rectangle,
+        position: Vector2,
+        tint: Color,
+    ) {
+        unsafe { DrawTextureRec(texture, source, position, tint) }
+    }
+
+    pub(crate) fn __draw_texture_pro(
+        texture: Texture2D,
+        source: Rectangle,
+        dest: Rectangle,
+        origin: Vector2,
+        rotation: f32,
+        tint: Color,
+    ) {
+        unsafe { DrawTexturePro(texture, source, dest, origin, rotation, tint) }
+    }
+
+    pub(crate) fn __draw_texture_n_patch(
+        texture: Texture2D,
+        info: NPatchInfo,
+        dest: Rectangle,
+        origin: Vector2,
+        rotation: f32,
+        tint: Color,
+    ) {
+        unsafe { DrawTextureNPatch(texture, info, dest, origin, rotation, tint) }
+    }
+
+    // Color/pixel related met
 }
 
 /// Exported methods
@@ -1020,4 +1071,59 @@ impl Rtextures {
     }
 
     // Texture drawing methods
+
+    pub fn draw_texture(&self, texture: Texture2D, x: i32, y: i32, tint: Color) {
+        Self::__draw_texture(texture, x, y, tint)
+    }
+
+    pub fn draw_texture_v(&self, texture: Texture2D, position: Vector2, tint: Color) {
+        Self::__draw_texture_v(texture, position, tint)
+    }
+
+    pub fn draw_texture_ex(
+        &self,
+        texture: Texture2D,
+        position: Vector2,
+        rotation: f32,
+        scale: f32,
+        tint: Color,
+    ) {
+        Self::__draw_texture_ex(texture, position, rotation, scale, tint)
+    }
+
+    pub fn draw_texture_rec(
+        &self,
+        texture: Texture2D,
+        source: Rectangle,
+        position: Vector2,
+        tint: Color,
+    ) {
+        Self::__draw_texture_rec(texture, source, position, tint)
+    }
+
+    pub fn draw_texture_pro(
+        &self,
+        texture: Texture2D,
+        source: Rectangle,
+        dest: Rectangle,
+        origin: Vector2,
+        rotation: f32,
+        tint: Color,
+    ) {
+        Self::__draw_texture_pro(texture, source, dest, origin, rotation, tint)
+    }
+
+    pub fn draw_texture_n_patch(
+        &self,
+        texture: Texture2D,
+        info: NPatchInfo,
+        dest: Rectangle,
+        origin: Vector2,
+        rotation: f32,
+        tint: Color,
+    ) {
+        Self::__draw_texture_n_patch(texture, info, dest, origin, rotation, tint)
+    }
+
+    // Color/pixel related methods
 }
