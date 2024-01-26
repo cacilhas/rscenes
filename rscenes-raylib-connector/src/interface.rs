@@ -2,6 +2,7 @@ use crate::rcamera::Rcamera;
 use crate::rcore::Rcore;
 use crate::rgestures::Rgestures;
 use crate::rshapes::Rshapes;
+use crate::rtext::Rtext;
 use crate::rtextures::Rtextures;
 use raylib_ffi::*;
 
@@ -12,6 +13,7 @@ pub struct RaylibConnector {
     pub rcamera: Rcamera,
     pub rshapes: Rshapes,
     pub rtextures: Rtextures,
+    pub rtext: Rtext,
 }
 
 impl RaylibConnector {
@@ -22,6 +24,7 @@ impl RaylibConnector {
             rcamera: Rcamera,
             rshapes: Rshapes,
             rtextures: Rtextures,
+            rtext: Rtext,
         }
     }
 
