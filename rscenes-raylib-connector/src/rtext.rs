@@ -262,6 +262,24 @@ impl Rtext {
     }
 
     // Text strings management methods (no UTF-8 strings, only byte chars)
+    //
+    // The following aren’t required, ’cause Rust supplies those features by
+    // itself:
+    // int TextCopy(char *dst, const char *src);
+    // bool TextIsEqual(const char *text1, const char *text2);
+    // unsigned int TextLength(const char *text);
+    // const char *TextFormat(const char *text, ...);
+    // const char *TextSubtext(const char *text, int position, int length);
+    // char *TextReplace(char *text, const char *replace, const char *by);
+    // char *TextInsert(const char *text, const char *insert, int position);
+    // const char *TextJoin(const char **textList, int count, const char *delimiter);
+    // const char **TextSplit(const char *text, char delimiter, int *count);
+    // void TextAppend(char *text, const char *append, int *position);
+    // int TextFindIndex(const char *text, const char *find);
+    // const char *TextToUpper(const char *text);
+    // const char *TextToLower(const char *text);
+    // const char *TextToPascal(const char *text);
+    // int TextToInteger(const char *text);
 }
 
 /// Exported methods
@@ -437,6 +455,4 @@ impl Rtext {
     pub fn codepoint_to_utf8(&self, codepoint: i32) -> Result<String> {
         Self::__codepoint_to_utf8(codepoint)
     }
-
-    // Text strings management methods (no UTF-8 strings, only byte chars)
 }
