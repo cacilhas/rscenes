@@ -1,7 +1,7 @@
 use crate::ext::vector::Vector2Ext;
 use raylib_ffi::*;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Rshapes;
 
 /// Crate only methods

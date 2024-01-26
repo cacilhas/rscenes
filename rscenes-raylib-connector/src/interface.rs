@@ -1,12 +1,14 @@
+// use crate::raudio::Raudio;
 use crate::rcamera::Rcamera;
 use crate::rcore::Rcore;
 use crate::rgestures::Rgestures;
+use crate::rmodels::Rmodels;
 use crate::rshapes::Rshapes;
 use crate::rtext::Rtext;
 use crate::rtextures::Rtextures;
 use raylib_ffi::*;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct RaylibConnector {
     pub rcore: Rcore,
     pub rgestures: Rgestures,
@@ -14,20 +16,12 @@ pub struct RaylibConnector {
     pub rshapes: Rshapes,
     pub rtextures: Rtextures,
     pub rtext: Rtext,
+    pub rmodels: Rmodels,
+    // pub raudio: Raudio,
 }
 
+/// TODO: the methods implemented bellow should be in the rscenes crate
 impl RaylibConnector {
-    pub fn new() -> Self {
-        Self {
-            rcore: Rcore,
-            rgestures: Rgestures,
-            rcamera: Rcamera,
-            rshapes: Rshapes,
-            rtextures: Rtextures,
-            rtext: Rtext,
-        }
-    }
-
     #[must_use]
     #[allow(non_snake_case)]
     pub fn mode_2D<F, R, E>(&self, camera: Camera2D, block: F) -> Result<R, E>
@@ -119,13 +113,54 @@ impl RaylibConnector {
 
 #[cfg(test)]
 mod tests {
-    use std::any::{Any, TypeId};
-
     use super::*;
+    use std::any::{Any, TypeId};
 
     #[test]
     fn should_export_rcore() {
-        let renderer = RaylibConnector::new();
+        let renderer = RaylibConnector::default();
         assert_eq!(renderer.rcore.type_id(), TypeId::of::<Rcore>())
     }
+
+    #[test]
+    fn should_export_rgestures() {
+        let renderer = RaylibConnector::default();
+        assert_eq!(renderer.rgestures.type_id(), TypeId::of::<Rgestures>())
+    }
+
+    #[test]
+    fn should_export_rcamera() {
+        let renderer = RaylibConnector::default();
+        assert_eq!(renderer.rcamera.type_id(), TypeId::of::<Rcamera>())
+    }
+
+    #[test]
+    fn should_export_rshapes() {
+        let renderer = RaylibConnector::default();
+        assert_eq!(renderer.rshapes.type_id(), TypeId::of::<Rshapes>())
+    }
+
+    #[test]
+    fn should_export_rtextures() {
+        let renderer = RaylibConnector::default();
+        assert_eq!(renderer.rtextures.type_id(), TypeId::of::<Rtextures>())
+    }
+
+    #[test]
+    fn should_export_rtext() {
+        let renderer = RaylibConnector::default();
+        assert_eq!(renderer.rtext.type_id(), TypeId::of::<Rtext>())
+    }
+
+    #[test]
+    fn should_export_rmodels() {
+        let renderer = RaylibConnector::default();
+        assert_eq!(renderer.rmodels.type_id(), TypeId::of::<Rmodels>())
+    }
+
+    // #[test]
+    // fn should_export_raudio() {
+    //     let renderer = RaylibConnector::default();
+    //     assert_eq!(renderer.raudio.type_id(), TypeId::of::<Raudio>())
+    // }
 }

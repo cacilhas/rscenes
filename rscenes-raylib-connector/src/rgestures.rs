@@ -1,6 +1,6 @@
 use raylib_ffi::{enums::Gesture, *};
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Rgestures;
 
 /// Crate only methods

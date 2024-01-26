@@ -7,7 +7,7 @@ use std::{
     slice,
 };
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Rtext;
 
 /// Crate only methods

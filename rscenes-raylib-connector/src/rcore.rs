@@ -8,7 +8,7 @@ use std::{
     ptr,
 };
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Rcore;
 
 /// Crate only methods

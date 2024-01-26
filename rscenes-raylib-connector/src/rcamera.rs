@@ -1,7 +1,7 @@
 use crate::ext::vector::*;
 use raylib_ffi::{enums::*, *};
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Rcamera;
 
 /// Crate only methods
