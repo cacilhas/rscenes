@@ -1,5 +1,4 @@
-use crate::ext::vector::*;
-use raylib_ffi::{enums::*, *};
+use raylib_ffi::{enums::CameraMode, *};
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Rcamera;
@@ -34,26 +33,5 @@ impl Rcamera {
         zoom: f32,
     ) {
         Self::__update_camera_pro(camera, movement, rotation, zoom)
-    }
-
-    #[allow(non_snake_case)]
-    pub fn default_camera_2D(&self) -> Camera2D {
-        Camera2D {
-            offset: Vector2::ZERO,
-            target: Vector2::ZERO,
-            rotation: 0.0,
-            zoom: 1.0,
-        }
-    }
-
-    #[allow(non_snake_case)]
-    pub fn default_camera_3D(&self) -> Camera3D {
-        Camera3D {
-            position: Vector3::BACK,
-            target: Vector3::ZERO,
-            up: Vector3::UP,
-            fovy: 100.0,
-            projection: enums::CameraProjection::Perspective as i32,
-        }
     }
 }

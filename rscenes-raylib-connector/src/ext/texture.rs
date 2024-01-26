@@ -1,7 +1,12 @@
+use std::fmt::Display;
+
 use crate::rtextures::Rtextures;
 use raylib_ffi::{enums::*, *};
 
 pub trait TextureExt {
+    fn load(filename: impl Display) -> Self;
+    fn load_from_image(image: Image) -> Self;
+
     fn is_ready(self) -> bool;
     fn unload(self);
     fn update_gpu(self, pixels: Vec<u8>) -> Self;
@@ -12,6 +17,14 @@ pub trait TextureExt {
 }
 
 impl TextureExt for Texture2D {
+    fn load(filename: impl Display) -> Self {
+        Rtextures::__load_texture(filename)
+    }
+
+    fn load_from_image(image: Image) -> Self {
+        Rtextures::__load_texture_from_image(image)
+    }
+
     fn is_ready(self) -> bool {
         Rtextures::__is_texture_ready(self)
     }
@@ -46,12 +59,28 @@ impl TextureExt for Texture2D {
     }
 }
 
+pub trait TextureCubemapExt {
+    fn load(image: Image, layout: CubemapLayout) -> Self;
+}
+
+impl TextureCubemapExt for TextureCubemap {
+    fn load(image: Image, layout: CubemapLayout) -> Self {
+        Rtextures::__load_texture_cubemap(image, layout)
+    }
+}
+
 pub trait RenderTextureExt {
+    fn load(width: i32, height: i32) -> Self;
+
     fn is_ready(self) -> bool;
     fn unload(self);
 }
 
 impl RenderTextureExt for RenderTexture2D {
+    fn load(width: i32, height: i32) -> Self {
+        Rtextures::__load_render_texture(width, height)
+    }
+
     fn is_ready(self) -> bool {
         Rtextures::__is_render_texture_ready(self)
     }

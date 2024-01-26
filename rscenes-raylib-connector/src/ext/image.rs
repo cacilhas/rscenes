@@ -3,13 +3,60 @@ use raylib_ffi::{enums::PixelFormat, *};
 use std::fmt::Display;
 
 pub trait ImageExt {
+    fn load(filename: impl Display) -> Self;
+    fn load_raw(
+        filename: impl Display,
+        width: i32,
+        height: i32,
+        format: impl Into<usize>,
+        header_size: i32,
+    ) -> Self;
+    fn load_svg(filename_or_string: impl Display, width: i32, height: i32) -> Self;
+    fn load_anim(filename: impl Display) -> (Self, i32)
+    where
+        Self: Sized;
+    fn load_from_memory(tpe: impl Display, data: Vec<u8>) -> Self;
+    fn load_from_texture(texture: Texture2D) -> Self;
+    fn load_from_screen() -> Self;
+
+    fn gen_color(width: i32, height: i32, color: Color) -> Self;
+    fn gen_gradient_linear(width: i32, height: i32, angle: f32, start: Color, end: Color) -> Self;
+    fn gen_gradient_radial(
+        width: i32,
+        height: i32,
+        density: f32,
+        inner: Color,
+        outer: Color,
+    ) -> Self;
+    fn gen_gradient_square(
+        width: i32,
+        height: i32,
+        density: f32,
+        inner: Color,
+        outer: Color,
+    ) -> Self;
+    fn gen_checked(
+        width: i32,
+        height: i32,
+        checks_x: i32,
+        checks_y: i32,
+        col1: Color,
+        col2: Color,
+    ) -> Self;
+    fn gen_white_noise(width: i32, height: i32, factor: f32) -> Self;
+    fn gen_perlin_noise(width: i32, height: i32, offset_x: i32, offset_y: i32, scale: f32) -> Self;
+    fn gen_cellular(width: i32, height: i32, tile_size: i32) -> Self;
+    fn gen_text(width: i32, height: i32, text: impl Display) -> Self;
+    fn gen_text_ex(text: impl Display, font_size: i32, color: Color) -> Self;
+
     fn is_ready(self) -> bool;
     fn unload(self);
     fn export(self, filename: impl Display) -> bool;
     fn export_to_memory(self, tpe: impl Display) -> Vec<u8>;
     fn export_as_code(self, filename: impl Display) -> bool;
 
-    fn copy(self) -> Image;
+    fn copy(self) -> Self;
+    fn copy_rec(self, rec: Rectangle) -> Self;
     fn format(&mut self, format: PixelFormat) -> &mut Self;
     fn to_pot(&mut self, fill: Color) -> &mut Self;
     fn crop(&mut self, crop: Rectangle) -> &mut Self;
@@ -106,6 +153,99 @@ pub trait ImageExt {
 }
 
 impl ImageExt for Image {
+    fn load(filename: impl Display) -> Self {
+        Rtextures::__load_image(filename)
+    }
+
+    fn load_raw(
+        filename: impl Display,
+        width: i32,
+        height: i32,
+        format: impl Into<usize>,
+        header_size: i32,
+    ) -> Self {
+        Rtextures::__load_image_raw(filename, width, height, format, header_size)
+    }
+
+    fn load_svg(filename_or_string: impl Display, width: i32, height: i32) -> Self {
+        Rtextures::__load_image_svg(filename_or_string, width, height)
+    }
+
+    fn load_anim(filename: impl Display) -> (Self, i32) {
+        Rtextures::__load_image_anim(filename)
+    }
+
+    fn load_from_screen() -> Self {
+        Rtextures::__load_image_from_screen()
+    }
+
+    fn load_from_texture(texture: Texture2D) -> Self {
+        Rtextures::__load_image_from_texture(texture)
+    }
+
+    fn load_from_memory(tpe: impl Display, data: Vec<u8>) -> Self {
+        Rtextures::__load_image_from_memory(tpe, data)
+    }
+
+    fn gen_white_noise(width: i32, height: i32, factor: f32) -> Self {
+        Rtextures::__gen_image_white_noise(width, height, factor)
+    }
+
+    fn gen_text(width: i32, height: i32, text: impl Display) -> Self {
+        Rtextures::__gen_image_text(width, height, text)
+    }
+
+    fn gen_color(width: i32, height: i32, color: Color) -> Self {
+        Rtextures::__gen_image_color(width, height, color)
+    }
+
+    fn gen_checked(
+        width: i32,
+        height: i32,
+        checks_x: i32,
+        checks_y: i32,
+        col1: Color,
+        col2: Color,
+    ) -> Self {
+        Rtextures::__gen_image_checked(width, height, checks_x, checks_y, col1, col2)
+    }
+
+    fn gen_text_ex(text: impl Display, font_size: i32, color: Color) -> Self {
+        Rtextures::__image_text(text, font_size, color)
+    }
+
+    fn gen_cellular(width: i32, height: i32, tile_size: i32) -> Self {
+        Rtextures::__gen_image_cellular(width, height, tile_size)
+    }
+
+    fn gen_perlin_noise(width: i32, height: i32, offset_x: i32, offset_y: i32, scale: f32) -> Self {
+        Rtextures::__gen_image_perlin_noise(width, height, offset_x, offset_y, scale)
+    }
+
+    fn gen_gradient_linear(width: i32, height: i32, angle: f32, start: Color, end: Color) -> Self {
+        Rtextures::__gen_image_gradient_linear(width, height, angle, start, end)
+    }
+
+    fn gen_gradient_radial(
+        width: i32,
+        height: i32,
+        density: f32,
+        inner: Color,
+        outer: Color,
+    ) -> Self {
+        Rtextures::__gen_image_gradient_radial(width, height, density, inner, outer)
+    }
+
+    fn gen_gradient_square(
+        width: i32,
+        height: i32,
+        density: f32,
+        inner: Color,
+        outer: Color,
+    ) -> Self {
+        Rtextures::__gen_image_gradient_square(width, height, density, inner, outer)
+    }
+
     fn is_ready(self) -> bool {
         Rtextures::__is_image_ready(self)
     }
@@ -128,6 +268,10 @@ impl ImageExt for Image {
 
     fn copy(self) -> Image {
         Rtextures::__image_copy(self)
+    }
+
+    fn copy_rec(self, rec: Rectangle) -> Self {
+        Rtextures::__image_from_image(self, rec)
     }
 
     fn format(&mut self, format: PixelFormat) -> &mut Self {

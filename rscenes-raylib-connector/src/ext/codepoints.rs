@@ -1,18 +1,24 @@
 use crate::rtext::Rtext;
 use eyre::*;
-use std::ptr;
+use std::{fmt::Display, marker::PhantomData, ptr};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Codepoints {
     pub inner: *mut i32,
     pub count: usize,
+    phantom: PhantomData<*mut i32>,
 }
 
 impl Codepoints {
+    pub fn load(text: impl Display) -> Self {
+        Rtext::__load_codepoints(text)
+    }
+
     pub(crate) fn new(ptr: *mut i32, count: i32) -> Self {
         Self {
             inner: ptr,
             count: count as usize,
+            phantom: PhantomData,
         }
     }
 

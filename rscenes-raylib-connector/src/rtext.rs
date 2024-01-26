@@ -33,7 +33,7 @@ impl Rtext {
         }
     }
 
-    pub(self) fn __load_font_from_image(image: Image, key: Color, first_char: i32) -> Font {
+    pub(crate) fn __load_font_from_image(image: Image, key: Color, first_char: i32) -> Font {
         unsafe { LoadFontFromImage(image, key, first_char) }
     }
 
