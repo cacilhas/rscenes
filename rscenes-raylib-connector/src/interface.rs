@@ -1,7 +1,7 @@
 use crate::rcamera::Rcamera;
 use crate::rcore::Rcore;
 use crate::rgestures::Rgestures;
-use crate::vector::*;
+use crate::rshapes::Rshapes;
 use raylib_ffi::*;
 
 #[derive(Clone, Copy, Debug)]
@@ -9,6 +9,7 @@ pub struct RaylibConnector {
     pub rcore: Rcore,
     pub rgestures: Rgestures,
     pub rcamera: Rcamera,
+    pub rshapes: Rshapes,
 }
 
 impl RaylibConnector {
@@ -17,27 +18,7 @@ impl RaylibConnector {
             rcore: Rcore,
             rgestures: Rgestures,
             rcamera: Rcamera,
-        }
-    }
-
-    #[allow(non_snake_case)]
-    pub fn default_camera_2D(&self) -> Camera2D {
-        Camera2D {
-            offset: Vector2::ZERO,
-            target: Vector2::ZERO,
-            rotation: 0.0,
-            zoom: 1.0,
-        }
-    }
-
-    #[allow(non_snake_case)]
-    pub fn default_camera_3D(&self) -> Camera3D {
-        Camera3D {
-            position: Vector3::BACK,
-            target: Vector3::ZERO,
-            up: Vector3::UP,
-            fovy: 100.0,
-            projection: enums::CameraProjection::Perspective as i32,
+            rshapes: Rshapes,
         }
     }
 

@@ -1,0 +1,571 @@
+use raylib_ffi::*;
+
+#[derive(Clone, Copy, Debug)]
+pub struct Rshapes;
+
+/// Crate only methods
+impl Rshapes {
+    pub(crate) fn __set_shapes_texture(texture: Texture2D, source: Rectangle) {
+        unsafe { SetShapesTexture(texture, source) }
+    }
+
+    // Basic shapes drawing methods
+
+    pub(crate) fn __draw_pixel(x: i32, y: i32, color: Color) {
+        unsafe { DrawPixel(x, y, color) }
+    }
+
+    pub(crate) fn __draw_pixel_v(position: Vector2, color: Color) {
+        unsafe { DrawPixelV(position, color) }
+    }
+
+    pub(crate) fn __draw_line(start_x: i32, start_y: i32, end_x: i32, end_y: i32, color: Color) {
+        unsafe { DrawLine(start_x, start_y, end_x, end_y, color) }
+    }
+
+    pub(crate) fn __draw_line_v(start: Vector2, end: Vector2, color: Color) {
+        unsafe { DrawLineV(start, end, color) }
+    }
+
+    pub(crate) fn __draw_line_ex(start: Vector2, end: Vector2, thick: f32, color: Color) {
+        unsafe { DrawLineEx(start, end, thick, color) }
+    }
+
+    pub(crate) fn __draw_line_strip(points: Vec<Vector2>, color: Color) {
+        unsafe {
+            let count = points.len() as i32;
+            let points = points.as_ptr() as *mut Vector2;
+            DrawLineStrip(points, count, color)
+        }
+    }
+
+    pub(crate) fn __draw_line_bezier(start: Vector2, end: Vector2, thick: f32, color: Color) {
+        unsafe { DrawLineBezier(start, end, thick, color) }
+    }
+
+    pub(crate) fn __draw_circle(center_x: i32, center_y: i32, radius: f32, color: Color) {
+        unsafe { DrawCircle(center_x, center_y, radius, color) }
+    }
+
+    pub(crate) fn __draw_circle_sector(
+        center: Vector2,
+        radius: f32,
+        start_angle: f32,
+        end_angle: f32,
+        segments: i32,
+        color: Color,
+    ) {
+        unsafe { DrawCircleSector(center, radius, start_angle, end_angle, segments, color) }
+    }
+
+    pub(crate) fn __draw_circle_sector_lines(
+        center: Vector2,
+        radius: f32,
+        start_angle: f32,
+        end_angle: f32,
+        segments: i32,
+        color: Color,
+    ) {
+        unsafe { DrawCircleSectorLines(center, radius, start_angle, end_angle, segments, color) }
+    }
+
+    pub(crate) fn __draw_circle_gradient(
+        center_x: i32,
+        center_y: i32,
+        radius: f32,
+        color1: Color,
+        color2: Color,
+    ) {
+        unsafe { DrawCircleGradient(center_x, center_y, radius, color1, color2) }
+    }
+
+    pub(crate) fn __draw_circle_v(center: Vector2, radius: f32, color: Color) {
+        unsafe { DrawCircleV(center, radius, color) }
+    }
+
+    pub(crate) fn __draw_circle_lines(center_x: i32, center_y: i32, radius: f32, color: Color) {
+        unsafe { DrawCircleLines(center_x, center_y, radius, color) }
+    }
+
+    pub(crate) fn __draw_circle_lines_v(center: Vector2, radius: f32, color: Color) {
+        unsafe { DrawCircleLinesV(center, radius, color) }
+    }
+
+    pub(crate) fn __draw_ellipse(
+        center_x: i32,
+        center_y: i32,
+        radius_h: f32,
+        radius_v: f32,
+        color: Color,
+    ) {
+        unsafe { DrawEllipse(center_x, center_y, radius_h, radius_v, color) }
+    }
+
+    pub(crate) fn __draw_ellipse_lines(
+        center_x: i32,
+        center_y: i32,
+        radius_h: f32,
+        radius_v: f32,
+        color: Color,
+    ) {
+        unsafe { DrawEllipseLines(center_x, center_y, radius_h, radius_v, color) }
+    }
+
+    pub(crate) fn __draw_ring(
+        center: Vector2,
+        inner_radius: f32,
+        outer_radius: f32,
+        start_angle: f32,
+        end_angle: f32,
+        segments: i32,
+        color: Color,
+    ) {
+        unsafe {
+            DrawRing(
+                center,
+                inner_radius,
+                outer_radius,
+                start_angle,
+                end_angle,
+                segments,
+                color,
+            )
+        }
+    }
+
+    pub(crate) fn __draw_ring_lines(
+        center: Vector2,
+        inner_radius: f32,
+        outer_radius: f32,
+        start_angle: f32,
+        end_angle: f32,
+        segments: i32,
+        color: Color,
+    ) {
+        unsafe {
+            DrawRingLines(
+                center,
+                inner_radius,
+                outer_radius,
+                start_angle,
+                end_angle,
+                segments,
+                color,
+            )
+        }
+    }
+
+    pub(crate) fn __draw_rectangle(x: i32, y: i32, width: i32, height: i32, color: Color) {
+        unsafe { DrawRectangle(x, y, width, height, color) }
+    }
+
+    pub(crate) fn __draw_rectangle_v(position: Vector2, size: Vector2, color: Color) {
+        unsafe { DrawRectangleV(position, size, color) }
+    }
+
+    pub(crate) fn __draw_rectangle_rec(rec: Rectangle, color: Color) {
+        unsafe { DrawRectangleRec(rec, color) }
+    }
+
+    pub(crate) fn __draw_rectangle_pro(
+        rec: Rectangle,
+        origin: Vector2,
+        rotation: f32,
+        color: Color,
+    ) {
+        unsafe { DrawRectanglePro(rec, origin, rotation, color) }
+    }
+
+    pub(crate) fn __draw_rectangle_gradient_v(
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
+        color1: Color,
+        color2: Color,
+    ) {
+        unsafe { DrawRectangleGradientV(x, y, width, height, color1, color2) }
+    }
+
+    pub(crate) fn __draw_rectangle_gradient_h(
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
+        color1: Color,
+        color2: Color,
+    ) {
+        unsafe { DrawRectangleGradientH(x, y, width, height, color1, color2) }
+    }
+
+    pub(crate) fn __draw_rectangle_gradient_ex(
+        rec: Rectangle,
+        col1: Color,
+        col2: Color,
+        col3: Color,
+        col4: Color,
+    ) {
+        unsafe { DrawRectangleGradientEx(rec, col1, col2, col3, col4) }
+    }
+
+    pub(crate) fn __draw_rectangle_lines(x: i32, y: i32, width: i32, height: i32, color: Color) {
+        unsafe { DrawRectangleLines(x, y, width, height, color) }
+    }
+
+    pub(crate) fn __draw_rectangle_lines_ex(rec: Rectangle, thick: f32, color: Color) {
+        unsafe { DrawRectangleLinesEx(rec, thick, color) }
+    }
+
+    pub(crate) fn __draw_rectangle_rounded(
+        rec: Rectangle,
+        roundness: f32,
+        segments: i32,
+        color: Color,
+    ) {
+        unsafe { DrawRectangleRounded(rec, roundness, segments, color) }
+    }
+
+    pub(crate) fn __draw_rectangle_rounded_lines(
+        rec: Rectangle,
+        roundness: f32,
+        segments: i32,
+        thick: f32,
+        color: Color,
+    ) {
+        unsafe { DrawRectangleRoundedLines(rec, roundness, segments, thick, color) }
+    }
+
+    pub(crate) fn __draw_triangle(v1: Vector2, v2: Vector2, v3: Vector2, color: Color) {
+        unsafe { DrawTriangle(v1, v2, v3, color) }
+    }
+
+    pub(crate) fn __draw_triangle_lines(v1: Vector2, v2: Vector2, v3: Vector2, color: Color) {
+        unsafe { DrawTriangleLines(v1, v2, v3, color) }
+    }
+
+    pub(crate) fn __draw_triangle_fan(points: Vec<Vector2>, color: Color) {
+        unsafe {
+            let count = points.len() as i32;
+            let points = points.as_ptr() as *mut Vector2;
+            DrawTriangleFan(points, count, color)
+        }
+    }
+
+    pub(crate) fn __draw_triangle_strip(points: Vec<Vector2>, color: Color) {
+        unsafe {
+            let count = points.len() as i32;
+            let points = points.as_ptr() as *mut Vector2;
+            DrawTriangleStrip(points, count, color)
+        }
+    }
+
+    pub(crate) fn __draw_poly(
+        center: Vector2,
+        sides: i32,
+        radius: f32,
+        rotation: f32,
+        color: Color,
+    ) {
+        unsafe { DrawPoly(center, sides, radius, rotation, color) }
+    }
+
+    pub(crate) fn __draw_poly_lines(
+        center: Vector2,
+        sides: i32,
+        radius: f32,
+        rotation: f32,
+        color: Color,
+    ) {
+        unsafe { DrawPolyLines(center, sides, radius, rotation, color) }
+    }
+
+    pub(crate) fn __draw_poly_lines_ex(
+        center: Vector2,
+        sides: i32,
+        radius: f32,
+        rotation: f32,
+        thick: f32,
+        color: Color,
+    ) {
+        unsafe { DrawPolyLinesEx(center, sides, radius, rotation, thick, color) }
+    }
+
+    // Splines drawing methods
+}
+
+/// Exported methods
+impl Rshapes {
+    pub fn set_shapes_texture(&self, texture: Texture2D, source: Rectangle) {
+        Self::__set_shapes_texture(texture, source)
+    }
+
+    // Basic shapes drawing methods
+
+    pub fn draw_pixel(&self, x: i32, y: i32, color: Color) {
+        Self::__draw_pixel(x, y, color)
+    }
+
+    pub fn draw_pixel_v(&self, position: Vector2, color: Color) {
+        Self::__draw_pixel_v(position, color)
+    }
+
+    pub fn draw_line(&self, start_x: i32, start_y: i32, end_x: i32, end_y: i32, color: Color) {
+        Self::__draw_line(start_x, start_y, end_x, end_y, color)
+    }
+
+    pub fn draw_line_v(&self, start: Vector2, end: Vector2, color: Color) {
+        Self::__draw_line_v(start, end, color)
+    }
+
+    pub fn draw_line_ex(&self, start: Vector2, end: Vector2, thick: f32, color: Color) {
+        Self::__draw_line_ex(start, end, thick, color)
+    }
+
+    pub fn draw_line_strip(&self, points: Vec<Vector2>, color: Color) {
+        Self::__draw_line_strip(points, color)
+    }
+
+    pub fn draw_line_bezier(&self, start: Vector2, end: Vector2, thick: f32, color: Color) {
+        Self::__draw_line_bezier(start, end, thick, color)
+    }
+
+    pub fn draw_circle(&self, center_x: i32, center_y: i32, radius: f32, color: Color) {
+        Self::__draw_circle(center_x, center_y, radius, color)
+    }
+
+    pub fn draw_circle_sector(
+        &self,
+        center: Vector2,
+        radius: f32,
+        start_angle: f32,
+        end_angle: f32,
+        segments: i32,
+        color: Color,
+    ) {
+        Self::__draw_circle_sector(center, radius, start_angle, end_angle, segments, color)
+    }
+
+    pub fn draw_circle_sector_lines(
+        &self,
+        center: Vector2,
+        radius: f32,
+        start_angle: f32,
+        end_angle: f32,
+        segments: i32,
+        color: Color,
+    ) {
+        Self::__draw_circle_sector_lines(center, radius, start_angle, end_angle, segments, color)
+    }
+
+    pub fn draw_circle_gradient(
+        &self,
+        center_x: i32,
+        center_y: i32,
+        radius: f32,
+        color1: Color,
+        color2: Color,
+    ) {
+        Self::__draw_circle_gradient(center_x, center_y, radius, color1, color2)
+    }
+
+    pub fn draw_circle_v(&self, center: Vector2, radius: f32, color: Color) {
+        Self::__draw_circle_v(center, radius, color)
+    }
+
+    pub fn draw_circle_lines(&self, center_x: i32, center_y: i32, radius: f32, color: Color) {
+        Self::__draw_circle_lines(center_x, center_y, radius, color)
+    }
+
+    pub fn draw_circle_lines_v(&self, center: Vector2, radius: f32, color: Color) {
+        Self::__draw_circle_lines_v(center, radius, color)
+    }
+
+    pub fn draw_ellipse(
+        &self,
+        center_x: i32,
+        center_y: i32,
+        radius_h: f32,
+        radius_v: f32,
+        color: Color,
+    ) {
+        Self::__draw_ellipse(center_x, center_y, radius_h, radius_v, color)
+    }
+
+    pub fn draw_ellipse_lines(
+        &self,
+        center_x: i32,
+        center_y: i32,
+        radius_h: f32,
+        radius_v: f32,
+        color: Color,
+    ) {
+        Self::__draw_ellipse_lines(center_x, center_y, radius_h, radius_v, color)
+    }
+
+    pub fn draw_ring(
+        &self,
+        center: Vector2,
+        inner_radius: f32,
+        outer_radius: f32,
+        start_angle: f32,
+        end_angle: f32,
+        segments: i32,
+        color: Color,
+    ) {
+        Self::__draw_ring(
+            center,
+            inner_radius,
+            outer_radius,
+            start_angle,
+            end_angle,
+            segments,
+            color,
+        )
+    }
+
+    pub fn draw_ring_lines(
+        &self,
+        center: Vector2,
+        inner_radius: f32,
+        outer_radius: f32,
+        start_angle: f32,
+        end_angle: f32,
+        segments: i32,
+        color: Color,
+    ) {
+        Self::__draw_ring_lines(
+            center,
+            inner_radius,
+            outer_radius,
+            start_angle,
+            end_angle,
+            segments,
+            color,
+        )
+    }
+
+    pub fn draw_rectangle(&self, x: i32, y: i32, width: i32, height: i32, color: Color) {
+        Self::__draw_rectangle(x, y, width, height, color)
+    }
+
+    pub fn draw_rectangle_v(&self, position: Vector2, size: Vector2, color: Color) {
+        Self::__draw_rectangle_v(position, size, color)
+    }
+
+    pub fn draw_rectangle_rec(&self, rec: Rectangle, color: Color) {
+        Self::__draw_rectangle_rec(rec, color)
+    }
+
+    pub fn draw_rectangle_pro(&self, rec: Rectangle, origin: Vector2, rotation: f32, color: Color) {
+        Self::__draw_rectangle_pro(rec, origin, rotation, color)
+    }
+
+    pub fn draw_rectangle_gradient_v(
+        &self,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
+        color1: Color,
+        color2: Color,
+    ) {
+        Self::__draw_rectangle_gradient_v(x, y, width, height, color1, color2)
+    }
+
+    pub fn draw_rectangle_gradient_h(
+        &self,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
+        color1: Color,
+        color2: Color,
+    ) {
+        Self::__draw_rectangle_gradient_h(x, y, width, height, color1, color2)
+    }
+
+    pub fn draw_rectangle_gradient_ex(
+        &self,
+        rec: Rectangle,
+        col1: Color,
+        col2: Color,
+        col3: Color,
+        col4: Color,
+    ) {
+        Self::__draw_rectangle_gradient_ex(rec, col1, col2, col3, col4)
+    }
+
+    pub fn draw_rectangle_lines(&self, x: i32, y: i32, width: i32, height: i32, color: Color) {
+        Self::__draw_rectangle_lines(x, y, width, height, color)
+    }
+
+    pub fn draw_rectangle_lines_ex(&self, rec: Rectangle, thick: f32, color: Color) {
+        Self::__draw_rectangle_lines_ex(rec, thick, color)
+    }
+
+    pub fn draw_rectangle_rounded(
+        &self,
+        rec: Rectangle,
+        roundness: f32,
+        segments: i32,
+        color: Color,
+    ) {
+        Self::__draw_rectangle_rounded(rec, roundness, segments, color)
+    }
+
+    pub fn draw_rectangle_rounded_lines(
+        &self,
+        rec: Rectangle,
+        roundness: f32,
+        segments: i32,
+        thick: f32,
+        color: Color,
+    ) {
+        Self::__draw_rectangle_rounded_lines(rec, roundness, segments, thick, color)
+    }
+
+    pub fn draw_triangle(&self, v1: Vector2, v2: Vector2, v3: Vector2, color: Color) {
+        Self::__draw_triangle(v1, v2, v3, color)
+    }
+
+    pub fn draw_triangle_lines(&self, v1: Vector2, v2: Vector2, v3: Vector2, color: Color) {
+        Self::__draw_triangle_lines(v1, v2, v3, color)
+    }
+
+    pub fn draw_triangle_fan(&self, points: Vec<Vector2>, color: Color) {
+        Self::__draw_triangle_fan(points, color)
+    }
+
+    pub fn draw_triangle_strip(&self, points: Vec<Vector2>, color: Color) {
+        Self::__draw_triangle_strip(points, color)
+    }
+
+    pub fn draw_poly(&self, center: Vector2, sides: i32, radius: f32, rotation: f32, color: Color) {
+        Self::__draw_poly(center, sides, radius, rotation, color)
+    }
+
+    pub fn draw_poly_lines(
+        &self,
+        center: Vector2,
+        sides: i32,
+        radius: f32,
+        rotation: f32,
+        color: Color,
+    ) {
+        Self::__draw_poly_lines(center, sides, radius, rotation, color)
+    }
+
+    pub fn draw_poly_lines_ex(
+        &self,
+        center: Vector2,
+        sides: i32,
+        radius: f32,
+        rotation: f32,
+        thick: f32,
+        color: Color,
+    ) {
+        Self::__draw_poly_lines_ex(center, sides, radius, rotation, thick, color)
+    }
+
+    // Splines drawing methods
+}
