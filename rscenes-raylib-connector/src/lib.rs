@@ -1,5 +1,6 @@
 mod camera;
 mod color;
+mod font;
 mod image;
 mod interface;
 mod key;
@@ -15,6 +16,7 @@ mod window_handle;
 
 pub use crate::camera::Camera3DExt;
 pub use crate::color::ColorExt;
+pub use crate::font::FontExt;
 pub use crate::image::ImageExt;
 pub use crate::interface::RaylibConnector;
 pub use crate::key::KeyboardKeyExt;
