@@ -512,6 +512,20 @@ impl Rtextures {
     }
 
     // Texture configuration methods
+
+    pub(crate) fn __gen_texture_mipmaps(texture: &mut Texture2D) {
+        unsafe { GenTextureMipmaps(texture) }
+    }
+
+    pub(crate) fn __set_texture_filter(texture: Texture2D, filter: impl Into<usize>) {
+        unsafe { SetTextureFilter(texture, filter.into() as i32) }
+    }
+
+    pub(crate) fn __set_texture_wrap(texture: Texture2D, wrap: impl Into<usize>) {
+        unsafe { SetTextureWrap(texture, wrap.into() as i32) }
+    }
+
+    // Texture drawing methods
 }
 
 /// Exported methods
@@ -992,4 +1006,18 @@ impl Rtextures {
     }
 
     // Texture configuration methods
+
+    pub fn gen_texture_mipmaps(&self, texture: &mut Texture2D) {
+        Self::__gen_texture_mipmaps(texture)
+    }
+
+    pub fn set_texture_filter(&self, texture: Texture2D, filter: TextureFilter) {
+        Self::__set_texture_filter(texture, filter)
+    }
+
+    pub fn set_texture_wrap(&self, texture: Texture2D, wrap: TextureWrap) {
+        Self::__set_texture_wrap(texture, wrap)
+    }
+
+    // Texture drawing methods
 }

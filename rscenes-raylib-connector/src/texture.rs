@@ -1,11 +1,14 @@
 use crate::rtextures::Rtextures;
-use raylib_ffi::*;
+use raylib_ffi::{enums::*, *};
 
 pub trait TextureExt {
     fn is_ready(self) -> bool;
     fn unload(self);
-    fn update_gpu(self, pixels: Vec<u8>);
-    fn update_gpu_rec(self, rec: Rectangle, pixels: Vec<u8>);
+    fn update_gpu(self, pixels: Vec<u8>) -> Self;
+    fn update_gpu_rec(self, rec: Rectangle, pixels: Vec<u8>) -> Self;
+    fn gen_mipmaps(&mut self) -> &mut Self;
+    fn set_filter(self, filter: TextureFilter) -> Self;
+    fn set_wrap(self, wrap: TextureWrap) -> Self;
 }
 
 impl TextureExt for Texture2D {
@@ -17,12 +20,29 @@ impl TextureExt for Texture2D {
         Rtextures::__unload_texture(self)
     }
 
-    fn update_gpu(self, pixels: Vec<u8>) {
-        Rtextures::__update_texture(self, pixels)
+    fn update_gpu(self, pixels: Vec<u8>) -> Self {
+        Rtextures::__update_texture(self, pixels);
+        self
     }
 
-    fn update_gpu_rec(self, rec: Rectangle, pixels: Vec<u8>) {
-        Rtextures::__update_texture_rec(self, rec, pixels)
+    fn update_gpu_rec(self, rec: Rectangle, pixels: Vec<u8>) -> Self {
+        Rtextures::__update_texture_rec(self, rec, pixels);
+        self
+    }
+
+    fn gen_mipmaps(&mut self) -> &mut Self {
+        Rtextures::__gen_texture_mipmaps(self);
+        self
+    }
+
+    fn set_filter(self, filter: TextureFilter) -> Self {
+        Rtextures::__set_texture_filter(self, filter);
+        self
+    }
+
+    fn set_wrap(self, wrap: TextureWrap) -> Self {
+        Rtextures::__set_texture_wrap(self, wrap);
+        self
     }
 }
 
