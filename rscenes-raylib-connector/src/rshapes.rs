@@ -380,6 +380,51 @@ impl Rshapes {
     }
 
     // Spline segment point evaluation methods, for a given t [0.0f .. 1.0f]
+
+    pub(crate) fn __get_spline_point_linear(start: Vector2, end: Vector2, t: f32) -> Vector2 {
+        unsafe { GetSplinePointLinear(start, end, t) }
+    }
+
+    pub(crate) fn __get_spline_point_basis(
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+        p4: Vector2,
+        t: f32,
+    ) -> Vector2 {
+        unsafe { GetSplinePointBasis(p1, p2, p3, p4, t) }
+    }
+
+    pub(crate) fn __get_spline_point_catmull_rom(
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+        p4: Vector2,
+        t: f32,
+    ) -> Vector2 {
+        unsafe { GetSplinePointCatmullRom(p1, p2, p3, p4, t) }
+    }
+
+    pub(crate) fn __get_spline_point_bezier_quad(
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+        t: f32,
+    ) -> Vector2 {
+        unsafe { GetSplinePointBezierQuad(p1, p2, p3, t) }
+    }
+
+    pub(crate) fn __get_spline_point_bezier_cubic(
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+        p4: Vector2,
+        t: f32,
+    ) -> Vector2 {
+        unsafe { GetSplinePointBezierCubic(p1, p2, p3, p4, t) }
+    }
+
+    // Basic shapes collision detection methods
 }
 
 /// Exported methods
@@ -730,4 +775,53 @@ impl Rshapes {
     }
 
     // Spline segment point evaluation methods, for a given t [0.0f .. 1.0f]
+
+    pub fn get_spline_point_linear(&self, start: Vector2, end: Vector2, t: f32) -> Vector2 {
+        Self::__get_spline_point_linear(start, end, t)
+    }
+
+    pub fn get_spline_point_basis(
+        &self,
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+        p4: Vector2,
+        t: f32,
+    ) -> Vector2 {
+        Self::__get_spline_point_basis(p1, p2, p3, p4, t)
+    }
+
+    pub fn get_spline_point_catmull_rom(
+        &self,
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+        p4: Vector2,
+        t: f32,
+    ) -> Vector2 {
+        Self::__get_spline_point_catmull_rom(p1, p2, p3, p4, t)
+    }
+
+    pub fn get_spline_point_bezier_quad(
+        &self,
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+        t: f32,
+    ) -> Vector2 {
+        Self::__get_spline_point_bezier_quad(p1, p2, p3, t)
+    }
+
+    pub fn get_spline_point_bezier_cubic(
+        &self,
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+        p4: Vector2,
+        t: f32,
+    ) -> Vector2 {
+        Self::__get_spline_point_bezier_cubic(p1, p2, p3, p4, t)
+    }
+
+    // Basic shapes collision detection methods
 }
