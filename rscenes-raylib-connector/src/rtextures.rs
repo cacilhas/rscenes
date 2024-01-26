@@ -100,7 +100,7 @@ impl Rtextures {
         end: Color,
     ) -> Image {
         unsafe {
-            let direction = (angle * PI / 180.0) as i32;
+            let direction = (angle * 180.0 / PI) as i32;
             GenImageGradientLinear(width, height, direction, start, end)
         }
     }
@@ -159,6 +159,164 @@ impl Rtextures {
     }
 
     // Image manipulation methods
+
+    pub(crate) fn __image_copy(image: Image) -> Image {
+        unsafe { ImageCopy(image) }
+    }
+
+    pub(crate) fn __image_from_image(image: Image, rec: Rectangle) -> Image {
+        unsafe { ImageFromImage(image, rec) }
+    }
+
+    pub(crate) fn __image_text(text: impl Display, font_size: i32, color: Color) -> Image {
+        unsafe { ImageText(rl_str!(text), font_size, color) }
+    }
+
+    pub(crate) fn __image_text_ex(
+        font: Font,
+        text: impl Display,
+        font_size: f32,
+        spacing: f32,
+        tint: Color,
+    ) -> Image {
+        unsafe { ImageTextEx(font, rl_str!(text), font_size, spacing, tint) }
+    }
+
+    pub(crate) fn __image_format(image: &mut Image, format: impl Into<usize>) {
+        unsafe { ImageFormat(image, format.into() as i32) }
+    }
+
+    pub(crate) fn __image_to_pot(image: &mut Image, fill: Color) {
+        unsafe { ImageToPOT(image, fill) }
+    }
+
+    pub(crate) fn __image_crop(image: &mut Image, crop: Rectangle) {
+        unsafe { ImageCrop(image, crop) }
+    }
+
+    pub(crate) fn __image_alpha_crop(image: &mut Image, threshold: f32) {
+        unsafe { ImageAlphaCrop(image, threshold) }
+    }
+
+    pub(crate) fn __image_alpha_clear(image: &mut Image, color: Color, threshold: f32) {
+        unsafe { ImageAlphaClear(image, color, threshold) }
+    }
+
+    pub(crate) fn __image_alpha_mask(image: &mut Image, alpha_mask: Image) {
+        unsafe { ImageAlphaMask(image, alpha_mask) }
+    }
+
+    pub(crate) fn __image_alpha_premultiply(image: &mut Image) {
+        unsafe { ImageAlphaPremultiply(image) }
+    }
+
+    pub(crate) fn __image_blur_gaussian(image: &mut Image, blur_size: i32) {
+        unsafe { ImageBlurGaussian(image, blur_size) }
+    }
+
+    pub(crate) fn __image_resize(image: &mut Image, width: i32, height: i32) {
+        unsafe { ImageResize(image, width, height) }
+    }
+
+    pub(crate) fn __image_resize_nn(image: &mut Image, width: i32, height: i32) {
+        unsafe { ImageResizeNN(image, width, height) }
+    }
+
+    pub(crate) fn __image_resize_canvas(
+        image: &mut Image,
+        width: i32,
+        height: i32,
+        offset_x: i32,
+        offset_y: i32,
+        fill: Color,
+    ) {
+        unsafe { ImageResizeCanvas(image, width, height, offset_x, offset_y, fill) }
+    }
+
+    pub(crate) fn __image_mipmaps(image: &mut Image) {
+        unsafe { ImageMipmaps(image) }
+    }
+
+    pub(crate) fn __image_dither(image: &mut Image, r: i32, g: i32, b: i32, a: i32) {
+        unsafe { ImageDither(image, r, g, b, a) }
+    }
+
+    pub(crate) fn __image_flip_vertical(image: &mut Image) {
+        unsafe { ImageFlipVertical(image) }
+    }
+
+    pub(crate) fn __image_flip_horizontal(image: &mut Image) {
+        unsafe { ImageFlipHorizontal(image) }
+    }
+
+    pub(crate) fn __image_rotate(image: &mut Image, angle: f32) {
+        unsafe {
+            let degrees = (angle * 180.0 / PI) as i32;
+            ImageRotate(image, degrees)
+        }
+    }
+
+    pub(crate) fn __image_rotate_cw(image: &mut Image) {
+        unsafe { ImageRotateCW(image) }
+    }
+
+    pub(crate) fn __image_rotate_ccw(image: &mut Image) {
+        unsafe { ImageRotateCCW(image) }
+    }
+
+    pub(crate) fn __image_color_tint(image: &mut Image, tint: Color) {
+        unsafe { ImageColorTint(image, tint) }
+    }
+
+    pub(crate) fn __image_color_invert(image: &mut Image) {
+        unsafe { ImageColorInvert(image) }
+    }
+
+    pub(crate) fn __image_color_grayscale(image: &mut Image) {
+        unsafe { ImageColorGrayscale(image) }
+    }
+
+    pub(crate) fn __image_color_contrast(image: &mut Image, contrast: f32) {
+        unsafe { ImageColorContrast(image, contrast) }
+    }
+
+    pub(crate) fn __image_color_brightness(image: &mut Image, brightness: i32) {
+        unsafe { ImageColorBrightness(image, brightness) }
+    }
+
+    pub(crate) fn __image_color_replace(image: &mut Image, color: Color, replace: Color) {
+        unsafe { ImageColorReplace(image, color, replace) }
+    }
+
+    pub(crate) fn __load_image_colors(image: Image) -> *mut Color {
+        unsafe { LoadImageColors(image) }
+    }
+
+    pub(crate) fn __load_image_pallete(image: Image, max_size: i32) -> Vec<Color> {
+        unsafe {
+            let mut size: i32 = 0;
+            let res = LoadImagePalette(image, max_size, &mut size);
+            slice::from_raw_parts(res, size as usize).to_vec()
+        }
+    }
+
+    pub(crate) fn __unload_image_colors(colors: *mut Color) {
+        unsafe { UnloadImageColors(colors) }
+    }
+
+    pub(crate) fn __unload_image_palette(colors: Vec<Color>) {
+        unsafe { UnloadImagePalette(colors.as_ptr() as *mut Color) }
+    }
+
+    pub(crate) fn __get_image_alpha_border(image: Image, threshold: f32) -> Rectangle {
+        unsafe { GetImageAlphaBorder(image, threshold) }
+    }
+
+    pub(crate) fn __get_image_color(image: Image, x: i32, y: i32) -> Color {
+        unsafe { GetImageColor(image, x, y) }
+    }
+
+    // Image drawing methods
 }
 
 /// Exported methods
@@ -300,4 +458,157 @@ impl Rtextures {
     }
 
     // Image manipulation methods
+
+    pub fn image_copy(&self, image: Image) -> Image {
+        Self::__image_copy(image)
+    }
+
+    pub fn image_from_image(&self, image: Image, rec: Rectangle) -> Image {
+        Self::__image_from_image(image, rec)
+    }
+
+    pub fn image_text(&self, text: impl Display, font_size: i32, color: Color) -> Image {
+        Self::__image_text(text, font_size, color)
+    }
+
+    pub fn image_text_ex(
+        &self,
+        font: Font,
+        text: impl Display,
+        font_size: f32,
+        spacing: f32,
+        tint: Color,
+    ) -> Image {
+        Self::__image_text_ex(font, text, font_size, spacing, tint)
+    }
+
+    pub fn image_format(&self, image: &mut Image, format: PixelFormat) {
+        Self::__image_format(image, format)
+    }
+
+    pub fn image_to_pot(&self, image: &mut Image, fill: Color) {
+        Self::__image_to_pot(image, fill)
+    }
+
+    pub fn image_crop(&self, image: &mut Image, crop: Rectangle) {
+        Self::__image_crop(image, crop)
+    }
+
+    pub fn image_alpha_crop(&self, image: &mut Image, threshold: f32) {
+        Self::__image_alpha_crop(image, threshold)
+    }
+
+    pub fn image_alpha_clear(&self, image: &mut Image, color: Color, threshold: f32) {
+        Self::__image_alpha_clear(image, color, threshold)
+    }
+
+    pub fn image_alpha_mask(&self, image: &mut Image, alpha_mask: Image) {
+        Self::__image_alpha_mask(image, alpha_mask)
+    }
+
+    pub fn image_alpha_premultiply(&self, image: &mut Image) {
+        Self::__image_alpha_premultiply(image)
+    }
+
+    pub fn image_blur_gaussian(&self, image: &mut Image, blur_size: i32) {
+        Self::__image_blur_gaussian(image, blur_size)
+    }
+
+    pub fn image_resize(&self, image: &mut Image, width: i32, height: i32) {
+        Self::__image_resize(image, width, height)
+    }
+
+    pub fn image_resize_nn(&self, image: &mut Image, width: i32, height: i32) {
+        Self::__image_resize_nn(image, width, height)
+    }
+
+    pub fn image_resize_canvas(
+        &self,
+        image: &mut Image,
+        width: i32,
+        height: i32,
+        offset_x: i32,
+        offset_y: i32,
+        fill: Color,
+    ) {
+        Self::__image_resize_canvas(image, width, height, offset_x, offset_y, fill)
+    }
+
+    pub fn image_mipmaps(&self, image: &mut Image) {
+        Self::__image_mipmaps(image)
+    }
+
+    pub fn image_dither(&self, image: &mut Image, r: i32, g: i32, b: i32, a: i32) {
+        Self::__image_dither(image, r, g, b, a)
+    }
+
+    pub fn image_flip_vertical(&self, image: &mut Image) {
+        Self::__image_flip_vertical(image)
+    }
+
+    pub fn image_flip_horizontal(&self, image: &mut Image) {
+        Self::__image_flip_horizontal(image)
+    }
+
+    pub fn image_rotate(&self, image: &mut Image, angle: f32) {
+        Self::__image_rotate(image, angle)
+    }
+
+    pub fn image_rotate_cw(&self, image: &mut Image) {
+        Self::__image_rotate_cw(image)
+    }
+
+    pub fn image_rotate_ccw(&self, image: &mut Image) {
+        Self::__image_rotate_ccw(image)
+    }
+
+    pub fn image_color_tint(&self, image: &mut Image, tint: Color) {
+        Self::__image_color_tint(image, tint)
+    }
+
+    pub fn image_color_invert(&self, image: &mut Image) {
+        Self::__image_color_invert(image)
+    }
+
+    pub fn image_color_grayscale(&self, image: &mut Image) {
+        Self::__image_color_grayscale(image)
+    }
+
+    pub fn image_color_contrast(&self, image: &mut Image, contrast: f32) {
+        Self::__image_color_contrast(image, contrast)
+    }
+
+    pub fn image_color_brightness(&self, image: &mut Image, brightness: i32) {
+        Self::__image_color_brightness(image, brightness)
+    }
+
+    pub fn image_color_replace(&self, image: &mut Image, color: Color, replace: Color) {
+        Self::__image_color_replace(image, color, replace)
+    }
+
+    pub fn load_image_colors(&self, image: Image) -> *mut Color {
+        Self::__load_image_colors(image)
+    }
+
+    pub fn load_image_pallete(&self, image: Image, max_size: i32) -> Vec<Color> {
+        Self::__load_image_pallete(image, max_size)
+    }
+
+    pub fn unload_image_colors(&self, colors: *mut Color) {
+        Self::__unload_image_colors(colors)
+    }
+
+    pub fn unload_image_palette(&self, colors: Vec<Color>) {
+        Self::__unload_image_palette(colors)
+    }
+
+    pub fn get_image_alpha_border(&self, image: Image, threshold: f32) -> Rectangle {
+        Self::__get_image_alpha_border(image, threshold)
+    }
+
+    pub fn get_image_color(&self, image: Image, x: i32, y: i32) -> Color {
+        Self::__get_image_color(image, x, y)
+    }
+
+    // Image drawing methods
 }
