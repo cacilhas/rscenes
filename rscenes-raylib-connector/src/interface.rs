@@ -1,11 +1,11 @@
-use crate::raudio::Raudio;
-use crate::rcamera::Rcamera;
-use crate::rcore::Rcore;
-use crate::rgestures::Rgestures;
-use crate::rmodels::Rmodels;
-use crate::rshapes::Rshapes;
-use crate::rtext::Rtext;
-use crate::rtextures::Rtextures;
+pub use crate::raudio::Raudio;
+pub use crate::rcamera::Rcamera;
+pub use crate::rcore::Rcore;
+pub use crate::rgestures::Rgestures;
+pub use crate::rmodels::Rmodels;
+pub use crate::rshapes::Rshapes;
+pub use crate::rtext::Rtext;
+pub use crate::rtextures::Rtextures;
 use raylib_ffi::*;
 
 #[derive(Clone, Copy, Debug, Default)]

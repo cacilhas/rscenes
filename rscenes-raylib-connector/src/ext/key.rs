@@ -2,7 +2,7 @@ use std::char;
 
 use raylib_ffi::enums::KeyboardKey;
 
-use crate::Rcore;
+use crate::rcore::Rcore;
 
 pub trait KeyboardKeyExt {
     fn get_pressed() -> Self;
