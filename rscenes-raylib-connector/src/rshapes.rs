@@ -1,3 +1,4 @@
+use crate::vector::Vector2Ext;
 use raylib_ffi::*;
 
 #[derive(Clone, Copy, Debug)]
@@ -425,6 +426,91 @@ impl Rshapes {
     }
 
     // Basic shapes collision detection methods
+
+    pub(crate) fn __check_collision_recs(rec1: Rectangle, rec2: Rectangle) -> bool {
+        unsafe { CheckCollisionRecs(rec1, rec2) }
+    }
+
+    pub(crate) fn __check_collision_circles(
+        center1: Vector2,
+        radius1: f32,
+        center2: Vector2,
+        radius2: f32,
+    ) -> bool {
+        unsafe { CheckCollisionCircles(center1, radius1, center2, radius2) }
+    }
+
+    pub(crate) fn __check_collision_circle_rec(
+        center: Vector2,
+        radius: f32,
+        rec: Rectangle,
+    ) -> bool {
+        unsafe { CheckCollisionCircleRec(center, radius, rec) }
+    }
+
+    pub(crate) fn __check_collision_point_rec(point: Vector2, rec: Rectangle) -> bool {
+        unsafe { CheckCollisionPointRec(point, rec) }
+    }
+
+    pub(crate) fn __check_collision_point_circle(
+        point: Vector2,
+        center: Vector2,
+        radius: f32,
+    ) -> bool {
+        unsafe { CheckCollisionPointCircle(point, center, radius) }
+    }
+
+    pub(crate) fn __check_collision_point_triangle(
+        point: Vector2,
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+    ) -> bool {
+        unsafe { CheckCollisionPointTriangle(point, p1, p2, p3) }
+    }
+
+    pub(crate) fn __check_collision_point_poly(point: Vector2, points: Vec<Vector2>) -> bool {
+        unsafe {
+            let count = points.len() as i32;
+            let points = points.as_ptr() as *mut Vector2;
+            CheckCollisionPointPoly(point, points, count)
+        }
+    }
+
+    pub(crate) fn __check_collision_lines(
+        start1: Vector2,
+        end1: Vector2,
+        start2: Vector2,
+        end2: Vector2,
+    ) -> Option<Vector2> {
+        unsafe {
+            let mut collision_point: Vector2 = Vector2::ZERO.clone();
+            if CheckCollisionLines(
+                start1,
+                end1,
+                start2,
+                end2,
+                &mut collision_point as *mut Vector2,
+            ) {
+                Some(collision_point)
+            } else {
+                None
+            }
+        }
+    }
+
+    pub(crate) fn __check_collision_point_line(
+        point: Vector2,
+        p1: Vector2,
+        p2: Vector2,
+        threshold: i32,
+    ) -> bool {
+        unsafe { CheckCollisionPointLine(point, p1, p2, threshold) }
+    }
+
+    pub(crate) fn __get_collision_rec(rec1: Rectangle, rec2: Rectangle) -> Rectangle {
+        unsafe { GetCollisionRec(rec1, rec2) }
+    }
 }
 
 /// Exported methods
@@ -824,4 +910,73 @@ impl Rshapes {
     }
 
     // Basic shapes collision detection methods
+
+    pub fn check_collision_recs(&self, rec1: Rectangle, rec2: Rectangle) -> bool {
+        Self::__check_collision_recs(rec1, rec2)
+    }
+
+    pub fn check_collision_circles(
+        &self,
+        center1: Vector2,
+        radius1: f32,
+        center2: Vector2,
+        radius2: f32,
+    ) -> bool {
+        Self::__check_collision_circles(center1, radius1, center2, radius2)
+    }
+
+    pub fn check_collision_circle_rec(&self, center: Vector2, radius: f32, rec: Rectangle) -> bool {
+        Self::__check_collision_circle_rec(center, radius, rec)
+    }
+
+    pub fn check_collision_point_rec(&self, point: Vector2, rec: Rectangle) -> bool {
+        Self::__check_collision_point_rec(point, rec)
+    }
+
+    pub fn check_collision_point_circle(
+        &self,
+        point: Vector2,
+        center: Vector2,
+        radius: f32,
+    ) -> bool {
+        Self::__check_collision_point_circle(point, center, radius)
+    }
+
+    pub fn check_collision_point_triangle(
+        &self,
+        point: Vector2,
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+    ) -> bool {
+        Self::__check_collision_point_triangle(point, p1, p2, p3)
+    }
+
+    pub fn check_collision_point_poly(&self, point: Vector2, points: Vec<Vector2>) -> bool {
+        Self::__check_collision_point_poly(point, points)
+    }
+
+    pub fn check_collision_lines(
+        &self,
+        start1: Vector2,
+        end1: Vector2,
+        start2: Vector2,
+        end2: Vector2,
+    ) -> Option<Vector2> {
+        Self::__check_collision_lines(start1, end1, start2, end2)
+    }
+
+    pub fn check_collision_point_line(
+        &self,
+        point: Vector2,
+        p1: Vector2,
+        p2: Vector2,
+        threshold: i32,
+    ) -> bool {
+        Self::__check_collision_point_line(point, p1, p2, threshold)
+    }
+
+    pub fn get_collision_rec(&self, rec1: Rectangle, rec2: Rectangle) -> Rectangle {
+        Self::__get_collision_rec(rec1, rec2)
+    }
 }
