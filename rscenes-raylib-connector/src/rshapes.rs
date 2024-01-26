@@ -291,6 +291,95 @@ impl Rshapes {
     }
 
     // Splines drawing methods
+
+    pub(crate) fn __draw_spline_linear(points: Vec<Vector2>, thick: f32, color: Color) {
+        unsafe {
+            let count = points.len() as i32;
+            let points = points.as_ptr() as *mut Vector2;
+            DrawSplineLinear(points, count, thick, color)
+        }
+    }
+
+    pub(crate) fn __draw_spline_basis(points: Vec<Vector2>, thick: f32, color: Color) {
+        unsafe {
+            let count = points.len() as i32;
+            let points = points.as_ptr() as *mut Vector2;
+            DrawSplineBasis(points, count, thick, color)
+        }
+    }
+
+    pub(crate) fn __draw_spline_catmull_rom(points: Vec<Vector2>, thick: f32, color: Color) {
+        unsafe {
+            let count = points.len() as i32;
+            let points = points.as_ptr() as *mut Vector2;
+            DrawSplineCatmullRom(points, count, thick, color)
+        }
+    }
+
+    pub(crate) fn __draw_spline_bezier_quadratic(points: Vec<Vector2>, thick: f32, color: Color) {
+        unsafe {
+            let count = points.len() as i32;
+            let points = points.as_ptr() as *mut Vector2;
+            DrawSplineBezierQuadratic(points, count, thick, color)
+        }
+    }
+
+    pub(crate) fn __draw_spline_bezier_cubic(points: Vec<Vector2>, thick: f32, color: Color) {
+        unsafe {
+            let count = points.len() as i32;
+            let points = points.as_ptr() as *mut Vector2;
+            DrawSplineBezierCubic(points, count, thick, color)
+        }
+    }
+
+    pub(crate) fn __draw_spline_segment_linear(p1: Vector2, p2: Vector2, thick: f32, color: Color) {
+        unsafe { DrawSplineSegmentLinear(p1, p2, thick, color) }
+    }
+
+    pub(crate) fn __draw_spline_segment_basis(
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+        p4: Vector2,
+        thick: f32,
+        color: Color,
+    ) {
+        unsafe { DrawSplineSegmentBasis(p1, p2, p3, p4, thick, color) }
+    }
+
+    pub(crate) fn __draw_spline_segment_catmull_rom(
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+        p4: Vector2,
+        thick: f32,
+        color: Color,
+    ) {
+        unsafe { DrawSplineSegmentCatmullRom(p1, p2, p3, p4, thick, color) }
+    }
+
+    pub(crate) fn __draw_spline_segment_bezier_quadratic(
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+        thick: f32,
+        color: Color,
+    ) {
+        unsafe { DrawSplineSegmentBezierQuadratic(p1, p2, p3, thick, color) }
+    }
+
+    pub(crate) fn __draw_spline_segment_bezier_cubic(
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+        p4: Vector2,
+        thick: f32,
+        color: Color,
+    ) {
+        unsafe { DrawSplineSegmentBezierCubic(p1, p2, p3, p4, thick, color) }
+    }
+
+    // Spline segment point evaluation methods, for a given t [0.0f .. 1.0f]
 }
 
 /// Exported methods
@@ -568,4 +657,77 @@ impl Rshapes {
     }
 
     // Splines drawing methods
+
+    pub fn draw_spline_linear(&self, points: Vec<Vector2>, thick: f32, color: Color) {
+        Self::__draw_spline_linear(points, thick, color)
+    }
+
+    pub fn draw_spline_basis(&self, points: Vec<Vector2>, thick: f32, color: Color) {
+        Self::__draw_spline_basis(points, thick, color)
+    }
+
+    pub fn draw_spline_catmull_rom(&self, points: Vec<Vector2>, thick: f32, color: Color) {
+        Self::__draw_spline_catmull_rom(points, thick, color)
+    }
+
+    pub fn draw_spline_berzier_quadratic(&self, points: Vec<Vector2>, thick: f32, color: Color) {
+        Self::__draw_spline_bezier_quadratic(points, thick, color)
+    }
+
+    pub fn draw_spline_berzier_cubic(&self, points: Vec<Vector2>, thick: f32, color: Color) {
+        Self::__draw_spline_bezier_cubic(points, thick, color)
+    }
+
+    pub fn draw_spline_segment_linear(&self, p1: Vector2, p2: Vector2, thick: f32, color: Color) {
+        Self::__draw_spline_segment_linear(p1, p2, thick, color)
+    }
+
+    pub fn draw_spline_segment_basis(
+        &self,
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+        p4: Vector2,
+        thick: f32,
+        color: Color,
+    ) {
+        Self::__draw_spline_segment_basis(p1, p2, p3, p4, thick, color)
+    }
+
+    pub fn draw_spline_segment_catmull_rom(
+        &self,
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+        p4: Vector2,
+        thick: f32,
+        color: Color,
+    ) {
+        Self::__draw_spline_segment_catmull_rom(p1, p2, p3, p4, thick, color)
+    }
+
+    pub fn draw_spline_segment_bezier_quadratic(
+        &self,
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+        thick: f32,
+        color: Color,
+    ) {
+        Self::__draw_spline_segment_bezier_quadratic(p1, p2, p3, thick, color)
+    }
+
+    pub fn draw_spline_segment_bezier_cubic(
+        &self,
+        p1: Vector2,
+        p2: Vector2,
+        p3: Vector2,
+        p4: Vector2,
+        thick: f32,
+        color: Color,
+    ) {
+        Self::__draw_spline_segment_bezier_cubic(p1, p2, p3, p4, thick, color)
+    }
+
+    // Spline segment point evaluation methods, for a given t [0.0f .. 1.0f]
 }
