@@ -9,6 +9,7 @@ pub mod mesh;
 pub mod model;
 pub mod model_animation;
 pub mod ray;
+pub mod sound;
 pub mod texture;
 pub mod vector;
 pub mod wave;
