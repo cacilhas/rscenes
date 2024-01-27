@@ -11,5 +11,4 @@ description = "Raylib connector for Rscenes 2"
 edition     = "2021"
 
 [dependencies]
-eyre = "0.6"
 raylib-ffi = "5.0"
