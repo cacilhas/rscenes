@@ -488,7 +488,7 @@ impl Rshapes {
         end2: Vector2,
     ) -> Option<Vector2> {
         unsafe {
-            let mut collision_point: Vector2 = Vector2::ZERO.clone();
+            let mut collision_point: Vector2 = Vector2::ZERO;
             if CheckCollisionLines(
                 start1,
                 end1,

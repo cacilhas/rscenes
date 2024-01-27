@@ -41,14 +41,14 @@ impl Codepoints {
     }
 }
 
-impl Into<*mut i32> for Codepoints {
-    fn into(self) -> *mut i32 {
-        self.inner
+impl From<Codepoints> for *mut i32 {
+    fn from(val: Codepoints) -> Self {
+        val.inner
     }
 }
 
-impl Into<*const i32> for Codepoints {
-    fn into(self) -> *const i32 {
-        self.inner
+impl From<Codepoints> for *const i32 {
+    fn from(val: Codepoints) -> Self {
+        val.inner
     }
 }

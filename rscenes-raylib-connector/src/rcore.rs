@@ -57,12 +57,12 @@ impl Rcore {
     }
 
     pub(crate) fn __set_window_state(flag: usize) {
-        let flag: usize = flag.into();
+        let flag: usize = flag;
         unsafe { SetWindowState(flag as u32) }
     }
 
     pub(crate) fn __clear_window_state(flag: usize) {
-        let flag: usize = flag.into();
+        let flag: usize = flag;
         unsafe { ClearWindowState(flag as u32) }
     }
 

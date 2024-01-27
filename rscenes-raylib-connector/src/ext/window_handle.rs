@@ -15,8 +15,8 @@ impl From<*mut c_void> for WindowHandle<'_> {
     }
 }
 
-impl Into<*mut c_void> for WindowHandle<'_> {
-    fn into(self) -> *mut c_void {
-        self.handle
+impl From<WindowHandle<'_>> for *mut c_void {
+    fn from(val: WindowHandle<'_>) -> Self {
+        val.handle
     }
 }

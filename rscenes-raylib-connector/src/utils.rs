@@ -5,15 +5,13 @@ use std::{
 
 pub unsafe fn string_from_c(raw: *mut c_char) -> Result<String, String> {
     CString::from_raw(raw)
-        .into_string()
-        .or_else(|e| Err(format!("{}", e)))
+        .into_string().map_err(|e| format!("{}", e))
 }
 
 pub unsafe fn utf8_from_c(raw: *const u8, size: usize) -> Result<String, String> {
     let bytes = slice::from_raw_parts(raw, size);
     std::str::from_utf8(bytes)
-        .map(|s| s.to_owned())
-        .or_else(|e| Err(format!("{}", e)))
+        .map(|s| s.to_owned()).map_err(|e| format!("{}", e))
 }
 
 pub unsafe fn array_from_c<T>(
