@@ -413,6 +413,62 @@ impl Rmodels {
     }
 
     // Collision detection methods
+
+    pub(crate) fn __check_collision_spheres(
+        center1: Vector3,
+        radius1: f32,
+        center2: Vector3,
+        radius2: f32,
+    ) -> bool {
+        unsafe { CheckCollisionSpheres(center1, radius1, center2, radius2) }
+    }
+
+    pub(crate) fn __check_collision_boxes(box1: BoundingBox, box2: BoundingBox) -> bool {
+        unsafe { CheckCollisionBoxes(box1, box2) }
+    }
+
+    pub(crate) fn __check_collision_box_sphere(
+        box_: BoundingBox,
+        center: Vector3,
+        radius: f32,
+    ) -> bool {
+        unsafe { CheckCollisionBoxSphere(box_, center, radius) }
+    }
+
+    pub(crate) fn __get_raycollision_sphere(
+        ray: Ray,
+        center: Vector3,
+        radius: f32,
+    ) -> RayCollision {
+        unsafe { GetRayCollisionSphere(ray, center, radius) }
+    }
+
+    pub(crate) fn __get_raycollision_box(ray: Ray, box_: BoundingBox) -> RayCollision {
+        unsafe { GetRayCollisionBox(ray, box_) }
+    }
+
+    pub(crate) fn __get_raycollision_mesh(ray: Ray, mesh: Mesh, transform: Matrix) -> RayCollision {
+        unsafe { GetRayCollisionMesh(ray, mesh, transform) }
+    }
+
+    pub(crate) fn __get_raycollision_triangle(
+        ray: Ray,
+        p1: Vector3,
+        p2: Vector3,
+        p3: Vector3,
+    ) -> RayCollision {
+        unsafe { GetRayCollisionTriangle(ray, p1, p2, p3) }
+    }
+
+    pub(crate) fn __get_raycollision_quad(
+        ray: Ray,
+        p1: Vector3,
+        p2: Vector3,
+        p3: Vector3,
+        p4: Vector3,
+    ) -> RayCollision {
+        unsafe { GetRayCollisionQuad(ray, p1, p2, p3, p4) }
+    }
 }
 
 /// Exported methods
@@ -804,4 +860,60 @@ impl Rmodels {
     }
 
     // Collision detection methods
+
+    pub fn check_collision_spheres(
+        &self,
+        center1: Vector3,
+        radius1: f32,
+        center2: Vector3,
+        radius2: f32,
+    ) -> bool {
+        Self::__check_collision_spheres(center1, radius1, center2, radius2)
+    }
+
+    pub fn check_collision_boxes(box1: BoundingBox, box2: BoundingBox) -> bool {
+        Self::__check_collision_boxes(box1, box2)
+    }
+
+    pub fn check_collision_box_sphere(
+        &self,
+        box_: BoundingBox,
+        center: Vector3,
+        radius: f32,
+    ) -> bool {
+        Self::__check_collision_box_sphere(box_, center, radius)
+    }
+
+    pub fn get_raycollision_sphere(&self, ray: Ray, center: Vector3, radius: f32) -> RayCollision {
+        Self::__get_raycollision_sphere(ray, center, radius)
+    }
+
+    pub fn get_raycollision_box(&self, ray: Ray, box_: BoundingBox) -> RayCollision {
+        Self::__get_raycollision_box(ray, box_)
+    }
+
+    pub fn get_raycollision_mesh(&self, ray: Ray, mesh: Mesh, transform: Matrix) -> RayCollision {
+        Self::__get_raycollision_mesh(ray, mesh, transform)
+    }
+
+    pub fn get_raycollision_triangle(
+        &self,
+        ray: Ray,
+        p1: Vector3,
+        p2: Vector3,
+        p3: Vector3,
+    ) -> RayCollision {
+        Self::__get_raycollision_triangle(ray, p1, p2, p3)
+    }
+
+    pub fn get_raycollision_quad(
+        &self,
+        ray: Ray,
+        p1: Vector3,
+        p2: Vector3,
+        p3: Vector3,
+        p4: Vector3,
+    ) -> RayCollision {
+        Self::__get_raycollision_quad(ray, p1, p2, p3, p4)
+    }
 }

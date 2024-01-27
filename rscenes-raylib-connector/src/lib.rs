@@ -21,6 +21,7 @@ pub mod assets {
     pub use crate::ext::mesh::MeshExt;
     pub use crate::ext::model::ModelExt;
     pub use crate::ext::model_animation::ModelAnimationExt;
+    pub use crate::ext::ray::RayExt;
     pub use crate::ext::texture::{RenderTextureExt, TextureCubemapExt, TextureExt};
     pub use crate::ext::vector::{Vector2Ext, Vector3Ext};
     pub use crate::ext::window_handle::WindowHandle;
