@@ -3,7 +3,7 @@ use raylib_ffi::*;
 use std::fmt::Display;
 
 pub trait MaterialExt {
-    fn load(filename: impl Display) -> Vec<Self>
+    fn load(filename: impl Display) -> Result<Vec<Self>, String>
     where
         Self: Sized;
     fn default() -> Self;
@@ -14,7 +14,7 @@ pub trait MaterialExt {
 }
 
 impl MaterialExt for Material {
-    fn load(filename: impl Display) -> Vec<Self> {
+    fn load(filename: impl Display) -> Result<Vec<Self>, String> {
         Rmodels::__load_materials(filename)
     }
 

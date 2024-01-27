@@ -10,7 +10,7 @@ pub struct Codepoints {
 }
 
 impl Codepoints {
-    pub fn load(text: impl Display) -> Self {
+    pub fn load(text: impl Display) -> Result<Self, String> {
         Rtext::__load_codepoints(text)
     }
 

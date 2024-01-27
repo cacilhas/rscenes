@@ -1,5 +1,7 @@
 use raylib_ffi::{enums::*, *};
-use std::{f32::consts::PI, ffi::c_void, fmt::Display, slice};
+use std::{f32::consts::PI, ffi::c_void, fmt::Display};
+
+use crate::utils::array_from_c;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Rtextures;
@@ -8,8 +10,15 @@ pub struct Rtextures;
 impl Rtextures {
     // Image loading
 
-    pub(crate) fn __load_image(filename: impl Display) -> Image {
-        unsafe { LoadImage(rl_str!(filename)) }
+    pub(crate) fn __load_image(filename: impl Display) -> Result<Image, String> {
+        unsafe {
+            let image = LoadImage(rl_str!(filename));
+            if image.data.is_null() {
+                Err(format!("couldn't load image from {}", filename))
+            } else {
+                Ok(image)
+            }
+        }
     }
 
     pub(crate) fn __load_image_raw(
@@ -18,15 +27,20 @@ impl Rtextures {
         height: i32,
         format: impl Into<usize>,
         header_size: i32,
-    ) -> Image {
+    ) -> Result<Image, String> {
         unsafe {
-            LoadImageRaw(
+            let image = LoadImageRaw(
                 rl_str!(filename),
                 width,
                 height,
                 format.into() as i32,
                 header_size,
-            )
+            );
+            if image.data.is_null() {
+                Err(format!("couldn't load image from {}", filename))
+            } else {
+                Ok(image)
+            }
         }
     }
 
@@ -34,23 +48,42 @@ impl Rtextures {
         filename_or_string: impl Display,
         width: i32,
         height: i32,
-    ) -> Image {
-        unsafe { LoadImageSvg(rl_str!(filename_or_string), width, height) }
-    }
-
-    pub(crate) fn __load_image_anim(filename: impl Display) -> (Image, i32) {
+    ) -> Result<Image, String> {
         unsafe {
-            let mut frames: i32 = 0;
-            let img = LoadImageAnim(rl_str!(filename), &mut frames);
-            (img, frames)
+            let image = LoadImageSvg(rl_str!(filename_or_string), width, height);
+            if image.data.is_null() {
+                Err(format!("couldn't load image from {}", filename_or_string))
+            } else {
+                Ok(image)
+            }
         }
     }
 
-    pub(crate) fn __load_image_from_memory(tpe: impl Display, data: &mut Vec<u8>) -> Image {
+    pub(crate) fn __load_image_anim(filename: impl Display) -> Result<(Image, i32), String> {
+        unsafe {
+            let mut frames: i32 = 0;
+            let image = LoadImageAnim(rl_str!(filename), &mut frames);
+            if image.data.is_null() {
+                Err(format!("couldn't load image from {}", filename))
+            } else {
+                Ok((image, frames))
+            }
+        }
+    }
+
+    pub(crate) fn __load_image_from_memory(
+        tpe: impl Display,
+        data: &mut Vec<u8>,
+    ) -> Result<Image, String> {
         unsafe {
             let size = data.len() as i32;
             let data = data.as_mut_ptr();
-            LoadImageFromMemory(rl_str!(tpe), data, size)
+            let image = LoadImageFromMemory(rl_str!(tpe), data, size);
+            if image.data.is_null() {
+                Err("failed to load image from memory".to_owned())
+            } else {
+                Ok(image)
+            }
         }
     }
 
@@ -74,11 +107,14 @@ impl Rtextures {
         unsafe { ExportImage(image, rl_str!(filename)) }
     }
 
-    pub(crate) fn __export_image_to_memory(image: Image, tpe: impl Display) -> Vec<u8> {
+    pub(crate) fn __export_image_to_memory(
+        image: Image,
+        tpe: impl Display,
+    ) -> Result<Vec<u8>, String> {
         unsafe {
             let mut size: i32 = 0;
-            let res = ExportImageToMemory(image, rl_str!(tpe), &mut size);
-            slice::from_raw_parts(res, size as usize).to_vec()
+            let raw = ExportImageToMemory(image, rl_str!(tpe), &mut size);
+            array_from_c(raw, size as usize, || "failed to export image".to_owned())
         }
     }
 
@@ -292,11 +328,13 @@ impl Rtextures {
         unsafe { LoadImageColors(image) }
     }
 
-    pub(crate) fn __load_image_pallete(image: Image, max_size: i32) -> Vec<Color> {
+    pub(crate) fn __load_image_pallete(image: Image, max_size: i32) -> Result<Vec<Color>, String> {
         unsafe {
             let mut size: i32 = 0;
-            let res = LoadImagePalette(image, max_size, &mut size);
-            slice::from_raw_parts(res, size as usize).to_vec()
+            let raw = LoadImagePalette(image, max_size, &mut size);
+            array_from_c(raw, size as usize, || {
+                "failed to load pallet from image".to_owned()
+            })
         }
     }
 
@@ -466,16 +504,40 @@ impl Rtextures {
 
     // Texture loading methods
 
-    pub(crate) fn __load_texture(filename: impl Display) -> Texture2D {
-        unsafe { LoadTexture(rl_str!(filename)) }
+    pub(crate) fn __load_texture(filename: impl Display) -> Result<Texture2D, String> {
+        unsafe {
+            let texture = LoadTexture(rl_str!(filename));
+            if texture.id == 0 {
+                Err(format!("couldn't load texture from {}", filename))
+            } else {
+                Ok(texture)
+            }
+        }
     }
 
-    pub(crate) fn __load_texture_from_image(image: Image) -> Texture2D {
-        unsafe { LoadTextureFromImage(image) }
+    pub(crate) fn __load_texture_from_image(image: Image) -> Result<Texture2D, String> {
+        unsafe {
+            let texture = LoadTextureFromImage(image);
+            if texture.id == 0 {
+                Err("failed to load texture from image".to_owned())
+            } else {
+                Ok(texture)
+            }
+        }
     }
 
-    pub(crate) fn __load_texture_cubemap(image: Image, layout: impl Into<usize>) -> TextureCubemap {
-        unsafe { LoadTextureCubemap(image, layout.into() as i32) }
+    pub(crate) fn __load_texture_cubemap(
+        image: Image,
+        layout: impl Into<usize>,
+    ) -> Result<TextureCubemap, String> {
+        unsafe {
+            let texture = LoadTextureCubemap(image, layout.into() as i32);
+            if texture.id == 0 {
+                Err("failed to load cubemap from image".to_owned())
+            } else {
+                Ok(texture)
+            }
+        }
     }
 
     pub(crate) fn __load_render_texture(width: i32, height: i32) -> RenderTexture2D {
@@ -638,7 +700,7 @@ impl Rtextures {
 impl Rtextures {
     // Image loading
 
-    pub fn load_image(&self, filename: impl Display) -> Image {
+    pub fn load_image(&self, filename: impl Display) -> Result<Image, String> {
         Self::__load_image(filename)
     }
 
@@ -649,7 +711,7 @@ impl Rtextures {
         height: i32,
         format: PixelFormat,
         header_size: i32,
-    ) -> Image {
+    ) -> Result<Image, String> {
         Self::__load_image_raw(filename, width, height, format, header_size)
     }
 
@@ -658,15 +720,19 @@ impl Rtextures {
         filename_or_string: impl Display,
         width: i32,
         height: i32,
-    ) -> Image {
+    ) -> Result<Image, String> {
         Self::__load_image_svg(filename_or_string, width, height)
     }
 
-    pub fn load_image_anim(&self, filename: impl Display) -> (Image, i32) {
+    pub fn load_image_anim(&self, filename: impl Display) -> Result<(Image, i32), String> {
         Self::__load_image_anim(filename)
     }
 
-    pub fn load_image_from_memory(&self, tpe: impl Display, data: &mut Vec<u8>) -> Image {
+    pub fn load_image_from_memory(
+        &self,
+        tpe: impl Display,
+        data: &mut Vec<u8>,
+    ) -> Result<Image, String> {
         Self::__load_image_from_memory(tpe, data)
     }
 
@@ -690,7 +756,11 @@ impl Rtextures {
         Self::__export_image(image, filename)
     }
 
-    pub fn export_image_to_memory(&self, image: Image, tpe: impl Display) -> Vec<u8> {
+    pub fn export_image_to_memory(
+        &self,
+        image: Image,
+        tpe: impl Display,
+    ) -> Result<Vec<u8>, String> {
         Self::__export_image_to_memory(image, tpe)
     }
 
@@ -905,7 +975,7 @@ impl Rtextures {
         Self::__load_image_colors(image)
     }
 
-    pub fn load_image_pallete(&self, image: Image, max_size: i32) -> Vec<Color> {
+    pub fn load_image_pallete(&self, image: Image, max_size: i32) -> Result<Vec<Color>, String> {
         Self::__load_image_pallete(image, max_size)
     }
 
@@ -1071,15 +1141,19 @@ impl Rtextures {
 
     // Texture loading methods
 
-    pub fn load_texture(&self, filename: impl Display) -> Texture2D {
+    pub fn load_texture(&self, filename: impl Display) -> Result<Texture2D, String> {
         Self::__load_texture(filename)
     }
 
-    pub fn load_texture_from_image(&self, image: Image) -> Texture2D {
+    pub fn load_texture_from_image(&self, image: Image) -> Result<Texture2D, String> {
         Self::__load_texture_from_image(image)
     }
 
-    pub fn load_texture_cubemap(&self, image: Image, layout: CubemapLayout) -> TextureCubemap {
+    pub fn load_texture_cubemap(
+        &self,
+        image: Image,
+        layout: CubemapLayout,
+    ) -> Result<TextureCubemap, String> {
         Self::__load_texture_cubemap(image, layout)
     }
 

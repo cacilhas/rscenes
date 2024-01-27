@@ -1,5 +1,7 @@
 use raylib_ffi::*;
-use std::{ffi::c_void, fmt::Display, ptr};
+use std::{ffi::c_void, fmt::Display};
+
+use crate::utils::array_from_c;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Rmodels;
@@ -170,8 +172,15 @@ impl Rmodels {
 
     // Model management methods
 
-    pub(crate) fn __load_model(filename: impl Display) -> Model {
-        unsafe { LoadModel(rl_str!(filename)) }
+    pub(crate) fn __load_model(filename: impl Display) -> Result<Model, String> {
+        unsafe {
+            let model = LoadModel(rl_str!(filename));
+            if model.meshCount > 0 {
+                Ok(model)
+            } else {
+                Err(format!("couldn't load model from {}", filename))
+            }
+        }
     }
 
     pub(crate) fn __load_model_from_mesh(mesh: Mesh) -> Model {
@@ -349,12 +358,13 @@ impl Rmodels {
 
     // Material loading/unloading methods
 
-    pub(crate) fn __load_materials(filename: impl Display) -> Vec<Material> {
+    pub(crate) fn __load_materials(filename: impl Display) -> Result<Vec<Material>, String> {
         unsafe {
             let mut count: i32 = 0;
-            let materials = LoadMaterials(rl_str!(filename), &mut count);
-            let array = ptr::slice_from_raw_parts_mut(materials, count as usize);
-            (*array).to_owned()
+            let raw = LoadMaterials(rl_str!(filename), &mut count);
+            array_from_c(raw, count as usize, || {
+                format!("couldn't load material from {}", filename)
+            })
         }
     }
 
@@ -384,12 +394,15 @@ impl Rmodels {
 
     // Model animations loading/unloading methods
 
-    pub(crate) fn __load_model_animations(filename: impl Display) -> Vec<ModelAnimation> {
+    pub(crate) fn __load_model_animations(
+        filename: impl Display,
+    ) -> Result<Vec<ModelAnimation>, String> {
         unsafe {
             let mut count: i32 = 0;
-            let anims = LoadModelAnimations(rl_str!(filename), &mut count);
-            let array = ptr::slice_from_raw_parts_mut(anims, count as usize);
-            (*array).to_owned()
+            let raw = LoadModelAnimations(rl_str!(filename), &mut count);
+            array_from_c(raw, count as usize, || {
+                format!("couldn't load model animations from {}", filename)
+            })
         }
     }
 
@@ -637,7 +650,7 @@ impl Rmodels {
 
     // Model management methods
 
-    pub fn load_model(&self, filename: impl Display) -> Model {
+    pub fn load_model(&self, filename: impl Display) -> Result<Model, String> {
         Self::__load_model(filename)
     }
 
@@ -813,7 +826,7 @@ impl Rmodels {
 
     // Material loading/unloading methods
 
-    pub fn load_materials(&self, filename: impl Display) -> Vec<Material> {
+    pub fn load_materials(&self, filename: impl Display) -> Result<Vec<Material>, String> {
         Self::__load_materials(filename)
     }
 
@@ -839,7 +852,10 @@ impl Rmodels {
 
     // Model animations loading/unloading methods
 
-    pub fn load_model_animations(&self, filename: impl Display) -> Vec<ModelAnimation> {
+    pub fn load_model_animations(
+        &self,
+        filename: impl Display,
+    ) -> Result<Vec<ModelAnimation>, String> {
         Self::__load_model_animations(filename)
     }
 

@@ -7,6 +7,7 @@ mod rmodels;
 mod rshapes;
 mod rtext;
 mod rtextures;
+mod utils;
 
 pub mod interface;
 

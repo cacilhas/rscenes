@@ -3,7 +3,9 @@ use raylib_ffi::*;
 use std::fmt::Display;
 
 pub trait ModelExt {
-    fn load(filename: impl Display) -> Self;
+    fn load(filename: impl Display) -> Result<Self, String>
+    where
+        Self: Sized;
     fn load_from_mesh(mesh: Mesh) -> Self;
 
     fn is_ready(self) -> bool;
@@ -15,7 +17,7 @@ pub trait ModelExt {
 }
 
 impl ModelExt for Model {
-    fn load(filename: impl Display) -> Self {
+    fn load(filename: impl Display) -> Result<Self, String> {
         Rmodels::__load_model(filename)
     }
 

@@ -1,12 +1,9 @@
 use crate::ext::window_handle::WindowHandle;
-use eyre::*;
+use crate::utils::{array_from_c, string_from_c};
 use raylib_ffi::{enums::*, *};
 use std::char;
+use std::ffi::{c_char, c_uchar, c_void};
 use std::fmt::Display;
-use std::{
-    ffi::{c_char, c_uchar, c_void, CString},
-    ptr,
-};
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Rcore;
@@ -132,8 +129,15 @@ impl Rcore {
         unsafe { SetWindowFocused() }
     }
 
-    pub(crate) fn __get_window_handle<'a>() -> WindowHandle<'a> {
-        unsafe { GetWindowHandle().into() }
+    pub(crate) fn __get_window_handle<'a>() -> Result<WindowHandle<'a>, String> {
+        unsafe {
+            let raw = GetWindowHandle();
+            if raw.is_null() {
+                Err("couldn't get window handle".to_owned())
+            } else {
+                Ok(raw.into())
+            }
+        }
     }
 
     pub(crate) fn __get_screen_width() -> i32 {
@@ -192,11 +196,8 @@ impl Rcore {
         unsafe { GetWindowScaleDPI() }
     }
 
-    pub(crate) fn __get_monitor_name(monitor: i32) -> Result<String> {
-        unsafe {
-            let res = GetMonitorName(monitor) as *mut c_char;
-            Ok(CString::from_raw(res).into_string()?)
-        }
+    pub(crate) fn __get_monitor_name(monitor: i32) -> Result<String, String> {
+        unsafe { string_from_c(GetMonitorName(monitor) as *mut c_char) }
     }
 
     pub(crate) fn __set_clipboard_text(text: impl Display) {
@@ -323,15 +324,35 @@ impl Rcore {
 
     // Shader management methods
 
-    pub(crate) fn __load_shader(vs_filename: impl Display, fs_filename: impl Display) -> Shader {
-        unsafe { LoadShader(rl_str!(vs_filename), rl_str!(fs_filename)) }
+    pub(crate) fn __load_shader(
+        vs_filename: impl Display,
+        fs_filename: impl Display,
+    ) -> Result<Shader, String> {
+        unsafe {
+            let shader = LoadShader(rl_str!(vs_filename), rl_str!(fs_filename));
+            if shader.locs.is_null() {
+                Err(format!(
+                    "couldn't load shader from [vs]{} [fs]{}",
+                    vs_filename, fs_filename
+                ))
+            } else {
+                Ok(shader)
+            }
+        }
     }
 
     pub(crate) fn __load_shader_from_memory(
         vs_code: impl Display,
         fs_code: impl Display,
-    ) -> Shader {
-        unsafe { LoadShaderFromMemory(rl_str!(vs_code), rl_str!(fs_code)) }
+    ) -> Result<Shader, String> {
+        unsafe {
+            let shader = LoadShaderFromMemory(rl_str!(vs_code), rl_str!(fs_code));
+            if shader.locs.is_null() {
+                Err("failed to load shader from memory".to_owned())
+            } else {
+                Ok(shader)
+            }
+        }
     }
 
     pub(crate) fn __is_shader_ready(shader: Shader) -> bool {
@@ -345,7 +366,7 @@ impl Rcore {
     pub(crate) fn __get_shader_location_attrib(
         shader: Shader,
         name: impl Display,
-    ) -> Result<enums::ShaderLocationIndex, String> {
+    ) -> Result<ShaderLocationIndex, String> {
         unsafe {
             match GetShaderLocationAttrib(shader, rl_str!(name)) {
                 0 => Ok(enums::ShaderLocationIndex::VertexPosition),
@@ -526,26 +547,27 @@ impl Rcore {
         }
     }
 
-    pub(crate) fn __mem_alloc(size: usize) -> *mut c_void {
-        unsafe { MemAlloc(size as u32) }
-    }
-
-    pub(crate) fn __mem_realloc(ptr: *mut c_void, size: usize) -> *mut c_void {
-        unsafe { MemRealloc(ptr, size as u32) }
-    }
-
-    pub(crate) fn __mem_free(ptr: *mut c_void) {
-        unsafe { MemFree(ptr) }
-    }
+    // pub(crate) fn __mem_alloc(size: usize) -> *mut c_void {
+    //     unsafe { MemAlloc(size as u32) }
+    // }
+    //
+    // pub(crate) fn __mem_realloc(ptr: *mut c_void, size: usize) -> *mut c_void {
+    //     unsafe { MemRealloc(ptr, size as u32) }
+    // }
+    //
+    // pub(crate) fn __mem_free(ptr: *mut c_void) {
+    //     unsafe { MemFree(ptr) }
+    // }
 
     // Files management methods
 
-    pub(crate) fn __load_file_data(filename: impl Display) -> Vec<u8> {
+    pub(crate) fn __load_file_data(filename: impl Display) -> Result<Vec<u8>, String> {
         unsafe {
             let mut size = 0;
-            let data = LoadFileData(rl_str!(filename), &mut size);
-            let array = ptr::slice_from_raw_parts_mut(data, size as usize);
-            (*array).to_owned()
+            let raw = LoadFileData(rl_str!(filename), &mut size);
+            array_from_c(raw, size as usize, || {
+                format!("couldn't load file data from {}", filename)
+            })
         }
     }
 
@@ -566,11 +588,8 @@ impl Rcore {
         }
     }
 
-    pub(crate) fn __load_file_text(filename: impl Display) -> Result<String> {
-        unsafe {
-            let res = LoadFileText(rl_str!(filename)) as *mut c_char;
-            Ok(CString::from_raw(res).into_string()?)
-        }
+    pub(crate) fn __load_file_text(filename: impl Display) -> Result<String, String> {
+        unsafe { string_from_c(LoadFileText(rl_str!(filename)) as *mut c_char) }
     }
 
     // TODO: UnloadFileText
@@ -597,53 +616,32 @@ impl Rcore {
         unsafe { GetFileLength(rl_str!(filename)) }
     }
 
-    pub(crate) fn __get_file_extenstion(filename: impl Display) -> Result<String> {
-        unsafe {
-            let res = GetFileExtension(rl_str!(filename)) as *mut c_char;
-            Ok(CString::from_raw(res).into_string()?)
-        }
+    pub(crate) fn __get_file_extenstion(filename: impl Display) -> Result<String, String> {
+        unsafe { string_from_c(GetFileExtension(rl_str!(filename)) as *mut c_char) }
     }
 
-    pub(crate) fn __get_file_name(path: impl Display) -> Result<String> {
-        unsafe {
-            let res = GetFileName(rl_str!(path)) as *mut c_char;
-            Ok(CString::from_raw(res).into_string()?)
-        }
+    pub(crate) fn __get_file_name(path: impl Display) -> Result<String, String> {
+        unsafe { string_from_c(GetFileName(rl_str!(path)) as *mut c_char) }
     }
 
-    pub(crate) fn __get_file_name_without_ext(path: impl Display) -> Result<String> {
-        unsafe {
-            let res = GetFileNameWithoutExt(rl_str!(path)) as *mut c_char;
-            Ok(CString::from_raw(res).into_string()?)
-        }
+    pub(crate) fn __get_file_name_without_ext(path: impl Display) -> Result<String, String> {
+        unsafe { string_from_c(GetFileNameWithoutExt(rl_str!(path)) as *mut c_char) }
     }
 
-    pub(crate) fn __get_directory_path(path: impl Display) -> Result<String> {
-        unsafe {
-            let res = GetDirectoryPath(rl_str!(path)) as *mut c_char;
-            Ok(CString::from_raw(res).into_string()?)
-        }
+    pub(crate) fn __get_directory_path(path: impl Display) -> Result<String, String> {
+        unsafe { string_from_c(GetDirectoryPath(rl_str!(path)) as *mut c_char) }
     }
 
-    pub(crate) fn __get_prev_directory_path(path: impl Display) -> Result<String> {
-        unsafe {
-            let res = GetPrevDirectoryPath(rl_str!(path)) as *mut c_char;
-            Ok(CString::from_raw(res).into_string()?)
-        }
+    pub(crate) fn __get_prev_directory_path(path: impl Display) -> Result<String, String> {
+        unsafe { string_from_c(GetPrevDirectoryPath(rl_str!(path)) as *mut c_char) }
     }
 
-    pub(crate) fn __get_working_directory() -> Result<String> {
-        unsafe {
-            let res = GetWorkingDirectory() as *mut c_char;
-            Ok(CString::from_raw(res).into_string()?)
-        }
+    pub(crate) fn __get_working_directory() -> Result<String, String> {
+        unsafe { string_from_c(GetWorkingDirectory() as *mut c_char) }
     }
 
-    pub(crate) fn __get_application_directory() -> Result<String> {
-        unsafe {
-            let res = GetApplicationDirectory() as *mut c_char;
-            Ok(CString::from_raw(res).into_string()?)
-        }
+    pub(crate) fn __get_application_directory() -> Result<String, String> {
+        unsafe { string_from_c(GetApplicationDirectory() as *mut c_char) }
     }
 
     pub(crate) fn __change_directory(dir: impl Display) -> bool {
@@ -688,51 +686,62 @@ impl Rcore {
 
     // Compression/Encoding functionality
 
-    pub(crate) fn __compress_data(data: &mut Vec<u8>) -> Vec<u8> {
+    pub(crate) fn __compress_data(data: &mut Vec<u8>) -> Result<Vec<u8>, String> {
         unsafe {
             let size = data.len() as i32;
             let data = data.as_mut_ptr() as *mut c_uchar;
             let mut comp_size = 0;
-            let res = CompressData(data, size, &mut comp_size);
-            let array = ptr::slice_from_raw_parts_mut(res, comp_size as usize);
-            (*array).to_owned()
+            let raw = CompressData(data, size, &mut comp_size);
+            array_from_c(raw, size as usize, || {
+                "error trying to compress data".to_owned()
+            })
         }
     }
 
-    pub(crate) fn __decompress_data(data: &mut Vec<u8>) -> Vec<u8> {
+    pub(crate) fn __decompress_data(data: &mut Vec<u8>) -> Result<Vec<u8>, String> {
         unsafe {
             let size = data.len() as i32;
             let data = data.as_mut_ptr() as *mut c_uchar;
             let mut decomp_size = 0;
-            let res = DecompressData(data, size, &mut decomp_size);
-            let array = ptr::slice_from_raw_parts_mut(res, decomp_size as usize);
-            (*array).to_owned()
+            let raw = DecompressData(data, size, &mut decomp_size);
+            array_from_c(raw, size as usize, || {
+                "error trying to decompress data".to_owned()
+            })
         }
     }
 
-    pub(crate) fn __encode_data_base64(data: &mut Vec<u8>) -> Result<String> {
+    pub(crate) fn __encode_data_base64(data: &mut Vec<u8>) -> Result<String, String> {
         unsafe {
             let size = data.len() as i32;
             let data = data.as_mut_ptr() as *mut c_uchar;
             let mut output_size = 0;
-            let res = EncodeDataBase64(data, size, &mut output_size) as *mut c_char;
-            Ok(CString::from_raw(res).into_string()?)
+            string_from_c(EncodeDataBase64(data, size, &mut output_size) as *mut c_char)
         }
     }
 
-    pub(crate) fn __decode_data_base64(data: &str) -> Vec<u8> {
+    pub(crate) fn __decode_data_base64(data: &str) -> Result<Vec<u8>, String> {
         unsafe {
-            let mut size = 0;
-            let res = DecodeDataBase64(rl_str!(data) as *const c_uchar, &mut size);
-            let array = ptr::slice_from_raw_parts_mut(res, size as usize);
-            (*array).to_owned()
+            let mut size: i32 = 0;
+            let raw = DecodeDataBase64(rl_str!(data) as *const c_uchar, &mut size);
+            array_from_c(raw, size as usize, || {
+                format!("could not decode as Base64: {}", data)
+            })
         }
     }
 
     // Automation events functionality
 
-    pub(crate) fn __load_automation_event_list(filename: impl Display) -> AutomationEventList {
-        unsafe { LoadAutomationEventList(rl_str!(filename)) }
+    pub(crate) fn __load_automation_event_list(
+        filename: impl Display,
+    ) -> Result<AutomationEventList, String> {
+        unsafe {
+            let list = LoadAutomationEventList(rl_str!(filename));
+            if list.events.is_null() {
+                Err(format!("couldn't load automation events from {}", filename))
+            } else {
+                Ok(list)
+            }
+        }
     }
 
     pub(crate) fn __unload_automation_event_list(mut list: AutomationEventList) {
@@ -791,7 +800,6 @@ impl Rcore {
     pub(crate) fn __get_key_pressed() -> KeyboardKey {
         unsafe {
             match GetKeyPressed() {
-                0 => KeyboardKey::Null,
                 39 => KeyboardKey::Apostrophe,
                 44 => KeyboardKey::Comma,
                 45 => KeyboardKey::Minus,
@@ -923,11 +931,8 @@ impl Rcore {
         unsafe { IsGamepadAvailable(gamepad) }
     }
 
-    pub(crate) fn __get_gamepad_name(gamepad: i32) -> Result<String> {
-        unsafe {
-            let res = GetGamepadName(gamepad) as *mut c_char;
-            Ok(CString::from_raw(res).into_string()?)
-        }
+    pub(crate) fn __get_gamepad_name(gamepad: i32) -> Result<String, String> {
+        unsafe { string_from_c(GetGamepadName(gamepad) as *mut c_char) }
     }
 
     pub(crate) fn __is_gamepad_button_pressed(gamepad: i32, button: impl Into<usize>) -> bool {
@@ -1180,7 +1185,7 @@ impl Rcore {
         Self::__set_window_focused()
     }
 
-    pub fn get_window_handle(&self) -> WindowHandle<'_> {
+    pub fn get_window_handle(&self) -> Result<WindowHandle<'_>, String> {
         Self::__get_window_handle()
     }
 
@@ -1240,7 +1245,7 @@ impl Rcore {
         Self::__get_window_scale_dpi()
     }
 
-    pub fn get_monitor_name(&self, monitor: i32) -> Result<String> {
+    pub fn get_monitor_name(&self, monitor: i32) -> Result<String, String> {
         Self::__get_monitor_name(monitor)
     }
 
@@ -1368,11 +1373,19 @@ impl Rcore {
 
     // Shader management methods
 
-    pub fn load_shader(&self, vs_filename: impl Display, fs_filename: impl Display) -> Shader {
+    pub fn load_shader(
+        &self,
+        vs_filename: impl Display,
+        fs_filename: impl Display,
+    ) -> Result<Shader, String> {
         Self::__load_shader(vs_filename, fs_filename)
     }
 
-    pub fn load_shader_from_memory(&self, vs_code: impl Display, fs_code: impl Display) -> Shader {
+    pub fn load_shader_from_memory(
+        &self,
+        vs_code: impl Display,
+        fs_code: impl Display,
+    ) -> Result<Shader, String> {
         Self::__load_shader_from_memory(vs_code, fs_code)
     }
 
@@ -1532,21 +1545,9 @@ impl Rcore {
         Self::__set_trace_log_level(level)
     }
 
-    pub fn mem_alloc(&self, size: usize) -> *mut c_void {
-        Self::__mem_alloc(size)
-    }
-
-    pub fn mem_realloc(&self, ptr: *mut c_void, size: usize) -> *mut c_void {
-        Self::__mem_realloc(ptr, size)
-    }
-
-    pub fn mem_free(&self, ptr: *mut c_void) {
-        Self::__mem_free(ptr)
-    }
-
     // Files management methods
 
-    pub fn load_file_data(&self, filename: impl Display) -> Vec<u8> {
+    pub fn load_file_data(&self, filename: impl Display) -> Result<Vec<u8>, String> {
         Self::__load_file_data(filename)
     }
 
@@ -1560,7 +1561,7 @@ impl Rcore {
         Self::__export_data_as_code(data, filename)
     }
 
-    pub fn load_file_text(&self, filename: impl Display) -> Result<String> {
+    pub fn load_file_text(&self, filename: impl Display) -> Result<String, String> {
         Self::__load_file_text(filename)
     }
 
@@ -1588,31 +1589,31 @@ impl Rcore {
         Self::__get_file_length(filename)
     }
 
-    pub fn get_file_extenstion(&self, filename: impl Display) -> Result<String> {
+    pub fn get_file_extenstion(&self, filename: impl Display) -> Result<String, String> {
         Self::__get_file_extenstion(filename)
     }
 
-    pub fn get_file_name(&self, path: impl Display) -> Result<String> {
+    pub fn get_file_name(&self, path: impl Display) -> Result<String, String> {
         Self::__get_file_name(path)
     }
 
-    pub fn get_file_name_without_ext(&self, path: impl Display) -> Result<String> {
+    pub fn get_file_name_without_ext(&self, path: impl Display) -> Result<String, String> {
         Self::__get_file_name_without_ext(path)
     }
 
-    pub fn get_directory_path(&self, path: impl Display) -> Result<String> {
+    pub fn get_directory_path(&self, path: impl Display) -> Result<String, String> {
         Self::__get_directory_path(path)
     }
 
-    pub fn get_prev_directory_path(&self, path: impl Display) -> Result<String> {
+    pub fn get_prev_directory_path(&self, path: impl Display) -> Result<String, String> {
         Self::__get_prev_directory_path(path)
     }
 
-    pub fn get_working_directory(&self) -> Result<String> {
+    pub fn get_working_directory(&self) -> Result<String, String> {
         Self::__get_working_directory()
     }
 
-    pub fn get_application_directory(&self) -> Result<String> {
+    pub fn get_application_directory(&self) -> Result<String, String> {
         Self::__get_application_directory()
     }
 
@@ -1659,25 +1660,28 @@ impl Rcore {
 
     // Compression/Encoding functionality
 
-    pub fn compress_data(&self, data: &mut Vec<u8>) -> Vec<u8> {
+    pub fn compress_data(&self, data: &mut Vec<u8>) -> Result<Vec<u8>, String> {
         Self::__compress_data(data)
     }
 
-    pub fn decompress_data(&self, data: &mut Vec<u8>) -> Vec<u8> {
+    pub fn decompress_data(&self, data: &mut Vec<u8>) -> Result<Vec<u8>, String> {
         Self::__decompress_data(data)
     }
 
-    pub fn encode_data_base64(&self, data: &mut Vec<u8>) -> Result<String> {
+    pub fn encode_data_base64(&self, data: &mut Vec<u8>) -> Result<String, String> {
         Self::__encode_data_base64(data)
     }
 
-    pub fn decode_data_base64(&self, data: &str) -> Vec<u8> {
+    pub fn decode_data_base64(&self, data: &str) -> Result<Vec<u8>, String> {
         Self::__decode_data_base64(data)
     }
 
     // Automation events functionality
 
-    pub fn load_automation_event_list(&self, filename: impl Display) -> AutomationEventList {
+    pub fn load_automation_event_list(
+        &self,
+        filename: impl Display,
+    ) -> Result<AutomationEventList, String> {
         Self::__load_automation_event_list(filename)
     }
 
@@ -1753,7 +1757,7 @@ impl Rcore {
         Self::__is_gamepad_available(gamepad)
     }
 
-    pub fn get_gamepad_name(&self, gamepad: i32) -> Result<String> {
+    pub fn get_gamepad_name(&self, gamepad: i32) -> Result<String, String> {
         Self::__get_gamepad_name(gamepad)
     }
 

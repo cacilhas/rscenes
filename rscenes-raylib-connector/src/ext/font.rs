@@ -4,8 +4,12 @@ use std::fmt::Display;
 
 pub trait FontExt {
     fn default() -> Self;
-    fn load(filename: impl Display) -> Self;
-    fn load_from_image(image: Image, key: Color, first_char: i32) -> Self;
+    fn load(filename: impl Display) -> Result<Self, String>
+    where
+        Self: Sized;
+    fn load_from_image(image: Image, key: Color, first_char: i32) -> Result<Self, String>
+    where
+        Self: Sized;
     fn is_ready(self) -> bool;
     fn unload(self);
     fn export_as_code(self, filename: impl Display) -> bool;
@@ -16,11 +20,11 @@ impl FontExt for Font {
         Rtext::__get_default_font()
     }
 
-    fn load(filename: impl Display) -> Self {
+    fn load(filename: impl Display) -> Result<Self, String> {
         Rtext::__load_font(filename)
     }
 
-    fn load_from_image(image: Image, key: Color, first_char: i32) -> Self {
+    fn load_from_image(image: Image, key: Color, first_char: i32) -> Result<Self, String> {
         Rtext::__load_font_from_image(image, key, first_char)
     }
 

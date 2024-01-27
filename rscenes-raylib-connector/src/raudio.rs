@@ -30,8 +30,15 @@ impl Raudio {
 
     // Wave/Sound loading/unloading methods
 
-    pub(crate) fn __load_wave(filename: impl Display) -> Wave {
-        unsafe { LoadWave(rl_str!(filename)) }
+    pub(crate) fn __load_wave(filename: impl Display) -> Result<Wave, String> {
+        unsafe {
+            let wave = LoadWave(rl_str!(filename));
+            if wave.data.is_null() {
+                Err(format!("error loading wave from {}", filename))
+            } else {
+                Ok(wave)
+            }
+        }
     }
 }
 
@@ -61,7 +68,7 @@ impl Raudio {
 
     // Wave/Sound loading/unloading methods
 
-    pub fn load_wave(&self, filename: impl Display) -> Wave {
+    pub fn load_wave(&self, filename: impl Display) -> Result<Wave, String> {
         Self::__load_wave(filename)
     }
 }

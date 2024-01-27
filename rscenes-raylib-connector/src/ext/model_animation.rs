@@ -3,7 +3,7 @@ use raylib_ffi::*;
 use std::fmt::Display;
 
 pub trait ModelAnimationExt {
-    fn load(filename: impl Display) -> Vec<Self>
+    fn load(filename: impl Display) -> Result<Vec<Self>, String>
     where
         Self: Sized;
     fn unload(self);
@@ -13,7 +13,7 @@ pub trait ModelAnimationExt {
 }
 
 impl ModelAnimationExt for ModelAnimation {
-    fn load(filename: impl Display) -> Vec<Self> {
+    fn load(filename: impl Display) -> Result<Vec<Self>, String> {
         Rmodels::__load_model_animations(filename)
     }
 

@@ -4,8 +4,12 @@ use crate::rtextures::Rtextures;
 use raylib_ffi::{enums::*, *};
 
 pub trait TextureExt {
-    fn load(filename: impl Display) -> Self;
-    fn load_from_image(image: Image) -> Self;
+    fn load(filename: impl Display) -> Result<Self, String>
+    where
+        Self: Sized;
+    fn load_from_image(image: Image) -> Result<Self, String>
+    where
+        Self: Sized;
 
     fn is_ready(self) -> bool;
     fn unload(self);
@@ -17,11 +21,11 @@ pub trait TextureExt {
 }
 
 impl TextureExt for Texture2D {
-    fn load(filename: impl Display) -> Self {
+    fn load(filename: impl Display) -> Result<Self, String> {
         Rtextures::__load_texture(filename)
     }
 
-    fn load_from_image(image: Image) -> Self {
+    fn load_from_image(image: Image) -> Result<Self, String> {
         Rtextures::__load_texture_from_image(image)
     }
 
@@ -60,11 +64,13 @@ impl TextureExt for Texture2D {
 }
 
 pub trait TextureCubemapExt {
-    fn load(image: Image, layout: CubemapLayout) -> Self;
+    fn load(image: Image, layout: CubemapLayout) -> Result<Self, String>
+    where
+        Self: Sized;
 }
 
 impl TextureCubemapExt for TextureCubemap {
-    fn load(image: Image, layout: CubemapLayout) -> Self {
+    fn load(image: Image, layout: CubemapLayout) -> Result<Self, String> {
         Rtextures::__load_texture_cubemap(image, layout)
     }
 }

@@ -1,7 +1,10 @@
+use crate::rcore::Rcore;
 use crate::rmodels::Rmodels;
 use raylib_ffi::*;
 
 pub trait RayExt {
+    fn get_mouse_ray(mouse_position: Vector2, camera: Camera3D) -> Self;
+
     fn get_collision_sphere(self, center: Vector3, radius: f32) -> RayCollision;
     fn get_collision_box(self, box_: BoundingBox) -> RayCollision;
     fn get_collision_mesh(self, mesh: Mesh, transform: Matrix) -> RayCollision;
@@ -11,6 +14,10 @@ pub trait RayExt {
 }
 
 impl RayExt for Ray {
+    fn get_mouse_ray(mouse_position: Vector2, camera: Camera3D) -> Self {
+        Rcore::__get_mouse_ray(mouse_position, camera)
+    }
+
     fn get_collision_sphere(self, center: Vector3, radius: f32) -> RayCollision {
         Rmodels::__get_raycollision_sphere(self, center, radius)
     }

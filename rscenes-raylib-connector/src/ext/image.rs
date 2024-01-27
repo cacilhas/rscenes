@@ -3,19 +3,27 @@ use raylib_ffi::{enums::PixelFormat, *};
 use std::fmt::Display;
 
 pub trait ImageExt {
-    fn load(filename: impl Display) -> Self;
+    fn load(filename: impl Display) -> Result<Self, String>
+    where
+        Self: Sized;
     fn load_raw(
         filename: impl Display,
         width: i32,
         height: i32,
         format: impl Into<usize>,
         header_size: i32,
-    ) -> Self;
-    fn load_svg(filename_or_string: impl Display, width: i32, height: i32) -> Self;
-    fn load_anim(filename: impl Display) -> (Self, i32)
+    ) -> Result<Self, String>
     where
         Self: Sized;
-    fn load_from_memory(tpe: impl Display, data: &mut Vec<u8>) -> Self;
+    fn load_svg(filename_or_string: impl Display, width: i32, height: i32) -> Result<Self, String>
+    where
+        Self: Sized;
+    fn load_anim(filename: impl Display) -> Result<(Self, i32), String>
+    where
+        Self: Sized;
+    fn load_from_memory(tpe: impl Display, data: &mut Vec<u8>) -> Result<Self, String>
+    where
+        Self: Sized;
     fn load_from_texture(texture: Texture2D) -> Self;
     fn load_from_screen() -> Self;
 
@@ -52,7 +60,7 @@ pub trait ImageExt {
     fn is_ready(self) -> bool;
     fn unload(self);
     fn export(self, filename: impl Display) -> bool;
-    fn export_to_memory(self, tpe: impl Display) -> Vec<u8>;
+    fn export_to_memory(self, tpe: impl Display) -> Result<Vec<u8>, String>;
     fn export_as_code(self, filename: impl Display) -> bool;
 
     fn copy(self) -> Self;
@@ -87,7 +95,7 @@ pub trait ImageExt {
     fn color_constrast(&mut self, contrast: f32) -> &mut Self;
     fn color_brightness(&mut self, brightness: i32) -> &mut Self;
     fn color_replace(&mut self, color: Color, replace: Color) -> &mut Self;
-    fn load_palette(self, max_size: usize) -> Vec<Color>;
+    fn load_palette(self, max_size: usize) -> Result<Vec<Color>, String>;
     fn unload_palette(self, palette: &mut Vec<Color>);
     fn get_alpha_border(self, threshold: f32) -> Rectangle;
     fn get_color(self, x: i32, y: i32) -> Color;
@@ -153,7 +161,7 @@ pub trait ImageExt {
 }
 
 impl ImageExt for Image {
-    fn load(filename: impl Display) -> Self {
+    fn load(filename: impl Display) -> Result<Self, String> {
         Rtextures::__load_image(filename)
     }
 
@@ -163,15 +171,15 @@ impl ImageExt for Image {
         height: i32,
         format: impl Into<usize>,
         header_size: i32,
-    ) -> Self {
+    ) -> Result<Self, String> {
         Rtextures::__load_image_raw(filename, width, height, format, header_size)
     }
 
-    fn load_svg(filename_or_string: impl Display, width: i32, height: i32) -> Self {
+    fn load_svg(filename_or_string: impl Display, width: i32, height: i32) -> Result<Self, String> {
         Rtextures::__load_image_svg(filename_or_string, width, height)
     }
 
-    fn load_anim(filename: impl Display) -> (Self, i32) {
+    fn load_anim(filename: impl Display) -> Result<(Self, i32), String> {
         Rtextures::__load_image_anim(filename)
     }
 
@@ -183,7 +191,7 @@ impl ImageExt for Image {
         Rtextures::__load_image_from_texture(texture)
     }
 
-    fn load_from_memory(tpe: impl Display, data: &mut Vec<u8>) -> Self {
+    fn load_from_memory(tpe: impl Display, data: &mut Vec<u8>) -> Result<Self, String> {
         Rtextures::__load_image_from_memory(tpe, data)
     }
 
@@ -258,7 +266,7 @@ impl ImageExt for Image {
         Rtextures::__export_image(self, filename)
     }
 
-    fn export_to_memory(self, tpe: impl Display) -> Vec<u8> {
+    fn export_to_memory(self, tpe: impl Display) -> Result<Vec<u8>, String> {
         Rtextures::__export_image_to_memory(self, tpe)
     }
 
@@ -391,7 +399,7 @@ impl ImageExt for Image {
         self
     }
 
-    fn load_palette(self, max_size: usize) -> Vec<Color> {
+    fn load_palette(self, max_size: usize) -> Result<Vec<Color>, String> {
         Rtextures::__load_image_pallete(self, max_size as i32)
     }
 
