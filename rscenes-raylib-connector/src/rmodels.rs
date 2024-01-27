@@ -1,5 +1,5 @@
 use raylib_ffi::*;
-use std::{ffi::c_void, fmt::Display};
+use std::{ffi::c_void, fmt::Display, ptr};
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Rmodels;
@@ -348,6 +348,41 @@ impl Rmodels {
     }
 
     // Material loading/unloading methods
+
+    pub(crate) fn __load_materials(filename: impl Display) -> Vec<Material> {
+        unsafe {
+            let mut count: i32 = 0;
+            let materials = LoadMaterials(rl_str!(filename), &mut count);
+            let array = ptr::slice_from_raw_parts_mut(materials, count as usize);
+            (*array).to_owned()
+        }
+    }
+
+    pub(crate) fn __load_material_default() -> Material {
+        unsafe { LoadMaterialDefault() }
+    }
+
+    pub(crate) fn __is_material_ready(material: Material) -> bool {
+        unsafe { IsMaterialReady(material) }
+    }
+
+    pub(crate) fn __unload_material(material: Material) {
+        unsafe { UnloadMaterial(material) }
+    }
+
+    pub(crate) fn __set_material_texture(
+        material: &mut Material,
+        map_tpe: i32,
+        texture: Texture2D,
+    ) {
+        unsafe { SetMaterialTexture(material, map_tpe, texture) }
+    }
+
+    pub(crate) fn __set_model_mesh_material(model: &mut Model, mesh_id: i32, material_id: i32) {
+        unsafe { SetModelMeshMaterial(model, mesh_id, material_id) }
+    }
+
+    // Model animations loading/unloading methods
 }
 
 /// Exported methods
@@ -691,4 +726,30 @@ impl Rmodels {
     }
 
     // Material loading/unloading methods
+
+    pub fn load_materials(&self, filename: impl Display) -> Vec<Material> {
+        Self::__load_materials(filename)
+    }
+
+    pub fn load_material_default(&self) -> Material {
+        Self::__load_material_default()
+    }
+
+    pub fn is_material_ready(&self, material: Material) -> bool {
+        Self::__is_material_ready(material)
+    }
+
+    pub fn unload_material(&self, material: Material) {
+        Self::__unload_material(material)
+    }
+
+    pub fn set_material_texture(&self, material: &mut Material, map_tpe: i32, texture: Texture2D) {
+        Self::__set_material_texture(material, map_tpe, texture)
+    }
+
+    pub fn set_model_mesh_material(&self, model: &mut Model, mesh_id: i32, material_id: i32) {
+        Self::__set_model_mesh_material(model, mesh_id, material_id)
+    }
+
+    // Model animations loading/unloading methods
 }

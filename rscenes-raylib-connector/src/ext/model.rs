@@ -9,6 +9,7 @@ pub trait ModelExt {
     fn is_ready(self) -> bool;
     fn unload(self);
     fn get_bounding_box(self) -> BoundingBox;
+    fn set_mesh_material(&mut self, mesh_id: i32, material_id: i32);
 }
 
 impl ModelExt for Model {
@@ -30,5 +31,9 @@ impl ModelExt for Model {
 
     fn get_bounding_box(self) -> BoundingBox {
         Rmodels::__get_model_bounding_box(self)
+    }
+
+    fn set_mesh_material(&mut self, mesh_id: i32, material_id: i32) {
+        Rmodels::__set_model_mesh_material(self, mesh_id, material_id)
     }
 }
