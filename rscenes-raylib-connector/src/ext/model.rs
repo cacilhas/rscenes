@@ -10,6 +10,8 @@ pub trait ModelExt {
     fn unload(self);
     fn get_bounding_box(self) -> BoundingBox;
     fn set_mesh_material(&mut self, mesh_id: i32, material_id: i32);
+    fn update_animation(self, anim: ModelAnimation, frame: i32);
+    fn is_animation_invalid(self, anim: ModelAnimation) -> bool;
 }
 
 impl ModelExt for Model {
@@ -35,5 +37,13 @@ impl ModelExt for Model {
 
     fn set_mesh_material(&mut self, mesh_id: i32, material_id: i32) {
         Rmodels::__set_model_mesh_material(self, mesh_id, material_id)
+    }
+
+    fn update_animation(self, anim: ModelAnimation, frame: i32) {
+        Rmodels::__update_model_animation(self, anim, frame)
+    }
+
+    fn is_animation_invalid(self, anim: ModelAnimation) -> bool {
+        Rmodels::__is_model_animation_invalid(self, anim)
     }
 }

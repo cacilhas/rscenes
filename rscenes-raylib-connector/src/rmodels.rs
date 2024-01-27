@@ -383,6 +383,36 @@ impl Rmodels {
     }
 
     // Model animations loading/unloading methods
+
+    pub(crate) fn __load_model_animations(filename: impl Display) -> Vec<ModelAnimation> {
+        unsafe {
+            let mut count: i32 = 0;
+            let anims = LoadModelAnimations(rl_str!(filename), &mut count);
+            let array = ptr::slice_from_raw_parts_mut(anims, count as usize);
+            (*array).to_owned()
+        }
+    }
+
+    pub(crate) fn __update_model_animation(model: Model, anim: ModelAnimation, frame: i32) {
+        unsafe { UpdateModelAnimation(model, anim, frame) }
+    }
+
+    pub(crate) fn __unload_model_animation(anim: ModelAnimation) {
+        unsafe { UnloadModelAnimation(anim) }
+    }
+
+    pub(crate) fn __unload_model_animations(mut anims: Vec<ModelAnimation>) {
+        unsafe {
+            let count = anims.len() as i32;
+            UnloadModelAnimations(anims.as_mut_ptr(), count)
+        }
+    }
+
+    pub(crate) fn __is_model_animation_invalid(model: Model, anim: ModelAnimation) -> bool {
+        unsafe { IsModelAnimationValid(model, anim) }
+    }
+
+    // Collision detection methods
 }
 
 /// Exported methods
@@ -752,4 +782,26 @@ impl Rmodels {
     }
 
     // Model animations loading/unloading methods
+
+    pub fn load_model_animations(&self, filename: impl Display) -> Vec<ModelAnimation> {
+        Self::__load_model_animations(filename)
+    }
+
+    pub fn update_model_animation(&self, model: Model, anim: ModelAnimation, frame: i32) {
+        Self::__update_model_animation(model, anim, frame)
+    }
+
+    pub fn unload_model_animation(&self, anim: ModelAnimation) {
+        Self::__unload_model_animation(anim)
+    }
+
+    pub fn unload_model_animations(&self, anims: Vec<ModelAnimation>) {
+        Self::__unload_model_animations(anims)
+    }
+
+    pub fn is_model_animation_invalid(&self, model: Model, anim: ModelAnimation) -> bool {
+        Self::__is_model_animation_invalid(model, anim)
+    }
+
+    // Collision detection methods
 }
