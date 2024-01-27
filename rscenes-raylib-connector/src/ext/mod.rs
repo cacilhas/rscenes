@@ -8,6 +8,7 @@ pub mod material;
 pub mod mesh;
 pub mod model;
 pub mod model_animation;
+pub mod music;
 pub mod ray;
 pub mod sound;
 pub mod texture;

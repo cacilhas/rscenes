@@ -172,6 +172,91 @@ impl Raudio {
     }
 
     // Music management methods
+
+    pub(crate) fn __load_music_stream(filename: impl Display) -> Result<Music, String> {
+        unsafe {
+            let music = LoadMusicStream(rl_str!(filename));
+            if music.stream.buffer.is_null() {
+                Err(format!("failed to load music stream from {}", filename))
+            } else {
+                Ok(music)
+            }
+        }
+    }
+
+    pub(crate) fn __load_music_stream_from_memory(
+        tpe: impl Display,
+        data: Vec<u8>,
+    ) -> Result<Music, String> {
+        unsafe {
+            let size = data.len() as i32;
+            let data = data.as_ptr();
+            let music = LoadMusicStreamFromMemory(rl_str!(tpe), data, size);
+            if music.stream.buffer.is_null() {
+                Err("failed to load music stream from memory".to_owned())
+            } else {
+                Ok(music)
+            }
+        }
+    }
+
+    pub(crate) fn __is_music_ready(music: Music) -> bool {
+        unsafe { IsMusicReady(music) }
+    }
+
+    pub(crate) fn __unload_music_stream(music: Music) {
+        unsafe { UnloadMusicStream(music) }
+    }
+
+    pub(crate) fn __play_music_stream(music: Music) {
+        unsafe { PlayMusicStream(music) }
+    }
+
+    pub(crate) fn __is_music_stream_playing(music: Music) -> bool {
+        unsafe { IsMusicStreamPlaying(music) }
+    }
+
+    pub(crate) fn __update_music_stream(music: Music) {
+        unsafe { UpdateMusicStream(music) }
+    }
+
+    pub(crate) fn __stop_music_stream(music: Music) {
+        unsafe { StopMusicStream(music) }
+    }
+
+    pub(crate) fn __pause_music_stream(music: Music) {
+        unsafe { PauseMusicStream(music) }
+    }
+
+    pub(crate) fn __resume_music_stream(music: Music) {
+        unsafe { ResumeMusicStream(music) }
+    }
+
+    pub(crate) fn __seek_music_stream(music: Music, position: f32) {
+        unsafe { SeekMusicStream(music, position) }
+    }
+
+    pub(crate) fn __set_music_volume(music: Music, volume: f32) {
+        unsafe { SetMusicVolume(music, volume) }
+    }
+
+    pub(crate) fn __set_music_pitch(music: Music, pitch: f32) {
+        unsafe { SetMusicPitch(music, pitch) }
+    }
+
+    pub(crate) fn __set_music_pan(music: Music, pan: f32) {
+        unsafe { SetMusicPan(music, pan) }
+    }
+
+    pub(crate) fn __get_music_time_length(music: Music) -> f32 {
+        unsafe { GetMusicTimeLength(music) }
+    }
+
+    pub(crate) fn __get_music_time_played(music: Music) -> f32 {
+        unsafe { GetMusicTimePlayed(music) }
+    }
+
+    // AudioStream management methods
 }
 
 /// Exported methods
@@ -303,4 +388,74 @@ impl Raudio {
     }
 
     // Music management methods
+
+    pub fn load_music_stream(&self, filename: impl Display) -> Result<Music, String> {
+        Self::__load_music_stream(filename)
+    }
+
+    pub fn load_music_stream_from_memory(
+        &self,
+        tpe: impl Display,
+        data: Vec<u8>,
+    ) -> Result<Music, String> {
+        Self::__load_music_stream_from_memory(tpe, data)
+    }
+
+    pub fn is_music_ready(&self, music: Music) -> bool {
+        Self::__is_music_ready(music)
+    }
+
+    pub fn unload_music_stream(&self, music: Music) {
+        Self::__unload_music_stream(music)
+    }
+
+    pub fn play_music_stream(&self, music: Music) {
+        Self::__play_music_stream(music)
+    }
+
+    pub fn is_music_stream_playing(&self, music: Music) -> bool {
+        Self::__is_music_stream_playing(music)
+    }
+
+    pub fn update_music_stream(&self, music: Music) {
+        Self::__update_music_stream(music)
+    }
+
+    pub fn stop_music_stream(&self, music: Music) {
+        Self::__stop_music_stream(music)
+    }
+
+    pub fn pause_music_stream(&self, music: Music) {
+        Self::__pause_music_stream(music)
+    }
+
+    pub fn resume_music_stream(&self, music: Music) {
+        Self::__resume_music_stream(music)
+    }
+
+    pub fn seek_music_stream(&self, music: Music, position: f32) {
+        Self::__seek_music_stream(music, position)
+    }
+
+    pub fn set_music_volume(&self, music: Music, volume: f32) {
+        Self::__set_music_volume(music, volume)
+    }
+
+    pub fn set_music_pitch(&self, music: Music, pitch: f32) {
+        Self::__set_music_pitch(music, pitch)
+    }
+
+    pub fn set_music_pan(&self, music: Music, pan: f32) {
+        Self::__set_music_pan(music, pan)
+    }
+
+    pub fn get_music_time_length(&self, music: Music) -> f32 {
+        Self::__get_music_time_length(music)
+    }
+
+    pub fn get_music_time_played(&self, music: Music) -> f32 {
+        Self::__get_music_time_played(music)
+    }
+
+    // AudioStream management methods
 }
