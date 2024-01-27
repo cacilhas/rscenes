@@ -11,4 +11,5 @@ pub mod model_animation;
 pub mod ray;
 pub mod texture;
 pub mod vector;
+pub mod wave;
 pub mod window_handle;

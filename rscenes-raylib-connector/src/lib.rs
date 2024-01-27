@@ -24,6 +24,7 @@ pub mod assets {
     pub use crate::ext::ray::RayExt;
     pub use crate::ext::texture::{RenderTextureExt, TextureCubemapExt, TextureExt};
     pub use crate::ext::vector::{Vector2Ext, Vector3Ext};
+    pub use crate::ext::wave::WaveExt;
     pub use crate::ext::window_handle::WindowHandle;
     pub use raylib_ffi::{
         enums::*, AudioStream, AutomationEvent, AutomationEventList, BoneInfo, BoundingBox,

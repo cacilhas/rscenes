@@ -1,4 +1,5 @@
 use raylib_ffi::*;
+use std::fmt::Display;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Raudio;
@@ -28,6 +29,10 @@ impl Raudio {
     }
 
     // Wave/Sound loading/unloading methods
+
+    pub(crate) fn __load_wave(filename: impl Display) -> Wave {
+        unsafe { LoadWave(rl_str!(filename)) }
+    }
 }
 
 /// Exported methods
@@ -55,4 +60,8 @@ impl Raudio {
     }
 
     // Wave/Sound loading/unloading methods
+
+    pub fn load_wave(&self, filename: impl Display) -> Wave {
+        Self::__load_wave(filename)
+    }
 }
