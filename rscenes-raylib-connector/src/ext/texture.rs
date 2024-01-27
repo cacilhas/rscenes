@@ -3,13 +3,9 @@ use std::fmt::Display;
 use crate::rtextures::Rtextures;
 use raylib_ffi::{enums::*, *};
 
-pub trait TextureExt {
-    fn load(filename: impl Display) -> Result<Self, String>
-    where
-        Self: Sized;
-    fn load_from_image(image: Image) -> Result<Self, String>
-    where
-        Self: Sized;
+pub trait TextureExt: Sized {
+    fn load(filename: impl Display) -> Result<Self, String>;
+    fn load_from_image(image: Image) -> Result<Self, String>;
 
     fn is_ready(self) -> bool;
     fn unload(self);
@@ -63,10 +59,8 @@ impl TextureExt for Texture2D {
     }
 }
 
-pub trait TextureCubemapExt {
-    fn load(image: Image, layout: CubemapLayout) -> Result<Self, String>
-    where
-        Self: Sized;
+pub trait TextureCubemapExt: Sized {
+    fn load(image: Image, layout: CubemapLayout) -> Result<Self, String>;
 }
 
 impl TextureCubemapExt for TextureCubemap {

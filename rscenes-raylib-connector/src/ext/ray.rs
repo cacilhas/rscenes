@@ -2,7 +2,7 @@ use crate::rcore::Rcore;
 use crate::rmodels::Rmodels;
 use raylib_ffi::*;
 
-pub trait RayExt {
+pub trait RayExt: Sized {
     fn get_mouse_ray(mouse_position: Vector2, camera: Camera3D) -> Self;
 
     fn get_collision_sphere(self, center: Vector3, radius: f32) -> RayCollision;

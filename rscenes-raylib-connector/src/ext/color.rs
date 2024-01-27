@@ -1,7 +1,7 @@
 use crate::rtextures::Rtextures;
 use raylib_ffi::{colors, Color, Vector3, Vector4};
 
-pub trait ColorExt {
+pub trait ColorExt: Sized {
     const LIGHTGRAY: Self;
     const GRAY: Self;
     const DARKGRAY: Self;

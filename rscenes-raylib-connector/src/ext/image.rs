@@ -2,28 +2,18 @@ use crate::rtextures::Rtextures;
 use raylib_ffi::{enums::PixelFormat, *};
 use std::fmt::Display;
 
-pub trait ImageExt {
-    fn load(filename: impl Display) -> Result<Self, String>
-    where
-        Self: Sized;
+pub trait ImageExt: Sized {
+    fn load(filename: impl Display) -> Result<Self, String>;
     fn load_raw(
         filename: impl Display,
         width: i32,
         height: i32,
         format: impl Into<usize>,
         header_size: i32,
-    ) -> Result<Self, String>
-    where
-        Self: Sized;
-    fn load_svg(filename_or_string: impl Display, width: i32, height: i32) -> Result<Self, String>
-    where
-        Self: Sized;
-    fn load_anim(filename: impl Display) -> Result<(Self, i32), String>
-    where
-        Self: Sized;
-    fn load_from_memory(tpe: impl Display, data: &mut Vec<u8>) -> Result<Self, String>
-    where
-        Self: Sized;
+    ) -> Result<Self, String>;
+    fn load_svg(filename_or_string: impl Display, width: i32, height: i32) -> Result<Self, String>;
+    fn load_anim(filename: impl Display) -> Result<(Self, i32), String>;
+    fn load_from_memory(tpe: impl Display, data: &mut Vec<u8>) -> Result<Self, String>;
     fn load_from_texture(texture: Texture2D) -> Self;
     fn load_from_screen() -> Self;
 

@@ -2,7 +2,7 @@ use crate::rmodels::Rmodels;
 use raylib_ffi::*;
 use std::fmt::Display;
 
-pub trait MeshExt {
+pub trait MeshExt: Sized {
     fn gen_poly(sides: i32, radius: f32) -> Self;
     fn gen_plane(width: f32, height: f32, x: i32, z: i32) -> Self;
     fn gen_cube(width: f32, height: f32, length: f32) -> Self;

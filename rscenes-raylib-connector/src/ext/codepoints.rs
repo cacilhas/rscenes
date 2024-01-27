@@ -1,5 +1,4 @@
 use crate::rtext::Rtext;
-use eyre::*;
 use std::{fmt::Display, marker::PhantomData, ptr};
 
 #[derive(Clone, Copy, Debug)]
@@ -30,12 +29,12 @@ impl Codepoints {
         self.count
     }
 
-    pub fn get(&self, index: usize) -> Result<i32> {
+    pub fn get(&self, index: usize) -> Result<i32, String> {
         if self.inner == ptr::null_mut() {
-            return Err(eyre!("null codepoints"));
+            return Err("null codepoints".to_owned());
         }
         if index >= self.count {
-            return Err(eyre!("index overflow"));
+            return Err("index overflow".to_owned());
         }
 
         unsafe { Ok(*self.inner.add(index)) }

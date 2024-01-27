@@ -4,7 +4,7 @@ use raylib_ffi::enums::KeyboardKey;
 
 use crate::rcore::Rcore;
 
-pub trait KeyboardKeyExt {
+pub trait KeyboardKeyExt: Sized {
     fn get_pressed() -> Self;
     fn get_pressed_char() -> String;
     fn to_string(self) -> String;

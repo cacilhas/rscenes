@@ -2,14 +2,10 @@ use crate::rtext::Rtext;
 use raylib_ffi::*;
 use std::fmt::Display;
 
-pub trait FontExt {
+pub trait FontExt: Sized {
     fn default() -> Self;
-    fn load(filename: impl Display) -> Result<Self, String>
-    where
-        Self: Sized;
-    fn load_from_image(image: Image, key: Color, first_char: i32) -> Result<Self, String>
-    where
-        Self: Sized;
+    fn load(filename: impl Display) -> Result<Self, String>;
+    fn load_from_image(image: Image, key: Color, first_char: i32) -> Result<Self, String>;
     fn is_ready(self) -> bool;
     fn unload(self);
     fn export_as_code(self, filename: impl Display) -> bool;

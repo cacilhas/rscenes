@@ -1,6 +1,6 @@
 pub use raylib_ffi::{Vector2, Vector3};
 
-pub trait Vector2Ext {
+pub trait Vector2Ext: Sized {
     const ZERO: Self;
     const UP: Self;
     const DOWN: Self;

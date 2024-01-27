@@ -2,14 +2,10 @@ use crate::rmodels::Rmodels;
 use raylib_ffi::*;
 use std::fmt::Display;
 
-pub trait ModelAnimationExt {
-    fn load(filename: impl Display) -> Result<Vec<Self>, String>
-    where
-        Self: Sized;
+pub trait ModelAnimationExt: Sized {
+    fn load(filename: impl Display) -> Result<Vec<Self>, String>;
     fn unload(self);
-    fn unload_animations(anims: Vec<Self>)
-    where
-        Self: Sized;
+    fn unload_animations(anims: Vec<Self>);
 }
 
 impl ModelAnimationExt for ModelAnimation {

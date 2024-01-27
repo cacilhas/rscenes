@@ -2,7 +2,7 @@ use super::vector::{Vector2Ext, Vector3Ext};
 use crate::rcamera::Rcamera;
 use raylib_ffi::{enums::*, *};
 
-pub trait Camera2DExt {
+pub trait Camera2DExt: Sized {
     fn empty() -> Self;
 }
 

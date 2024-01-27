@@ -2,10 +2,8 @@ use crate::rmodels::Rmodels;
 use raylib_ffi::*;
 use std::fmt::Display;
 
-pub trait MaterialExt {
-    fn load(filename: impl Display) -> Result<Vec<Self>, String>
-    where
-        Self: Sized;
+pub trait MaterialExt: Sized {
+    fn load(filename: impl Display) -> Result<Vec<Self>, String>;
     fn default() -> Self;
 
     fn is_ready(self) -> bool;
