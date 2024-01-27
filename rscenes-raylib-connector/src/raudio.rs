@@ -1,6 +1,8 @@
 use raylib_ffi::*;
 use std::fmt::Display;
 
+use crate::utils::array_from_c;
+
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Raudio;
 
@@ -104,6 +106,72 @@ impl Raudio {
     }
 
     // Wave/Sound management methods
+
+    pub(crate) fn __play_sound(sound: Sound) {
+        unsafe { PlaySound(sound) }
+    }
+
+    pub(crate) fn __stop_sound(sound: Sound) {
+        unsafe { StopSound(sound) }
+    }
+
+    pub(crate) fn __pause_sound(sound: Sound) {
+        unsafe { PauseSound(sound) }
+    }
+
+    pub(crate) fn __resume_sound(sound: Sound) {
+        unsafe { ResumeSound(sound) }
+    }
+
+    pub(crate) fn __is_sound_playing(sound: Sound) -> bool {
+        unsafe { IsSoundPlaying(sound) }
+    }
+
+    pub(crate) fn __set_sound_volume(sound: Sound, volume: f32) {
+        unsafe { SetSoundVolume(sound, volume) }
+    }
+
+    pub(crate) fn __set_sound_pitch(sound: Sound, pitch: f32) {
+        unsafe { SetSoundPitch(sound, pitch) }
+    }
+
+    pub(crate) fn __set_sound_pan(sound: Sound, pan: f32) {
+        unsafe { SetSoundPan(sound, pan) }
+    }
+
+    pub(crate) fn __wave_copy(wave: Wave) -> Wave {
+        unsafe { WaveCopy(wave) }
+    }
+
+    pub(crate) fn __wave_crop(wave: &mut Wave, init_sample: i32, final_sample: i32) {
+        unsafe { WaveCrop(wave, init_sample, final_sample) }
+    }
+
+    pub(crate) fn __wave_format(
+        wave: &mut Wave,
+        sample_rate: i32,
+        sample_size: i32,
+        channels: i32,
+    ) {
+        unsafe { WaveFormat(wave, sample_rate, sample_size, channels) }
+    }
+
+    pub(crate) fn __load_wave_samples(wave: Wave) -> Result<Vec<f32>, String> {
+        unsafe {
+            let raw = LoadWaveSamples(wave);
+            // TODO: review this calculation
+            let count = wave.frameCount * wave.sampleSize / 32;
+            array_from_c(raw, count as usize, || {
+                "couldn't load samples from wave".to_owned()
+            })
+        }
+    }
+
+    pub(crate) fn __unload_wave_samples(samples: &mut Vec<f32>) {
+        unsafe { UnloadWaveSamples(samples.as_mut_ptr()) }
+    }
+
+    // Music management methods
 }
 
 /// Exported methods
@@ -181,4 +249,58 @@ impl Raudio {
     }
 
     // Wave/Sound management methods
+
+    pub fn play_sound(&self, sound: Sound) {
+        Self::__play_sound(sound)
+    }
+
+    pub fn stop_sound(&self, sound: Sound) {
+        Self::__stop_sound(sound)
+    }
+
+    pub fn pause_sound(&self, sound: Sound) {
+        Self::__pause_sound(sound)
+    }
+
+    pub fn resume_sound(&self, sound: Sound) {
+        Self::__resume_sound(sound)
+    }
+
+    pub fn is_sound_playing(&self, sound: Sound) -> bool {
+        Self::__is_sound_playing(sound)
+    }
+
+    pub fn set_sound_volume(&self, sound: Sound, volume: f32) {
+        Self::__set_sound_volume(sound, volume)
+    }
+
+    pub fn set_sound_pitch(&self, sound: Sound, pitch: f32) {
+        Self::__set_sound_pitch(sound, pitch)
+    }
+
+    pub fn set_sound_pan(&self, sound: Sound, pan: f32) {
+        Self::__set_sound_pan(sound, pan)
+    }
+
+    pub fn wave_copy(&self, wave: Wave) -> Wave {
+        Self::__wave_copy(wave)
+    }
+
+    pub fn wave_crop(&self, wave: &mut Wave, init_sample: i32, final_sample: i32) {
+        Self::__wave_crop(wave, init_sample, final_sample)
+    }
+
+    pub fn wave_format(&self, wave: &mut Wave, sample_rate: i32, sample_size: i32, channels: i32) {
+        Self::__wave_format(wave, sample_rate, sample_size, channels)
+    }
+
+    pub fn load_wave_samples(&self, wave: Wave) -> Result<Vec<f32>, String> {
+        Self::__load_wave_samples(wave)
+    }
+
+    pub fn unload_wave_samples(&self, samples: &mut Vec<f32>) {
+        Self::__unload_wave_samples(samples)
+    }
+
+    // Music management methods
 }
