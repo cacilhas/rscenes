@@ -30,10 +30,10 @@ impl Rmodels {
         unsafe { DrawTriangle3D(v1, v2, v3, color) }
     }
 
-    pub(crate) fn __draw_triangle_strip_3d(points: Vec<Vector3>, color: Color) {
+    pub(crate) fn __draw_triangle_strip_3d(points: &mut Vec<Vector3>, color: Color) {
         unsafe {
             let count = points.len() as i32;
-            let points = points.as_ptr() as *mut Vector3;
+            let points = points.as_mut_ptr();
             DrawTriangleStrip3D(points, count, color)
         }
     }
@@ -271,10 +271,10 @@ impl Rmodels {
         unsafe { UploadMesh(mesh, dynamic) }
     }
 
-    pub(crate) fn __update_mesh_buffer(mesh: Mesh, index: i32, data: Vec<u8>, offset: i32) {
+    pub(crate) fn __update_mesh_buffer(mesh: Mesh, index: i32, data: &mut Vec<u8>, offset: i32) {
         unsafe {
             let size = data.len() as i32;
-            let data = data.as_ptr() as *mut c_void;
+            let data = data.as_mut_ptr() as *mut c_void;
             UpdateMeshBuffer(mesh, index, data, size, offset)
         }
     }
@@ -442,7 +442,7 @@ impl Rmodels {
         Self::__draw_triangle_3d(v1, v2, v3, color)
     }
 
-    pub fn draw_triangle_strip_3d(&self, points: Vec<Vector3>, color: Color) {
+    pub fn draw_triangle_strip_3d(&self, points: &mut Vec<Vector3>, color: Color) {
         Self::__draw_triangle_strip_3d(points, color)
     }
 
@@ -685,7 +685,7 @@ impl Rmodels {
         Self::__upload_mesh(mesh, dynamic)
     }
 
-    pub fn update_mesh_buffer(&self, mesh: Mesh, index: i32, data: Vec<u8>, offset: i32) {
+    pub fn update_mesh_buffer(&self, mesh: Mesh, index: i32, data: &mut Vec<u8>, offset: i32) {
         Self::__update_mesh_buffer(mesh, index, data, offset)
     }
 

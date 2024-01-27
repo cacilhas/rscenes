@@ -16,7 +16,7 @@ pub trait MeshExt {
     fn gen_cubicmap(heightmap: Image, size: Vector3) -> Self;
 
     fn upload(&mut self, dynamic: bool);
-    fn update_buffer(self, index: i32, data: Vec<u8>, offset: i32);
+    fn update_buffer(self, index: i32, data: &mut Vec<u8>, offset: i32);
     fn unload(self);
     fn export(self, filename: impl Display) -> bool;
     fn get_bounding_box(self) -> BoundingBox;
@@ -72,7 +72,7 @@ impl MeshExt for Mesh {
         Rmodels::__upload_mesh(self, dynamic)
     }
 
-    fn update_buffer(self, index: i32, data: Vec<u8>, offset: i32) {
+    fn update_buffer(self, index: i32, data: &mut Vec<u8>, offset: i32) {
         Rmodels::__update_mesh_buffer(self, index, data, offset)
     }
 

@@ -32,10 +32,10 @@ impl Rshapes {
         unsafe { DrawLineEx(start, end, thick, color) }
     }
 
-    pub(crate) fn __draw_line_strip(points: Vec<Vector2>, color: Color) {
+    pub(crate) fn __draw_line_strip(points: &mut Vec<Vector2>, color: Color) {
         unsafe {
             let count = points.len() as i32;
-            let points = points.as_ptr() as *mut Vector2;
+            let points = points.as_mut_ptr();
             DrawLineStrip(points, count, color)
         }
     }
@@ -244,18 +244,18 @@ impl Rshapes {
         unsafe { DrawTriangleLines(v1, v2, v3, color) }
     }
 
-    pub(crate) fn __draw_triangle_fan(points: Vec<Vector2>, color: Color) {
+    pub(crate) fn __draw_triangle_fan(points: &mut Vec<Vector2>, color: Color) {
         unsafe {
             let count = points.len() as i32;
-            let points = points.as_ptr() as *mut Vector2;
+            let points = points.as_mut_ptr();
             DrawTriangleFan(points, count, color)
         }
     }
 
-    pub(crate) fn __draw_triangle_strip(points: Vec<Vector2>, color: Color) {
+    pub(crate) fn __draw_triangle_strip(points: &mut Vec<Vector2>, color: Color) {
         unsafe {
             let count = points.len() as i32;
-            let points = points.as_ptr() as *mut Vector2;
+            let points = points.as_mut_ptr();
             DrawTriangleStrip(points, count, color)
         }
     }
@@ -293,42 +293,46 @@ impl Rshapes {
 
     // Splines drawing methods
 
-    pub(crate) fn __draw_spline_linear(points: Vec<Vector2>, thick: f32, color: Color) {
+    pub(crate) fn __draw_spline_linear(points: &mut Vec<Vector2>, thick: f32, color: Color) {
         unsafe {
             let count = points.len() as i32;
-            let points = points.as_ptr() as *mut Vector2;
+            let points = points.as_mut_ptr();
             DrawSplineLinear(points, count, thick, color)
         }
     }
 
-    pub(crate) fn __draw_spline_basis(points: Vec<Vector2>, thick: f32, color: Color) {
+    pub(crate) fn __draw_spline_basis(points: &mut Vec<Vector2>, thick: f32, color: Color) {
         unsafe {
             let count = points.len() as i32;
-            let points = points.as_ptr() as *mut Vector2;
+            let points = points.as_mut_ptr();
             DrawSplineBasis(points, count, thick, color)
         }
     }
 
-    pub(crate) fn __draw_spline_catmull_rom(points: Vec<Vector2>, thick: f32, color: Color) {
+    pub(crate) fn __draw_spline_catmull_rom(points: &mut Vec<Vector2>, thick: f32, color: Color) {
         unsafe {
             let count = points.len() as i32;
-            let points = points.as_ptr() as *mut Vector2;
+            let points = points.as_mut_ptr();
             DrawSplineCatmullRom(points, count, thick, color)
         }
     }
 
-    pub(crate) fn __draw_spline_bezier_quadratic(points: Vec<Vector2>, thick: f32, color: Color) {
+    pub(crate) fn __draw_spline_bezier_quadratic(
+        points: &mut Vec<Vector2>,
+        thick: f32,
+        color: Color,
+    ) {
         unsafe {
             let count = points.len() as i32;
-            let points = points.as_ptr() as *mut Vector2;
+            let points = points.as_mut_ptr();
             DrawSplineBezierQuadratic(points, count, thick, color)
         }
     }
 
-    pub(crate) fn __draw_spline_bezier_cubic(points: Vec<Vector2>, thick: f32, color: Color) {
+    pub(crate) fn __draw_spline_bezier_cubic(points: &mut Vec<Vector2>, thick: f32, color: Color) {
         unsafe {
             let count = points.len() as i32;
-            let points = points.as_ptr() as *mut Vector2;
+            let points = points.as_mut_ptr();
             DrawSplineBezierCubic(points, count, thick, color)
         }
     }
@@ -469,10 +473,10 @@ impl Rshapes {
         unsafe { CheckCollisionPointTriangle(point, p1, p2, p3) }
     }
 
-    pub(crate) fn __check_collision_point_poly(point: Vector2, points: Vec<Vector2>) -> bool {
+    pub(crate) fn __check_collision_point_poly(point: Vector2, points: &mut Vec<Vector2>) -> bool {
         unsafe {
             let count = points.len() as i32;
-            let points = points.as_ptr() as *mut Vector2;
+            let points = points.as_mut_ptr();
             CheckCollisionPointPoly(point, points, count)
         }
     }
@@ -541,7 +545,7 @@ impl Rshapes {
         Self::__draw_line_ex(start, end, thick, color)
     }
 
-    pub fn draw_line_strip(&self, points: Vec<Vector2>, color: Color) {
+    pub fn draw_line_strip(&self, points: &mut Vec<Vector2>, color: Color) {
         Self::__draw_line_strip(points, color)
     }
 
@@ -752,11 +756,11 @@ impl Rshapes {
         Self::__draw_triangle_lines(v1, v2, v3, color)
     }
 
-    pub fn draw_triangle_fan(&self, points: Vec<Vector2>, color: Color) {
+    pub fn draw_triangle_fan(&self, points: &mut Vec<Vector2>, color: Color) {
         Self::__draw_triangle_fan(points, color)
     }
 
-    pub fn draw_triangle_strip(&self, points: Vec<Vector2>, color: Color) {
+    pub fn draw_triangle_strip(&self, points: &mut Vec<Vector2>, color: Color) {
         Self::__draw_triangle_strip(points, color)
     }
 
@@ -789,23 +793,28 @@ impl Rshapes {
 
     // Splines drawing methods
 
-    pub fn draw_spline_linear(&self, points: Vec<Vector2>, thick: f32, color: Color) {
+    pub fn draw_spline_linear(&self, points: &mut Vec<Vector2>, thick: f32, color: Color) {
         Self::__draw_spline_linear(points, thick, color)
     }
 
-    pub fn draw_spline_basis(&self, points: Vec<Vector2>, thick: f32, color: Color) {
+    pub fn draw_spline_basis(&self, points: &mut Vec<Vector2>, thick: f32, color: Color) {
         Self::__draw_spline_basis(points, thick, color)
     }
 
-    pub fn draw_spline_catmull_rom(&self, points: Vec<Vector2>, thick: f32, color: Color) {
+    pub fn draw_spline_catmull_rom(&self, points: &mut Vec<Vector2>, thick: f32, color: Color) {
         Self::__draw_spline_catmull_rom(points, thick, color)
     }
 
-    pub fn draw_spline_berzier_quadratic(&self, points: Vec<Vector2>, thick: f32, color: Color) {
+    pub fn draw_spline_berzier_quadratic(
+        &self,
+        points: &mut Vec<Vector2>,
+        thick: f32,
+        color: Color,
+    ) {
         Self::__draw_spline_bezier_quadratic(points, thick, color)
     }
 
-    pub fn draw_spline_berzier_cubic(&self, points: Vec<Vector2>, thick: f32, color: Color) {
+    pub fn draw_spline_berzier_cubic(&self, points: &mut Vec<Vector2>, thick: f32, color: Color) {
         Self::__draw_spline_bezier_cubic(points, thick, color)
     }
 
@@ -952,7 +961,7 @@ impl Rshapes {
         Self::__check_collision_point_triangle(point, p1, p2, p3)
     }
 
-    pub fn check_collision_point_poly(&self, point: Vector2, points: Vec<Vector2>) -> bool {
+    pub fn check_collision_point_poly(&self, point: Vector2, points: &mut Vec<Vector2>) -> bool {
         Self::__check_collision_point_poly(point, points)
     }
 

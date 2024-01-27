@@ -15,7 +15,7 @@ pub trait ImageExt {
     fn load_anim(filename: impl Display) -> (Self, i32)
     where
         Self: Sized;
-    fn load_from_memory(tpe: impl Display, data: Vec<u8>) -> Self;
+    fn load_from_memory(tpe: impl Display, data: &mut Vec<u8>) -> Self;
     fn load_from_texture(texture: Texture2D) -> Self;
     fn load_from_screen() -> Self;
 
@@ -88,7 +88,7 @@ pub trait ImageExt {
     fn color_brightness(&mut self, brightness: i32) -> &mut Self;
     fn color_replace(&mut self, color: Color, replace: Color) -> &mut Self;
     fn load_palette(self, max_size: usize) -> Vec<Color>;
-    fn unload_palette(self, palette: Vec<Color>);
+    fn unload_palette(self, palette: &mut Vec<Color>);
     fn get_alpha_border(self, threshold: f32) -> Rectangle;
     fn get_color(self, x: i32, y: i32) -> Color;
 
@@ -183,7 +183,7 @@ impl ImageExt for Image {
         Rtextures::__load_image_from_texture(texture)
     }
 
-    fn load_from_memory(tpe: impl Display, data: Vec<u8>) -> Self {
+    fn load_from_memory(tpe: impl Display, data: &mut Vec<u8>) -> Self {
         Rtextures::__load_image_from_memory(tpe, data)
     }
 
@@ -395,7 +395,7 @@ impl ImageExt for Image {
         Rtextures::__load_image_pallete(self, max_size as i32)
     }
 
-    fn unload_palette(self, palette: Vec<Color>) {
+    fn unload_palette(self, palette: &mut Vec<Color>) {
         Rtextures::__unload_image_palette(palette)
     }
 

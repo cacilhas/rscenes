@@ -96,7 +96,7 @@ impl Rcore {
     pub(crate) fn __set_window_icons(images: &mut Vec<Image>) {
         unsafe {
             let count = images.len() as i32;
-            SetWindowIcons(images.as_ptr() as *mut Image, count)
+            SetWindowIcons(images.as_mut_ptr(), count)
         }
     }
 
@@ -395,7 +395,7 @@ impl Rcore {
     pub(crate) fn __set_shader_value_v<T>(
         shader: Shader,
         index: i32,
-        value: Vec<&T>,
+        value: &Vec<&T>,
         tpe: enums::ShaderUniformDataType,
     ) {
         unsafe {
@@ -551,10 +551,10 @@ impl Rcore {
 
     // TODO: UnloadFileData
 
-    pub(crate) fn __save_file_data(filename: impl Display, data: Vec<u8>) -> bool {
+    pub(crate) fn __save_file_data(filename: impl Display, data: &mut Vec<u8>) -> bool {
         unsafe {
             let size = data.len() as i32;
-            let data = data.as_ptr() as *mut c_void;
+            let data = data.as_mut_ptr() as *mut c_void;
             SaveFileData(rl_str!(filename), data, size)
         }
     }
@@ -688,10 +688,10 @@ impl Rcore {
 
     // Compression/Encoding functionality
 
-    pub(crate) fn __compress_data(data: Vec<u8>) -> Vec<u8> {
+    pub(crate) fn __compress_data(data: &mut Vec<u8>) -> Vec<u8> {
         unsafe {
             let size = data.len() as i32;
-            let data = data.as_ptr() as *mut c_uchar;
+            let data = data.as_mut_ptr() as *mut c_uchar;
             let mut comp_size = 0;
             let res = CompressData(data, size, &mut comp_size);
             let array = ptr::slice_from_raw_parts_mut(res, comp_size as usize);
@@ -699,10 +699,10 @@ impl Rcore {
         }
     }
 
-    pub(crate) fn __decompress_data(data: Vec<u8>) -> Vec<u8> {
+    pub(crate) fn __decompress_data(data: &mut Vec<u8>) -> Vec<u8> {
         unsafe {
             let size = data.len() as i32;
-            let data = data.as_ptr() as *mut c_uchar;
+            let data = data.as_mut_ptr() as *mut c_uchar;
             let mut decomp_size = 0;
             let res = DecompressData(data, size, &mut decomp_size);
             let array = ptr::slice_from_raw_parts_mut(res, decomp_size as usize);
@@ -710,10 +710,10 @@ impl Rcore {
         }
     }
 
-    pub(crate) fn __encode_data_base64(data: Vec<u8>) -> Result<String> {
+    pub(crate) fn __encode_data_base64(data: &mut Vec<u8>) -> Result<String> {
         unsafe {
             let size = data.len() as i32;
-            let data = data.as_ptr() as *mut c_uchar;
+            let data = data.as_mut_ptr() as *mut c_uchar;
             let mut output_size = 0;
             let res = EncodeDataBase64(data, size, &mut output_size) as *mut c_char;
             Ok(CString::from_raw(res).into_string()?)
@@ -1406,7 +1406,7 @@ impl Rcore {
         &self,
         shader: Shader,
         index: i32,
-        value: Vec<&T>,
+        value: &Vec<&T>,
         tpe: enums::ShaderUniformDataType,
     ) {
         Self::__set_shader_value_v(shader, index, value, tpe)
@@ -1552,7 +1552,7 @@ impl Rcore {
 
     // TODO: UnloadFileData
 
-    pub fn save_file_data(&self, filename: impl Display, data: Vec<u8>) -> bool {
+    pub fn save_file_data(&self, filename: impl Display, data: &mut Vec<u8>) -> bool {
         Self::__save_file_data(filename, data)
     }
 
@@ -1659,15 +1659,15 @@ impl Rcore {
 
     // Compression/Encoding functionality
 
-    pub fn compress_data(&self, data: Vec<u8>) -> Vec<u8> {
+    pub fn compress_data(&self, data: &mut Vec<u8>) -> Vec<u8> {
         Self::__compress_data(data)
     }
 
-    pub fn decompress_data(&self, data: Vec<u8>) -> Vec<u8> {
+    pub fn decompress_data(&self, data: &mut Vec<u8>) -> Vec<u8> {
         Self::__decompress_data(data)
     }
 
-    pub fn encode_data_base64(&self, data: Vec<u8>) -> Result<String> {
+    pub fn encode_data_base64(&self, data: &mut Vec<u8>) -> Result<String> {
         Self::__encode_data_base64(data)
     }
 

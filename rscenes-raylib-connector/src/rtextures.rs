@@ -1,10 +1,5 @@
 use raylib_ffi::{enums::*, *};
-use std::{
-    f32::consts::PI,
-    ffi::{c_uchar, c_void},
-    fmt::Display,
-    slice,
-};
+use std::{f32::consts::PI, ffi::c_void, fmt::Display, slice};
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Rtextures;
@@ -51,10 +46,10 @@ impl Rtextures {
         }
     }
 
-    pub(crate) fn __load_image_from_memory(tpe: impl Display, data: Vec<u8>) -> Image {
+    pub(crate) fn __load_image_from_memory(tpe: impl Display, data: &mut Vec<u8>) -> Image {
         unsafe {
             let size = data.len() as i32;
-            let data = data.as_ptr() as *mut c_uchar;
+            let data = data.as_mut_ptr();
             LoadImageFromMemory(rl_str!(tpe), data, size)
         }
     }
@@ -309,8 +304,8 @@ impl Rtextures {
         unsafe { UnloadImageColors(colors) }
     }
 
-    pub(crate) fn __unload_image_palette(colors: Vec<Color>) {
-        unsafe { UnloadImagePalette(colors.as_ptr() as *mut Color) }
+    pub(crate) fn __unload_image_palette(colors: &mut Vec<Color>) {
+        unsafe { UnloadImagePalette(colors.as_mut_ptr()) }
     }
 
     pub(crate) fn __get_image_alpha_border(image: Image, threshold: f32) -> Rectangle {
@@ -503,11 +498,11 @@ impl Rtextures {
         unsafe { UnloadRenderTexture(target) }
     }
 
-    pub(crate) fn __update_texture(texture: Texture2D, pixels: Vec<u8>) {
+    pub(crate) fn __update_texture(texture: Texture2D, pixels: &Vec<u8>) {
         unsafe { UpdateTexture(texture, pixels.as_ptr() as *const c_void) }
     }
 
-    pub(crate) fn __update_texture_rec(texture: Texture2D, rec: Rectangle, pixels: Vec<u8>) {
+    pub(crate) fn __update_texture_rec(texture: Texture2D, rec: Rectangle, pixels: &Vec<u8>) {
         unsafe { UpdateTextureRec(texture, rec, pixels.as_ptr() as *const c_void) }
     }
 
@@ -626,12 +621,12 @@ impl Rtextures {
         unsafe { GetColor(hex_value) }
     }
 
-    pub(crate) fn __get_pixel_color(ptr: Vec<u8>, format: impl Into<usize>) -> Color {
-        unsafe { GetPixelColor(ptr.as_ptr() as *mut c_void, format.into() as i32) }
+    pub(crate) fn __get_pixel_color(ptr: &mut Vec<u8>, format: impl Into<usize>) -> Color {
+        unsafe { GetPixelColor(ptr.as_mut_ptr() as *mut c_void, format.into() as i32) }
     }
 
     pub(crate) fn __set_pixel_color(ptr: &mut Vec<u8>, color: Color, format: impl Into<usize>) {
-        unsafe { SetPixelColor(ptr.as_ptr() as *mut c_void, color, format.into() as i32) }
+        unsafe { SetPixelColor(ptr.as_mut_ptr() as *mut c_void, color, format.into() as i32) }
     }
 
     pub(crate) fn __get_pixel_data_size(width: i32, height: i32, format: impl Into<usize>) -> i32 {
@@ -671,7 +666,7 @@ impl Rtextures {
         Self::__load_image_anim(filename)
     }
 
-    pub fn load_image_from_memory(&self, tpe: impl Display, data: Vec<u8>) -> Image {
+    pub fn load_image_from_memory(&self, tpe: impl Display, data: &mut Vec<u8>) -> Image {
         Self::__load_image_from_memory(tpe, data)
     }
 
@@ -918,7 +913,7 @@ impl Rtextures {
         Self::__unload_image_colors(colors)
     }
 
-    pub fn unload_image_palette(&self, colors: Vec<Color>) {
+    pub fn unload_image_palette(&self, colors: &mut Vec<Color>) {
         Self::__unload_image_palette(colors)
     }
 
@@ -1108,11 +1103,11 @@ impl Rtextures {
         Self::__unload_render_texture(target)
     }
 
-    pub fn update_texture(&self, texture: Texture2D, pixels: Vec<u8>) {
+    pub fn update_texture(&self, texture: Texture2D, pixels: &Vec<u8>) {
         Self::__update_texture(texture, pixels)
     }
 
-    pub fn update_texture_rec(&self, texture: Texture2D, rec: Rectangle, pixels: Vec<u8>) {
+    pub fn update_texture_rec(&self, texture: Texture2D, rec: Rectangle, pixels: &Vec<u8>) {
         Self::__update_texture_rec(texture, rec, pixels)
     }
 
@@ -1235,7 +1230,7 @@ impl Rtextures {
         Self::__get_color(hex_value)
     }
 
-    pub fn get_pixel_color(&self, ptr: Vec<u8>, format: PixelFormat) -> Color {
+    pub fn get_pixel_color(&self, ptr: &mut Vec<u8>, format: PixelFormat) -> Color {
         Self::__get_pixel_color(ptr, format)
     }
 
