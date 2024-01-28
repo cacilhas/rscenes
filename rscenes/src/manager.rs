@@ -4,9 +4,10 @@ use crate::{
     state::State,
 };
 use resolution::current_resolution;
-use rscenes_raylib_connector::{assets::*, interface::*};
+use rscenes_raylib_connector::interface::*;
 
 /// Control the game
+#[derive(Default)]
 pub struct Rscenes {
     /// Change this to set the window title
     pub title: String,
@@ -42,9 +43,20 @@ impl Rscenes {
                 ..
             } => (rcore, rgestures, rcamera),
         };
-        rcore.set_exit_key(KeyboardKey::Escape);
-        rcore.init_window(self.window_size.0, self.window_size.1, &self.title);
         rcore.set_target_fps(60);
+        let (width, height) = match self.window_size {
+            (0, 0) => current_resolution().unwrap_or((800, 600)),
+            (0, height) => {
+                let (width, _) = current_resolution().unwrap_or((800, 600));
+                (width, height)
+            }
+            (width, 0) => {
+                let (_, height) = current_resolution().unwrap_or((800, 600));
+                (width, height)
+            }
+            (width, height) => (width, height),
+        };
+        rcore.init_window(width, height, &self.title);
 
         for callback in self.setups.iter() {
             callback(rcore, rgestures, rcamera)?;
@@ -83,22 +95,6 @@ impl Rscenes {
         }
 
         Ok(())
-    }
-}
-
-impl Default for Rscenes {
-    /// Default window size is ¾ of the each screen dimension
-    fn default() -> Self {
-        let window_size = match current_resolution() {
-            Ok((width, height)) => (width * 3 / 4, height * 3 / 4),
-            _ => (800, 600),
-        };
-        Self {
-            title: String::default(),
-            window_size,
-            setups: Vec::with_capacity(1),
-            scenes: Vec::with_capacity(4),
-        }
     }
 }
 
