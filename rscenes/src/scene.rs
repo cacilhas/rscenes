@@ -5,11 +5,11 @@ use crate::state::State;
 use rscenes_raylib_connector::{assets::*, interface::*};
 
 pub trait Scene: Debug {
-    fn get_camera_2d(&self) -> Camera2D {
-        Camera2D::empty()
+    fn get_camera_2d(&self) -> Box<Camera2D> {
+        Box::new(Camera2D::empty())
     }
-    fn get_camera_3d(&self) -> Camera3D {
-        Camera3D::empty()
+    fn get_camera_3d(&self) -> Box<Camera3D> {
+        Box::new(Camera3D::empty())
     }
 
     #[allow(unused)]

@@ -27,17 +27,32 @@ pub fn draw(attr: TokenStream, item: TokenStream) -> TokenStream {
     let output = match attr.as_str() {
         "2d" => quote! {
             fn draw_2d(&self, connector: &rscenes::prelude::Connector2D) -> Result<(), String> {
-                let rcore = connector.recore;
-                let rgestures = connector.rgestures;
-                let rshapes = connector.rshapes;
-                let rtextures = connector.rtextures;
-                let rtext = connector.rtext;
-                let raudio = connector.raudio;
-                let camera = self.get_camera_2d();
-
+                let camera = self.get_camera_2d(),
                 rcore.begin_mode_2D(camera);
-                #body
+                let res = self.__draw_2d(
+                    connector.rcore,
+                    connector.rgestures,
+                    connector.rshapes,
+                    connector.rtextures,
+                    connector.rtext,
+                    connector.raudio,
+                    camera,
+                );
                 rcore.end_mode_2D();
+                res
+            }
+
+            fn __draw_2d(
+                &self,
+                rcore: rscenes::prelude::Rcore,
+                rgestures: rscenes::prelude::Rgestures,
+                rshapes: rscenes::prelude::Rshapes,
+                textures: rscenes::prelude::Rtextures,
+                rtext: rscenes::prelude::Rtext,
+                raudio: rscenes::prelude::Raudio,
+                camera: Box<rscenes::prelude::Camera2D>,
+            ) -> Result<(), String {
+                #body
                 Ok(())
             }
         },
@@ -54,6 +69,36 @@ pub fn draw(attr: TokenStream, item: TokenStream) -> TokenStream {
                 rcore.begin_mode_3D(camera);
                 #body
                 rcore.end_mode_3D();
+                Ok(())
+            }
+
+            fn draw_3d(&self, connector: &rscenes::prelude::Connector3D) -> Result<(), String> {
+                let camera = self.get_camera_3d(),
+                rcore.begin_mode_3D(camera);
+                let res = self.__draw_3d(
+                    connector.rcore,
+                    connector.rgestures,
+                    connector.rcamera,
+                    connector.rtextures,
+                    connector.rmodels,
+                    connector.raudio,
+                    camera,
+                );
+                rcore.end_mode_3D();
+                res
+            }
+
+            fn __draw_3d(
+                &self,
+                rcore: rscenes::prelude::Rcore,
+                rgestures: rscenes::prelude::Rgestures,
+                rcamera: rscenes::prelude::Rcamera,
+                textures: rscenes::prelude::Rtextures,
+                rmodels: rscenes::prelude::Rmodels,
+                raudio: rscenes::prelude::Raudio,
+                camera: Box<rscenes::prelude::Camera2D>,
+            ) -> Result<(), String {
+                #body
                 Ok(())
             }
         },
