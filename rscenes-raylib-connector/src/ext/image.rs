@@ -13,7 +13,7 @@ pub trait ImageExt: Sized {
     ) -> Result<Self, String>;
     fn load_svg(filename_or_string: impl Display, width: i32, height: i32) -> Result<Self, String>;
     fn load_anim(filename: impl Display) -> Result<(Self, i32), String>;
-    fn load_from_memory(tpe: impl Display, data: &mut Vec<u8>) -> Result<Self, String>;
+    fn load_from_memory(tpe: ImageType, data: &mut Vec<u8>) -> Result<Self, String>;
     fn load_from_texture(texture: Texture2D) -> Self;
     fn load_from_screen() -> Self;
 
@@ -50,7 +50,7 @@ pub trait ImageExt: Sized {
     fn is_ready(self) -> bool;
     fn unload(self);
     fn export(self, filename: impl Display) -> bool;
-    fn export_to_memory(self, tpe: impl Display) -> Result<Vec<u8>, String>;
+    fn export_to_memory(self, tpe: ImageType) -> Result<Vec<u8>, String>;
     fn export_as_code(self, filename: impl Display) -> bool;
 
     fn copy(self) -> Self;
@@ -181,7 +181,7 @@ impl ImageExt for Image {
         Rtextures::__load_image_from_texture(texture)
     }
 
-    fn load_from_memory(tpe: impl Display, data: &mut Vec<u8>) -> Result<Self, String> {
+    fn load_from_memory(tpe: ImageType, data: &mut Vec<u8>) -> Result<Self, String> {
         Rtextures::__load_image_from_memory(tpe, data)
     }
 
@@ -256,7 +256,7 @@ impl ImageExt for Image {
         Rtextures::__export_image(self, filename)
     }
 
-    fn export_to_memory(self, tpe: impl Display) -> Result<Vec<u8>, String> {
+    fn export_to_memory(self, tpe: ImageType) -> Result<Vec<u8>, String> {
         Rtextures::__export_image_to_memory(self, tpe)
     }
 
@@ -530,5 +530,36 @@ impl ImageExt for Image {
     ) -> &mut Self {
         Rtextures::__image_draw_text_ex(self, font, text, position, font_size, spacing, tint);
         self
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum ImageType {
+    Bitmap,
+    Heif,
+    Jpeg,
+    Pixmap,
+    Png,
+    Pnm,
+    Raw,
+    Svg,
+    Tiff,
+    WebP,
+}
+
+impl Display for ImageType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ImageType::Bitmap => f.write_str(".bmp"),
+            ImageType::Heif => f.write_str(".heif"),
+            ImageType::Jpeg => f.write_str(".jpg"),
+            ImageType::Pixmap => f.write_str(".xpm"),
+            ImageType::Png => f.write_str(".png"),
+            ImageType::Pnm => f.write_str(".pnm"),
+            ImageType::Raw => f.write_str(".raw"),
+            ImageType::Svg => f.write_str(".svg"),
+            ImageType::Tiff => f.write_str(".tiff"),
+            ImageType::WebP => f.write_str(".webp"),
+        }
     }
 }

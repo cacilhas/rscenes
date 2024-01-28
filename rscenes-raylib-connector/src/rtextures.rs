@@ -1,7 +1,6 @@
+use crate::{ext::image::ImageType, utils::array_from_c};
 use raylib_ffi::{enums::*, *};
 use std::{f32::consts::PI, ffi::c_void, fmt::Display};
-
-use crate::utils::array_from_c;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Rtextures;
@@ -730,7 +729,7 @@ impl Rtextures {
 
     pub fn load_image_from_memory(
         &self,
-        tpe: impl Display,
+        tpe: ImageType,
         data: &mut Vec<u8>,
     ) -> Result<Image, String> {
         Self::__load_image_from_memory(tpe, data)
@@ -756,11 +755,7 @@ impl Rtextures {
         Self::__export_image(image, filename)
     }
 
-    pub fn export_image_to_memory(
-        &self,
-        image: Image,
-        tpe: impl Display,
-    ) -> Result<Vec<u8>, String> {
+    pub fn export_image_to_memory(&self, image: Image, tpe: ImageType) -> Result<Vec<u8>, String> {
         Self::__export_image_to_memory(image, tpe)
     }
 

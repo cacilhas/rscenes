@@ -1,4 +1,4 @@
-use crate::utils::array_from_c;
+use crate::{ext::wave::WaveType, utils::array_from_c};
 use raylib_ffi::*;
 use std::{ffi::c_void, fmt::Display};
 
@@ -361,7 +361,7 @@ impl Raudio {
         Self::__load_wave(filename)
     }
 
-    pub fn load_wave_from_memory(&self, tpe: impl Display, data: Vec<u8>) -> Result<Wave, String> {
+    pub fn load_wave_from_memory(&self, tpe: WaveType, data: Vec<u8>) -> Result<Wave, String> {
         Self::__load_wave_from_memory(tpe, data)
     }
 

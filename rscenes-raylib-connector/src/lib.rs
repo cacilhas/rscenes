@@ -20,7 +20,7 @@ pub mod assets {
     pub use crate::ext::codepoints::Codepoints;
     pub use crate::ext::color::ColorExt;
     pub use crate::ext::font::FontExt;
-    pub use crate::ext::image::ImageExt;
+    pub use crate::ext::image::{ImageExt, ImageType};
     pub use crate::ext::key::KeyboardKeyExt;
     pub use crate::ext::material::MaterialExt;
     pub use crate::ext::mesh::MeshExt;
@@ -31,7 +31,7 @@ pub mod assets {
     pub use crate::ext::sound::SoundExt;
     pub use crate::ext::texture::{RenderTextureExt, TextureCubemapExt, TextureExt};
     pub use crate::ext::vector::{Vector2Ext, Vector3Ext};
-    pub use crate::ext::wave::WaveExt;
+    pub use crate::ext::wave::{WaveExt, WaveType};
     pub use crate::ext::window_handle::WindowHandle;
     pub use raylib_ffi::{
         enums::*, AudioStream, AutomationEvent, AutomationEventList, BoneInfo, BoundingBox,
