@@ -416,7 +416,7 @@ impl Rcore {
     pub(crate) fn __set_shader_value_v<T>(
         shader: Shader,
         index: i32,
-        value: &Vec<&T>,
+        value: &[&T],
         tpe: enums::ShaderUniformDataType,
     ) {
         unsafe {
@@ -1419,7 +1419,7 @@ impl Rcore {
         &self,
         shader: Shader,
         index: i32,
-        value: &Vec<&T>,
+        value: &[&T],
         tpe: enums::ShaderUniformDataType,
     ) {
         Self::__set_shader_value_v(shader, index, value, tpe)

@@ -1,3 +1,6 @@
+#![allow(clippy::too_many_arguments)] // Raylib functions has too may arguments ¯\_(ツ)_/¯
+#![allow(clippy::wrong_self_convention)] // Raylib is_* methods receive owned objects
+
 mod ext;
 mod raudio;
 mod rcamera;

@@ -9,8 +9,8 @@ pub trait TextureExt: Sized {
 
     fn is_ready(self) -> bool;
     fn unload(self);
-    fn update_gpu(self, pixels: &Vec<u8>) -> Self;
-    fn update_gpu_rec(self, rec: Rectangle, pixels: &Vec<u8>) -> Self;
+    fn update_gpu(self, pixels: &[u8]) -> Self;
+    fn update_gpu_rec(self, rec: Rectangle, pixels: &[u8]) -> Self;
     fn gen_mipmaps(&mut self) -> &mut Self;
     fn set_filter(self, filter: TextureFilter) -> Self;
     fn set_wrap(self, wrap: TextureWrap) -> Self;
@@ -33,12 +33,12 @@ impl TextureExt for Texture2D {
         Rtextures::__unload_texture(self)
     }
 
-    fn update_gpu(self, pixels: &Vec<u8>) -> Self {
+    fn update_gpu(self, pixels: &[u8]) -> Self {
         Rtextures::__update_texture(self, pixels);
         self
     }
 
-    fn update_gpu_rec(self, rec: Rectangle, pixels: &Vec<u8>) -> Self {
+    fn update_gpu_rec(self, rec: Rectangle, pixels: &[u8]) -> Self {
         Rtextures::__update_texture_rec(self, rec, pixels);
         self
     }

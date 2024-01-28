@@ -1,5 +1,5 @@
 use crate::rtext::Rtext;
-use std::{fmt::Display, marker::PhantomData, ptr};
+use std::{fmt::Display, marker::PhantomData};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Codepoints {
@@ -29,8 +29,12 @@ impl Codepoints {
         self.count
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.count == 0
+    }
+
     pub fn get(&self, index: usize) -> Result<i32, String> {
-        if self.inner == ptr::null_mut() {
+        if self.inner.is_null() {
             return Err("null codepoints".to_owned());
         }
         if index >= self.count {

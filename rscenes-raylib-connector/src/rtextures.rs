@@ -560,11 +560,11 @@ impl Rtextures {
         unsafe { UnloadRenderTexture(target) }
     }
 
-    pub(crate) fn __update_texture(texture: Texture2D, pixels: &Vec<u8>) {
+    pub(crate) fn __update_texture(texture: Texture2D, pixels: &[u8]) {
         unsafe { UpdateTexture(texture, pixels.as_ptr() as *const c_void) }
     }
 
-    pub(crate) fn __update_texture_rec(texture: Texture2D, rec: Rectangle, pixels: &Vec<u8>) {
+    pub(crate) fn __update_texture_rec(texture: Texture2D, rec: Rectangle, pixels: &[u8]) {
         unsafe { UpdateTextureRec(texture, rec, pixels.as_ptr() as *const c_void) }
     }
 
@@ -1177,11 +1177,11 @@ impl Rtextures {
         Self::__unload_render_texture(target)
     }
 
-    pub fn update_texture(&self, texture: Texture2D, pixels: &Vec<u8>) {
+    pub fn update_texture(&self, texture: Texture2D, pixels: &[u8]) {
         Self::__update_texture(texture, pixels)
     }
 
-    pub fn update_texture_rec(&self, texture: Texture2D, rec: Rectangle, pixels: &Vec<u8>) {
+    pub fn update_texture_rec(&self, texture: Texture2D, rec: Rectangle, pixels: &[u8]) {
         Self::__update_texture_rec(texture, rec, pixels)
     }
 

@@ -22,7 +22,6 @@ pub struct RaylibConnector {
 
 /// TODO: the methods implemented bellow should be in the rscenes crate
 impl RaylibConnector {
-    #[must_use]
     #[allow(non_snake_case)]
     pub fn mode_2D<F, R, E>(&self, camera: Camera2D, block: F) -> Result<R, E>
     where
@@ -34,7 +33,6 @@ impl RaylibConnector {
         res
     }
 
-    #[must_use]
     #[allow(non_snake_case)]
     pub fn mode_3D<F, R, E>(&self, camera: Camera3D, block: F) -> Result<R, E>
     where
@@ -46,7 +44,6 @@ impl RaylibConnector {
         res
     }
 
-    #[must_use]
     pub fn texture_mode<F, R, E>(&self, target: RenderTexture2D, block: F) -> Result<R, E>
     where
         F: FnOnce() -> Result<R, E>,
@@ -57,7 +54,6 @@ impl RaylibConnector {
         res
     }
 
-    #[must_use]
     pub fn shader_mode<F, R, E>(&self, shader: Shader, block: F) -> Result<R, E>
     where
         F: FnOnce() -> Result<R, E>,
@@ -68,7 +64,6 @@ impl RaylibConnector {
         res
     }
 
-    #[must_use]
     pub fn blend_mode<F, R, E>(&self, mode: i32, block: F) -> Result<R, E>
     where
         F: FnOnce() -> Result<R, E>,
@@ -79,7 +74,6 @@ impl RaylibConnector {
         res
     }
 
-    #[must_use]
     pub fn scissor_mode<F, R, E>(
         &self,
         x: i32,
@@ -97,7 +91,6 @@ impl RaylibConnector {
         res
     }
 
-    #[must_use]
     pub fn vr_stereo_mode<F, R, E>(&self, config: VrStereoConfig, block: F) -> Result<R, E>
     where
         F: FnOnce() -> Result<R, E>,
