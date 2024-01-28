@@ -1,14 +1,10 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+mod connectors;
+mod scene;
+mod state;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+pub mod prelude {
+    pub use crate::connectors::{Connector2D, Connector3D};
+    pub use crate::scene::Scene;
+    pub use crate::state::State;
+    pub use rscenes_raylib_connector::assets::*;
 }

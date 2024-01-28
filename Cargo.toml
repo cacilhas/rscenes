@@ -3,6 +3,6 @@
 resolver = "1"
 
 members = [
-  "rscenes",
+  "rscenes", "rscenes-macros",
   "rscenes-raylib-connector",
 ]

@@ -1,5 +1,5 @@
 [package]
-name          = "rscenes"
+name          = "rscenes-macros"
 version       = "2.0.0"
 authors       = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info"]
 license       = "BSD-3-Clause"
@@ -12,6 +12,9 @@ categories    = ["api-bindings", "game-engines", "graphics"]
 keywords      = ["raylib", "scenes"]
 edition       = "2021"
 
-[dependencies.rscenes-raylib-connector]
-version = "1.0"
-path = "../rscenes-raylib-connector"
+[lib]
+proc-macro    = true
+
+[dependencies]
+quote = "1.0"
+syn = "2.0"

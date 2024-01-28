@@ -37,7 +37,7 @@ pub mod assets {
         enums::*, AudioStream, AutomationEvent, AutomationEventList, BoneInfo, BoundingBox,
         Camera2D, Camera3D, Color, FilePathList, Font, GlyphInfo, Image, Material, MaterialMap,
         Matrix, Mesh, Model, ModelAnimation, Music, NPatchInfo, Ray, RayCollision, Rectangle,
-        RenderTexture, Shader, Sound, Texture, Transform, Vector2, Vector3, Vector4, VrDeviceInfo,
-        VrStereoConfig, Wave,
+        RenderTexture, Shader, Sound, Texture2D, TextureCubemap, Transform, Vector2, Vector3,
+        Vector4, VrDeviceInfo, VrStereoConfig, Wave,
     };
 }
