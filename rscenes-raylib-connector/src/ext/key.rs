@@ -3,13 +3,21 @@ use raylib_ffi::enums::KeyboardKey;
 use std::char;
 
 pub trait KeyboardKeyExt: Sized {
+    /// Get key pressed, call it multiple times for keys queued, returns KeyboardKey::Null when the queue is empty
     fn get_pressed() -> Self;
+    /// Get char pressed (unicode), call it multiple times for chars queued, returns empty when the queue is empty
     fn get_pressed_char() -> String;
+    /// Convert to string
     fn to_string(self) -> String;
+    /// Check whether a key has been pressed once
     fn is_pressed(self) -> bool;
+    /// Check whether a key has been pressed again (Only PLATFORM_DESKTOP)
     fn is_pressed_repeat(self) -> bool;
+    /// Check whether a key is being pressed
     fn is_down(self) -> bool;
+    /// Check whether a key has been released once
     fn is_released(self) -> bool;
+    /// Check whether a key is NOT being pressed
     fn is_up(self) -> bool;
 }
 

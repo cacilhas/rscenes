@@ -21,10 +21,12 @@ impl Rcamera {
 
 /// Exported methods
 impl Rcamera {
+    /// Update camera position for selected mode
     pub fn update_camera(&self, camera: &mut Camera3D, mode: CameraMode) {
         Self::__update_camera(camera, mode)
     }
 
+    /// Update camera movement/rotation
     pub fn update_camera_pro(
         &self,
         camera: &mut Camera3D,

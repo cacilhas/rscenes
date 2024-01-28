@@ -6,7 +6,6 @@ pub use crate::rmodels::Rmodels;
 pub use crate::rshapes::Rshapes;
 pub use crate::rtext::Rtext;
 pub use crate::rtextures::Rtextures;
-use raylib_ffi::*;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct RaylibConnector {
@@ -18,90 +17,6 @@ pub struct RaylibConnector {
     pub rtext: Rtext,
     pub rmodels: Rmodels,
     pub raudio: Raudio,
-}
-
-/// TODO: the methods implemented bellow should be in the rscenes crate
-impl RaylibConnector {
-    #[allow(non_snake_case)]
-    pub fn mode_2D<F, R, E>(&self, camera: Camera2D, block: F) -> Result<R, E>
-    where
-        F: FnOnce() -> Result<R, E>,
-    {
-        self.rcore.begin_mode_2D(camera);
-        let res = block();
-        self.rcore.end_mode_2D();
-        res
-    }
-
-    #[allow(non_snake_case)]
-    pub fn mode_3D<F, R, E>(&self, camera: Camera3D, block: F) -> Result<R, E>
-    where
-        F: FnOnce() -> Result<R, E>,
-    {
-        self.rcore.begin_mode_3D(camera);
-        let res = block();
-        self.rcore.end_mode_3D();
-        res
-    }
-
-    pub fn texture_mode<F, R, E>(&self, target: RenderTexture2D, block: F) -> Result<R, E>
-    where
-        F: FnOnce() -> Result<R, E>,
-    {
-        self.rcore.begin_texture_mode(target);
-        let res = block();
-        self.rcore.end_texture_mode();
-        res
-    }
-
-    pub fn shader_mode<F, R, E>(&self, shader: Shader, block: F) -> Result<R, E>
-    where
-        F: FnOnce() -> Result<R, E>,
-    {
-        self.rcore.begin_shader_mode(shader);
-        let res = block();
-        self.rcore.end_shader_mode();
-        res
-    }
-
-    pub fn blend_mode<F, R, E>(&self, mode: i32, block: F) -> Result<R, E>
-    where
-        F: FnOnce() -> Result<R, E>,
-    {
-        self.rcore.begin_blend_mode(mode);
-        let res = block();
-        self.rcore.end_blend_mode();
-        res
-    }
-
-    pub fn scissor_mode<F, R, E>(
-        &self,
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
-        block: F,
-    ) -> Result<R, E>
-    where
-        F: FnOnce() -> Result<R, E>,
-    {
-        self.rcore.begin_scissor_mode(x, y, width, height);
-        let res = block();
-        self.rcore.end_scissor_mode();
-        res
-    }
-
-    pub fn vr_stereo_mode<F, R, E>(&self, config: VrStereoConfig, block: F) -> Result<R, E>
-    where
-        F: FnOnce() -> Result<R, E>,
-    {
-        self.rcore.begin_vr_stereo_mode(config);
-        let res = block();
-        self.rcore.end_vr_stereo_mode();
-        res
-    }
-
-    // TODO: record automation event
 }
 
 #[cfg(test)]

@@ -204,6 +204,10 @@ impl Rcore {
         unsafe { SetClipboardText(rl_str!(text)) }
     }
 
+    pub(crate) fn __get_clipboard_text() -> Result<String, String> {
+        unsafe { string_from_c(GetClipboardText() as *mut c_char) }
+    }
+
     pub(crate) fn __enable_event_waiting() {
         unsafe { EnableEventWaiting() }
     }
@@ -288,8 +292,8 @@ impl Rcore {
         unsafe { EndShaderMode() }
     }
 
-    pub(crate) fn __begin_blend_mode(mode: i32) {
-        unsafe { BeginBlendMode(mode) }
+    pub(crate) fn __begin_blend_mode(mode: impl Into<usize>) {
+        unsafe { BeginBlendMode(mode.into() as i32) }
     }
 
     pub(crate) fn __end_blend_mode() {
@@ -516,8 +520,24 @@ impl Rcore {
         unsafe { GetRandomValue(min, max) }
     }
 
-    // TODO: LoadRandomSequence
-    // TODO: UnloadRandomSequence
+    pub(crate) fn __load_random_sequence(
+        count: usize,
+        min: i32,
+        max: i32,
+    ) -> Result<Vec<i32>, String> {
+        unsafe {
+            let raw = LoadRandomSequence(count as u32, min, max);
+            let res = array_from_c(raw, count, || {
+                "could not generate random sequence".to_owned()
+            })?
+            // Copy sequence to the stack
+            .iter()
+            .map(|e| *e)
+            .collect::<Vec<_>>();
+            UnloadRandomSequence(raw);
+            Ok(res)
+        }
+    }
 
     // Misc methods
 
@@ -525,8 +545,8 @@ impl Rcore {
         unsafe { TakeScreenshot(rl_str!(filename)) }
     }
 
-    pub(crate) fn __set_config_flags(flags: usize) {
-        unsafe { SetConfigFlags(flags as u32) }
+    pub(crate) fn __set_config_flags(flags: impl Into<usize>) {
+        unsafe { SetConfigFlags(flags.into() as u32) }
     }
 
     pub(crate) fn __open_url(url: impl Display) {
@@ -565,13 +585,17 @@ impl Rcore {
         unsafe {
             let mut size = 0;
             let raw = LoadFileData(rl_str!(filename), &mut size);
-            array_from_c(raw, size as usize, || {
+            let res = array_from_c(raw, size as usize, || {
                 format!("couldn't load file data from {}", filename)
-            })
+            })?
+            // Copy data to the stack
+            .iter()
+            .map(|e| *e)
+            .collect::<Vec<_>>();
+            UnloadFileData(raw);
+            Ok(res)
         }
     }
-
-    // TODO: UnloadFileData
 
     pub(crate) fn __save_file_data(filename: impl Display, data: &mut Vec<u8>) -> bool {
         unsafe {
@@ -589,10 +613,13 @@ impl Rcore {
     }
 
     pub(crate) fn __load_file_text(filename: impl Display) -> Result<String, String> {
-        unsafe { string_from_c(LoadFileText(rl_str!(filename)) as *mut c_char) }
+        unsafe {
+            let raw = LoadFileText(rl_str!(filename)) as *mut c_char;
+            let res = string_from_c(raw).map(|e| e.clone());
+            UnloadFileText(raw);
+            res
+        }
     }
-
-    // TODO: UnloadFileText
 
     pub(crate) fn __save_file_text(filename: impl Display, text: impl Display) -> bool {
         unsafe { SaveFileText(rl_str!(filename), rl_str!(text) as *mut c_char) }
@@ -600,134 +627,134 @@ impl Rcore {
 
     // File system methods
 
-    pub(crate) fn __file_exists(filename: impl Display) -> bool {
-        unsafe { FileExists(rl_str!(filename)) }
-    }
-
-    pub(crate) fn __directory_exists(dirname: impl Display) -> bool {
-        unsafe { DirectoryExists(rl_str!(dirname)) }
-    }
-
-    pub(crate) fn __is_file_extension(filename: impl Display, ext: impl Display) -> bool {
-        unsafe { IsFileExtension(rl_str!(filename), rl_str!(ext)) }
-    }
-
-    pub(crate) fn __get_file_length(filename: impl Display) -> i32 {
-        unsafe { GetFileLength(rl_str!(filename)) }
-    }
-
-    pub(crate) fn __get_file_extenstion(filename: impl Display) -> Result<String, String> {
-        unsafe { string_from_c(GetFileExtension(rl_str!(filename)) as *mut c_char) }
-    }
-
-    pub(crate) fn __get_file_name(path: impl Display) -> Result<String, String> {
-        unsafe { string_from_c(GetFileName(rl_str!(path)) as *mut c_char) }
-    }
-
-    pub(crate) fn __get_file_name_without_ext(path: impl Display) -> Result<String, String> {
-        unsafe { string_from_c(GetFileNameWithoutExt(rl_str!(path)) as *mut c_char) }
-    }
-
-    pub(crate) fn __get_directory_path(path: impl Display) -> Result<String, String> {
-        unsafe { string_from_c(GetDirectoryPath(rl_str!(path)) as *mut c_char) }
-    }
-
-    pub(crate) fn __get_prev_directory_path(path: impl Display) -> Result<String, String> {
-        unsafe { string_from_c(GetPrevDirectoryPath(rl_str!(path)) as *mut c_char) }
-    }
-
-    pub(crate) fn __get_working_directory() -> Result<String, String> {
-        unsafe { string_from_c(GetWorkingDirectory() as *mut c_char) }
-    }
+    // pub(crate) fn __file_exists(filename: impl Display) -> bool {
+    //     unsafe { FileExists(rl_str!(filename)) }
+    // }
+    //
+    // pub(crate) fn __directory_exists(dirname: impl Display) -> bool {
+    //     unsafe { DirectoryExists(rl_str!(dirname)) }
+    // }
+    //
+    // pub(crate) fn __is_file_extension(filename: impl Display, ext: impl Display) -> bool {
+    //     unsafe { IsFileExtension(rl_str!(filename), rl_str!(ext)) }
+    // }
+    //
+    // pub(crate) fn __get_file_length(filename: impl Display) -> i32 {
+    //     unsafe { GetFileLength(rl_str!(filename)) }
+    // }
+    //
+    // pub(crate) fn __get_file_extenstion(filename: impl Display) -> Result<String, String> {
+    //     unsafe { string_from_c(GetFileExtension(rl_str!(filename)) as *mut c_char) }
+    // }
+    //
+    // pub(crate) fn __get_file_name(path: impl Display) -> Result<String, String> {
+    //     unsafe { string_from_c(GetFileName(rl_str!(path)) as *mut c_char) }
+    // }
+    //
+    // pub(crate) fn __get_file_name_without_ext(path: impl Display) -> Result<String, String> {
+    //     unsafe { string_from_c(GetFileNameWithoutExt(rl_str!(path)) as *mut c_char) }
+    // }
+    //
+    // pub(crate) fn __get_directory_path(path: impl Display) -> Result<String, String> {
+    //     unsafe { string_from_c(GetDirectoryPath(rl_str!(path)) as *mut c_char) }
+    // }
+    //
+    // pub(crate) fn __get_prev_directory_path(path: impl Display) -> Result<String, String> {
+    //     unsafe { string_from_c(GetPrevDirectoryPath(rl_str!(path)) as *mut c_char) }
+    // }
+    //
+    // pub(crate) fn __get_working_directory() -> Result<String, String> {
+    //     unsafe { string_from_c(GetWorkingDirectory() as *mut c_char) }
+    // }
 
     pub(crate) fn __get_application_directory() -> Result<String, String> {
         unsafe { string_from_c(GetApplicationDirectory() as *mut c_char) }
     }
 
-    pub(crate) fn __change_directory(dir: impl Display) -> bool {
-        unsafe { ChangeDirectory(rl_str!(dir)) }
-    }
-
-    pub(crate) fn __is_path_file(path: impl Display) -> bool {
-        unsafe { IsPathFile(rl_str!(path)) }
-    }
-
-    pub(crate) fn __load_directory_files(path: impl Display) -> FilePathList {
-        unsafe { LoadDirectoryFiles(rl_str!(path)) }
-    }
-
-    pub(crate) fn __load_directory_files_ex(
-        path: impl Display,
-        filter: impl Display,
-        scan_subdirs: bool,
-    ) -> FilePathList {
-        unsafe { LoadDirectoryFilesEx(rl_str!(path), rl_str!(filter), scan_subdirs) }
-    }
-
-    pub(crate) fn __unload_directory_files(files: FilePathList) {
-        unsafe { UnloadDirectoryFiles(files) }
-    }
-
-    pub(crate) fn __is_file_dropped() -> bool {
-        unsafe { IsFileDropped() }
-    }
-
-    pub(crate) fn __load_dropped_files() -> FilePathList {
-        unsafe { LoadDroppedFiles() }
-    }
-
-    pub(crate) fn __unload_dropped_files(files: FilePathList) {
-        unsafe { UnloadDroppedFiles(files) }
-    }
-
-    pub(crate) fn __get_file_mod_time(filename: impl Display) -> i64 {
-        unsafe { GetFileModTime(rl_str!(filename)) }
-    }
+    // pub(crate) fn __change_directory(dir: impl Display) -> bool {
+    //     unsafe { ChangeDirectory(rl_str!(dir)) }
+    // }
+    //
+    // pub(crate) fn __is_path_file(path: impl Display) -> bool {
+    //     unsafe { IsPathFile(rl_str!(path)) }
+    // }
+    //
+    // pub(crate) fn __load_directory_files(path: impl Display) -> FilePathList {
+    //     unsafe { LoadDirectoryFiles(rl_str!(path)) }
+    // }
+    //
+    // pub(crate) fn __load_directory_files_ex(
+    //     path: impl Display,
+    //     filter: impl Display,
+    //     scan_subdirs: bool,
+    // ) -> FilePathList {
+    //     unsafe { LoadDirectoryFilesEx(rl_str!(path), rl_str!(filter), scan_subdirs) }
+    // }
+    //
+    // pub(crate) fn __unload_directory_files(files: FilePathList) {
+    //     unsafe { UnloadDirectoryFiles(files) }
+    // }
+    //
+    // pub(crate) fn __is_file_dropped() -> bool {
+    //     unsafe { IsFileDropped() }
+    // }
+    //
+    // pub(crate) fn __load_dropped_files() -> FilePathList {
+    //     unsafe { LoadDroppedFiles() }
+    // }
+    //
+    // pub(crate) fn __unload_dropped_files(files: FilePathList) {
+    //     unsafe { UnloadDroppedFiles(files) }
+    // }
+    //
+    // pub(crate) fn __get_file_mod_time(filename: impl Display) -> i64 {
+    //     unsafe { GetFileModTime(rl_str!(filename)) }
+    // }
 
     // Compression/Encoding functionality
 
-    pub(crate) fn __compress_data(data: &mut Vec<u8>) -> Result<Vec<u8>, String> {
-        unsafe {
-            let size = data.len() as i32;
-            let data = data.as_mut_ptr() as *mut c_uchar;
-            let mut comp_size = 0;
-            let raw = CompressData(data, size, &mut comp_size);
-            array_from_c(raw, size as usize, || {
-                "error trying to compress data".to_owned()
-            })
-        }
-    }
-
-    pub(crate) fn __decompress_data(data: &mut Vec<u8>) -> Result<Vec<u8>, String> {
-        unsafe {
-            let size = data.len() as i32;
-            let data = data.as_mut_ptr() as *mut c_uchar;
-            let mut decomp_size = 0;
-            let raw = DecompressData(data, size, &mut decomp_size);
-            array_from_c(raw, size as usize, || {
-                "error trying to decompress data".to_owned()
-            })
-        }
-    }
-
-    pub(crate) fn __encode_data_base64(data: &mut Vec<u8>) -> Result<String, String> {
-        unsafe {
-            let size = data.len() as i32;
-            let data = data.as_mut_ptr() as *mut c_uchar;
-            let mut output_size = 0;
-            string_from_c(EncodeDataBase64(data, size, &mut output_size) as *mut c_char)
-        }
-    }
-
-    pub(crate) fn __decode_data_base64(data: &str) -> Result<Vec<u8>, String> {
-        unsafe {
-            let mut size: i32 = 0;
-            let raw = DecodeDataBase64(rl_str!(data) as *const c_uchar, &mut size);
-            array_from_c(raw, size as usize, || {
-                format!("could not decode as Base64: {}", data)
-            })
-        }
-    }
+    // pub(crate) fn __compress_data(data: &mut Vec<u8>) -> Result<Vec<u8>, String> {
+    //     unsafe {
+    //         let size = data.len() as i32;
+    //         let data = data.as_mut_ptr() as *mut c_uchar;
+    //         let mut comp_size = 0;
+    //         let raw = CompressData(data, size, &mut comp_size);
+    //         array_from_c(raw, size as usize, || {
+    //             "error trying to compress data".to_owned()
+    //         })
+    //     }
+    // }
+    //
+    // pub(crate) fn __decompress_data(data: &mut Vec<u8>) -> Result<Vec<u8>, String> {
+    //     unsafe {
+    //         let size = data.len() as i32;
+    //         let data = data.as_mut_ptr() as *mut c_uchar;
+    //         let mut decomp_size = 0;
+    //         let raw = DecompressData(data, size, &mut decomp_size);
+    //         array_from_c(raw, size as usize, || {
+    //             "error trying to decompress data".to_owned()
+    //         })
+    //     }
+    // }
+    //
+    // pub(crate) fn __encode_data_base64(data: &mut Vec<u8>) -> Result<String, String> {
+    //     unsafe {
+    //         let size = data.len() as i32;
+    //         let data = data.as_mut_ptr() as *mut c_uchar;
+    //         let mut output_size = 0;
+    //         string_from_c(EncodeDataBase64(data, size, &mut output_size) as *mut c_char)
+    //     }
+    // }
+    //
+    // pub(crate) fn __decode_data_base64(data: &str) -> Result<Vec<u8>, String> {
+    //     unsafe {
+    //         let mut size: i32 = 0;
+    //         let raw = DecodeDataBase64(rl_str!(data) as *const c_uchar, &mut size);
+    //         array_from_c(raw, size as usize, || {
+    //             format!("could not decode as Base64: {}", data)
+    //         })
+    //     }
+    // }
 
     // Automation events functionality
 
@@ -1073,306 +1100,444 @@ impl Rcore {
 impl Rcore {
     // Window-related methods
 
+    /// Initialize window and OpenGL context
     pub fn init_window(&self, width: i32, height: i32, title: impl Display) {
         Self::__init_window(width, height, title)
     }
 
+    /// Close window and unload OpenGL context
     pub fn close_window(&self) {
         Self::__close_window()
     }
 
+    /// Check whether application should close (KEY_ESCAPE pressed or windows close icon clicked)
     pub fn window_should_close(&self) -> bool {
         Self::__window_should_close()
     }
 
+    /// Check whether window has been initialized successfully
     pub fn is_window_ready() -> bool {
         Self::__is_window_ready()
     }
 
+    /// Check whether window is currently fullscreen
     pub fn is_window_fullscreen(&self) -> bool {
         Self::__is_window_fullscreen()
     }
 
+    /// Check whether window is currently hidden (only PLATFORM_DESKTOP)
     pub fn is_window_hidden(&self) -> bool {
         Self::__is_window_hidden()
     }
 
+    /// Check whether window is currently minimized (only PLATFORM_DESKTOP)
     pub fn is_window_minimized(&self) -> bool {
         Self::__is_window_minimized()
     }
 
+    /// Check whether window is currently maximized (only PLATFORM_DESKTOP)
     pub fn is_window_maximized(&self) -> bool {
         Self::__is_window_maximized()
     }
 
+    /// Check whether window is currently focused (only PLATFORM_DESKTOP)
     pub fn is_window_focused(&self) -> bool {
         Self::__is_window_focused()
     }
 
+    /// Check whether window has been resized last frame
     pub fn is_window_resized(&self) -> bool {
         Self::__is_window_resized()
     }
 
+    /// Check whether one specific window flag is enabled
     pub fn is_window_state(&self, flag: usize) -> bool {
         Self::__is_window_state(flag)
     }
 
+    /// Set window configuration state using flags (only PLATFORM_DESKTOP)
     pub fn set_window_state(&self, flag: usize) {
         Self::__set_window_state(flag)
     }
 
+    /// Clear window configuration state flags
     pub fn clear_window_state(&self, flag: usize) {
         Self::__clear_window_state(flag)
     }
 
+    /// Toggle window state: fullscreen/windowed (only PLATFORM_DESKTOP)
     pub fn toggle_fullscreen(&self) {
         Self::__toggle_fullscreen()
     }
 
+    /// Toggle window state: borderless windowed (only PLATFORM_DESKTOP)
     pub fn toggle_borderless_windowed(&self) {
         Self::__toggle_borderless_windowed()
     }
 
+    /// Set window state: maximized, if resizable (only PLATFORM_DESKTOP)
     pub fn maximize_window(&self) {
         Self::__maximize_window()
     }
 
+    /// Set window state: minimized, if resizable (only PLATFORM_DESKTOP)
     pub fn minimize_window(&self) {
         Self::__minimize_window()
     }
 
+    /// Set window state: not minimized/maximized (only PLATFORM_DESKTOP)
     pub fn restore_window(&self) {
         Self::__restore_window()
     }
 
+    /// Set icon for window (single image, RGBA 32bit, only PLATFORM_DESKTOP)
     pub fn set_window_icon(&self, image: Image) {
         Self::__set_window_icon(image)
     }
 
+    /// Set icon for window (single image, RGBA 32bit, only PLATFORM_DESKTOP)
     pub fn set_window_icons(&self, images: &mut Vec<Image>) {
         Self::__set_window_icons(images)
     }
 
+    /// Set title for window (only PLATFORM_DESKTOP and PLATFORM_WEB)
     pub fn set_window_title(&self, title: impl Display) {
         Self::__set_window_title(title)
     }
 
+    /// Set window position on screen (only PLATFORM_DESKTOP)
     pub fn set_window_position(&self, x: i32, y: i32) {
         Self::__set_window_position(x, y)
     }
 
+    /// Set monitor for the current window
     pub fn set_window_monitor(&self, monitor: i32) {
         Self::__set_window_monitor(monitor)
     }
 
+    /// Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
     pub fn set_window_min_size(&self, width: i32, height: i32) {
         Self::__set_window_min_size(width, height)
     }
 
+    /// Set window maximum dimensions (for FLAG_WINDOW_RESIZABLE)
     pub fn set_window_max_size(&self, width: i32, height: i32) {
         Self::__set_window_max_size(width, height)
     }
 
+    /// Set window dimensions
     pub fn set_window_size(&self, width: i32, height: i32) {
         Self::__set_window_size(width, height)
     }
 
+    /// Set window opacity [0.0..1.0] (only PLATFORM_DESKTOP)
     pub fn set_window_opacity(&self, opacity: f32) {
         Self::__set_window_opacity(opacity)
     }
 
+    /// Set window focused (only PLATFORM_DESKTOP)
     pub fn set_window_focused(&self) {
         Self::__set_window_focused()
     }
 
+    /// Get native window handle
     pub fn get_window_handle(&self) -> Result<WindowHandle<'_>, String> {
         Self::__get_window_handle()
     }
 
+    /// Get current screen width
     pub fn get_screen_width(&self) -> i32 {
         Self::__get_screen_width()
     }
 
+    /// Get current screen height
     pub fn get_screen_height(&self) -> i32 {
         Self::__get_screen_height()
     }
 
+    /// Get current render width (it considers HiDPI)
     pub fn get_render_width(&self) -> i32 {
         Self::__get_render_width()
     }
 
+    /// Get current render width (it considers HiDPI)
     pub fn get_render_height(&self) -> i32 {
         Self::__get_render_height()
     }
 
+    /// Get number of connected monitors
     pub fn get_monitor_count(&self) -> i32 {
         Self::__get_monitor_count()
     }
 
+    /// Get current connected monitor
     pub fn get_current_monitor(&self) -> i32 {
         Self::__get_current_monitor()
     }
 
+    /// Get specified monitor position
     pub fn get_monitor_position(&self, monitor: i32) -> Vector2 {
         Self::__get_monitor_position(monitor)
     }
 
+    /// Get specified monitor width (current video mode used by monitor)
     pub fn get_monitor_width(&self, monitor: i32) -> i32 {
         Self::__get_monitor_width(monitor)
     }
 
+    /// Get specified monitor height (current video mode used by monitor)
     pub fn get_monitor_height(&self, monitor: i32) -> i32 {
         Self::__get_monitor_height(monitor)
     }
 
+    /// Get specified monitor physical width in millimetres
     pub fn get_monitor_physical_width(&self, monitor: i32) -> i32 {
         Self::__get_monitor_physical_width(monitor)
     }
 
+    /// Get specified monitor physical height in millimetres
     pub fn get_monitor_physical_height(&self, monitor: i32) -> i32 {
         Self::__get_monitor_physical_height(monitor)
     }
 
+    /// Get specified monitor refresh rate
     pub fn get_monitor_refresh_rate(&self, monitor: i32) -> i32 {
         Self::__get_monitor_refresh_rate(monitor)
     }
 
+    /// Get window position XY on monitor
     pub fn get_window_position(&self) -> Vector2 {
         Self::__get_window_position()
     }
 
+    /// Get window scale DPI factor
     pub fn get_window_scale_dpi(&self) -> Vector2 {
         Self::__get_window_scale_dpi()
     }
 
+    /// Get the human-readable, UTF-8 encoded name of the specified monitor
     pub fn get_monitor_name(&self, monitor: i32) -> Result<String, String> {
         Self::__get_monitor_name(monitor)
     }
 
+    /// Set clipboard text content
     pub fn set_clipboard_text(&self, text: impl Display) {
         Self::__set_clipboard_text(text)
     }
 
+    /// Get clipboard text content
+    pub fn get_clipboard_text(&self) -> Result<String, String> {
+        Self::__get_clipboard_text()
+    }
+
+    /// Enable waiting for events on EndDrawing(), no automatic event polling
     pub fn enable_event_waiting(&self) {
         Self::__enable_event_waiting()
     }
 
+    /// Disable waiting for events on EndDrawing(), automatic events polling
     pub fn disable_event_waiting(&self) {
         Self::__disable_event_waiting()
     }
 
     // Cursor-related methods
 
+    /// Shows cursor
     pub fn show_cursor(&self) {
         Self::__show_cursor()
     }
 
+    /// Hides cursor
     pub fn hide_cursor(&self) {
         Self::__hide_cursor()
     }
 
+    /// Check whether cursor is not visible
     pub fn is_cursor_hiden(&self) -> bool {
         Self::__is_cursor_hiden()
     }
 
+    /// Enables cursor (unlock cursor)
     pub fn enable_cursor(&self) {
         Self::__enable_cursor()
     }
 
+    /// Disables cursor (lock cursor)
     pub fn disable_cursor(&self) {
         Self::__disable_cursor()
     }
 
+    /// Check whether cursor is on the screen
     pub fn is_cursor_on_screen(&self) -> bool {
         Self::__is_cursor_on_screen()
     }
 
     // Drawing-related methods
 
+    /// Set background color (framebuffer clear color)
     pub fn clear_background(&self, color: Color) {
         Self::__clear_background(color)
     }
 
+    /// Setup canvas (framebuffer) to start drawing
     pub fn begin_drawing(&self) {
         Self::__begin_drawing()
     }
 
+    /// End canvas drawing and swap buffers (double buffering)
     pub fn end_drawing(&self) {
         Self::__end_drawing()
     }
 
-    #[allow(non_snake_case)]
-    pub fn begin_mode_2D(&self, camera: Camera2D) {
+    /// Begin 2D mode with custom camera (2D)
+    pub fn begin_mode_2d(&self, camera: Camera2D) {
         Self::__begin_mode_2D(camera)
     }
 
-    #[allow(non_snake_case)]
-    pub fn end_mode_2D(&self) {
+    /// Ends 2D mode with custom camera
+    pub fn end_mode_2d(&self) {
         Self::__end_mode_2D()
     }
 
-    #[allow(non_snake_case)]
-    pub fn begin_mode_3D(&self, camera: Camera3D) {
+    /// Begin 3D mode with custom camera (3D)
+    pub fn begin_mode_3(&self, camera: Camera3D) {
         Self::__begin_mode_3D(camera)
     }
 
-    #[allow(non_snake_case)]
-    pub fn end_mode_3D(&self) {
+    /// Ends 3D mode and returns to default 2D orthographic mode
+    pub fn end_mode_3d(&self) {
         Self::__end_mode_3D()
     }
 
+    /// Begin drawing to render texture
     pub fn begin_texture_mode(&self, target: RenderTexture2D) {
         Self::__begin_texture_mode(target)
     }
 
+    /// Ends drawing to render texture
     pub fn end_texture_mode(&self) {
         Self::__end_texture_mode()
     }
 
+    /// Begin custom shader drawing
     pub fn begin_shader_mode(&self, shader: Shader) {
         Self::__begin_shader_mode(shader)
     }
 
+    /// End custom shader drawing (use default shader)
     pub fn end_shader_mode(&self) {
         Self::__end_shader_mode()
     }
 
-    pub fn begin_blend_mode(&self, mode: i32) {
+    /// Begin blending mode (alpha, additive, multiplied, subtract, custom)
+    pub fn begin_blend_mode(&self, mode: BlendMode) {
         Self::__begin_blend_mode(mode)
     }
 
+    /// End blending mode (reset to default: alpha blending)
     pub fn end_blend_mode(&self) {
         Self::__end_blend_mode()
     }
 
+    /// Begin scissor mode (define screen area for following drawing)
     pub fn begin_scissor_mode(&self, x: i32, y: i32, width: i32, height: i32) {
         Self::__begin_scissor_mode(x, y, width, height)
     }
 
+    /// End scissor mode
     pub fn end_scissor_mode(&self) {
         Self::__end_scissor_mode()
     }
 
+    /// Begin stereo rendering (requires VR simulator)
     pub fn begin_vr_stereo_mode(&self, config: VrStereoConfig) {
         Self::__begin_vr_stereo_mode(config)
     }
 
+    /// End stereo rendering (requires VR simulator)
     pub fn end_vr_stereo_mode(&self) {
         Self::__end_vr_stereo_mode()
     }
 
+    // Mode helpers
+
+    /// Run a closure in texture mode
+    pub fn texture_mode<F, R, E>(&self, target: RenderTexture2D, block: F) -> Result<R, E>
+    where
+        F: FnOnce() -> Result<R, E>,
+    {
+        self.begin_texture_mode(target);
+        let res = block();
+        self.end_texture_mode();
+        res
+    }
+
+    /// Run a closure in shader mode
+    pub fn shader_mode<F, R, E>(&self, shader: Shader, block: F) -> Result<R, E>
+    where
+        F: FnOnce() -> Result<R, E>,
+    {
+        self.begin_shader_mode(shader);
+        let res = block();
+        self.end_shader_mode();
+        res
+    }
+
+    /// Run a closure in blend mode
+    pub fn blend_mode<F, R, E>(&self, mode: BlendMode, block: F) -> Result<R, E>
+    where
+        F: FnOnce() -> Result<R, E>,
+    {
+        self.begin_blend_mode(mode);
+        let res = block();
+        self.end_blend_mode();
+        res
+    }
+
+    /// Run a closure in scissor mode
+    pub fn scissor_mode<F, R, E>(
+        &self,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
+        block: F,
+    ) -> Result<R, E>
+    where
+        F: FnOnce() -> Result<R, E>,
+    {
+        self.begin_scissor_mode(x, y, width, height);
+        let res = block();
+        self.end_scissor_mode();
+        res
+    }
+
+    /// Run a closure in VR stereo mode
+    pub fn vr_stereo_mode<F, R, E>(&self, config: VrStereoConfig, block: F) -> Result<R, E>
+    where
+        F: FnOnce() -> Result<R, E>,
+    {
+        self.begin_vr_stereo_mode(config);
+        let res = block();
+        self.end_vr_stereo_mode();
+        res
+    }
+
     // VR stereo config methods for VR simulator
 
+    /// Load VR stereo config for VR simulator device parameters
     pub fn load_vr_stereo_config(&self, device: VrDeviceInfo) -> VrStereoConfig {
         Self::__load_vr_stereo_config(device)
     }
 
+    /// Unload VR stereo config
     pub fn unload_vr_stereo_config(&self, config: VrStereoConfig) {
         Self::__unload_vr_stereo_config(config)
     }
 
     // Shader management methods
 
+    /// Load shader from files and bind default locations
     pub fn load_shader(
         &self,
         vs_filename: impl Display,
@@ -1381,6 +1546,7 @@ impl Rcore {
         Self::__load_shader(vs_filename, fs_filename)
     }
 
+    /// Load shader from code strings and bind default locations
     pub fn load_shader_from_memory(
         &self,
         vs_code: impl Display,
@@ -1389,14 +1555,17 @@ impl Rcore {
         Self::__load_shader_from_memory(vs_code, fs_code)
     }
 
+    /// Check whether a shader is ready
     pub fn is_shader_ready(&self, shader: Shader) -> bool {
         Self::__is_shader_ready(shader)
     }
 
+    /// Get shader uniform location
     pub fn get_shader_location(&self, shader: Shader, name: impl Display) -> i32 {
         Self::__get_shader_location(shader, name)
     }
 
+    /// Get shader attribute location
     pub fn get_shader_location_attrib(
         &self,
         shader: Shader,
@@ -1405,6 +1574,7 @@ impl Rcore {
         Self::__get_shader_location_attrib(shader, name)
     }
 
+    /// Set shader uniform value
     pub fn set_shader_value<T>(
         &self,
         shader: Shader,
@@ -1415,6 +1585,7 @@ impl Rcore {
         Self::__set_shader_value(shader, index, value, tpe)
     }
 
+    /// Set shader uniform value vector
     pub fn set_shader_value_v<T>(
         &self,
         shader: Shader,
@@ -1425,50 +1596,55 @@ impl Rcore {
         Self::__set_shader_value_v(shader, index, value, tpe)
     }
 
+    /// Set shader uniform value (matrix 4x4)
     pub fn set_shader_value_matrix(&self, shader: Shader, loc: i32, mat: Matrix) {
         Self::__set_shader_value_matrix(shader, loc, mat)
     }
 
+    /// Set shader uniform value for texture (sampler2d)
     pub fn set_shader_value_texture(&self, shader: Shader, index: i32, texture: Texture2D) {
         Self::__set_shader_value_texture(shader, index, texture)
     }
 
+    /// Unload shader from GPU memory (VRAM)
     pub fn unload_shader(&self, shader: Shader) {
         Self::__unload_shader(shader)
     }
 
     // Screen-space-related methods
 
+    /// Get a ray trace from mouse position
     pub fn get_mouse_ray(&self, mouse_position: Vector2, camera: Camera3D) -> Ray {
         Self::__get_mouse_ray(mouse_position, camera)
     }
 
-    #[allow(non_snake_case)]
-    pub fn get_camera_matrix_2D(&self, camera: Camera2D) -> Matrix {
+    /// Get camera 2D transform matrix
+    pub fn get_camera_matrix_2d(&self, camera: Camera2D) -> Matrix {
         Self::__get_camera_matrix_2d(camera)
     }
-    #[allow(non_snake_case)]
-    pub fn get_camera_matrix_3D(&self, camera: Camera3D) -> Matrix {
+
+    /// Get camera transform matrix (view matrix)
+    pub fn get_camera_matrix_3d(&self, camera: Camera3D) -> Matrix {
         Self::__get_camera_matrix_3d(camera)
     }
 
-    #[allow(non_snake_case)]
-    pub fn get_world_to_screen_2D(&self, position: Vector2, camera: Camera2D) -> Vector2 {
+    /// Get the screen space position for a 2D camera world space position
+    pub fn get_world_to_screen_2d(&self, position: Vector2, camera: Camera2D) -> Vector2 {
         Self::__get_world_to_screen_2d(position, camera)
     }
 
-    #[allow(non_snake_case)]
-    pub fn get_screen_to_world_2D(&self, position: Vector2, camera: Camera2D) -> Vector2 {
+    /// Get the world space position for a 2D camera screen space position
+    pub fn get_screen_to_world_2d(&self, position: Vector2, camera: Camera2D) -> Vector2 {
         Self::__get_screen_to_world_2d(position, camera)
     }
 
-    #[allow(non_snake_case)]
-    pub fn get_world_to_screen_3D(&self, position: Vector3, camera: Camera3D) -> Vector2 {
+    /// Get the screen space position for a 3D world space position
+    pub fn get_world_to_screen_3d(&self, position: Vector3, camera: Camera3D) -> Vector2 {
         Self::__get_world_to_screen_3d(position, camera)
     }
 
-    #[allow(non_snake_case)]
-    pub fn get_world_to_screen_3D_ex(
+    /// Get size position for a 3D world space position
+    pub fn get_world_to_screen_3d_ex(
         &self,
         position: Vector3,
         camera: Camera3D,
@@ -1480,204 +1656,127 @@ impl Rcore {
 
     // Timing-related methods
 
+    /// Set target FPS (maximum)
     pub fn set_target_fps(&self, fps: i32) {
         Self::__set_target_fps(fps)
     }
 
+    /// Get time in seconds for last frame drawn (delta time)
     pub fn get_frame_time(&self) -> f32 {
         Self::__get_frame_time()
     }
 
+    /// Get elapsed time in seconds since InitWindow()
     pub fn get_time(&self) -> f64 {
         Self::__get_time()
     }
 
+    /// Get current FPS
     pub fn get_fps(&self) -> i32 {
         Self::__get_fps()
     }
 
     // Custom frame control methods
 
+    /// Swap back buffer with front buffer (screen drawing)
     pub fn swap_screen_buffer(&self) {
+        dbg!("avoid rcore.swap_screen_buffer(), use rcore.end_drawing() instead");
         Self::__swap_screen_buffer()
     }
 
+    /// Register all input events
     pub fn poll_input_events(&self) {
+        dbg!("avoid rcore.poll_input_events(), use rcore.end_drawing() instead");
         Self::__poll_input_events()
     }
 
+    /// Wait for some time (halt program execution)
     pub fn wait_time(&self, seconds: f64) {
+        dbg!("halting execution", seconds);
         Self::__wait_time(seconds)
     }
 
     // Random values generation methods
 
+    /// Set the seed for the random number generator
     pub fn set_random_seed(&self, seed: u32) {
         Self::__set_random_seed(seed)
     }
 
+    /// Get a random value between min and max (both included)
     pub fn get_random_value(&self, min: i32, max: i32) -> i32 {
         Self::__get_random_value(min, max)
     }
 
-    // TODO: LoadRandomSequence
-    // TODO: UnloadRandomSequence
+    /// Load random values sequence, no values repeated
+    pub fn load_random_sequence(&self, count: usize, min: i32, max: i32) -> Vec<i32> {
+        Self::__load_random_sequence(count, min, max).unwrap_or_else(|_| vec![])
+    }
 
     // Misc methods
 
+    /// Takes a screenshot of current screen (filename extension defines format)
     pub fn take_screenshot(&self, filename: impl Display) {
         Self::__take_screenshot(filename)
     }
 
-    pub fn set_config_flags(&self, flags: usize) {
+    /// Setup init configuration flags (use ConfigFlags)
+    pub fn set_config_flags(&self, flags: impl Into<usize>) {
         Self::__set_config_flags(flags)
     }
 
+    /// Open URL with default system browser (if available)
     pub fn open_url(&self, url: impl Display) {
         Self::__open_url(url)
     }
 
+    /// Show trace log messages (LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR...)
     pub fn trace_log(&self, level: TraceLogLevel, text: impl Display) {
         Self::__trace_log(level, text)
     }
 
+    /// Set the current threshold (minimum) log level
     pub fn set_trace_log_level(&self, level: TraceLogLevel) {
         Self::__set_trace_log_level(level)
     }
 
     // Files management methods
 
+    /// Load file data as byte array (read)
     pub fn load_file_data(&self, filename: impl Display) -> Result<Vec<u8>, String> {
         Self::__load_file_data(filename)
     }
 
-    // TODO: UnloadFileData
-
+    /// Save data to file from byte array (write), returns true on success
     pub fn save_file_data(&self, filename: impl Display, data: &mut Vec<u8>) -> bool {
         Self::__save_file_data(filename, data)
     }
 
+    /// Export data to code (.h), returns true on success
     pub fn export_data_as_code(&self, data: &str, filename: impl Display) -> bool {
         Self::__export_data_as_code(data, filename)
     }
 
+    /// Load text data from file (read)
     pub fn load_file_text(&self, filename: impl Display) -> Result<String, String> {
         Self::__load_file_text(filename)
     }
 
-    // TODO: UnloadFileText
-
+    /// Save text data to file (write), string must be '\0' terminated, returns true on success
     pub fn save_file_text(&self, filename: impl Display, text: impl Display) -> bool {
         Self::__save_file_text(filename, text)
     }
 
     // File system methods
 
-    pub fn file_exists(&self, filename: impl Display) -> bool {
-        Self::__file_exists(filename)
-    }
-
-    pub fn directory_exists(&self, dirname: impl Display) -> bool {
-        Self::__directory_exists(dirname)
-    }
-
-    pub fn is_file_extension(&self, filename: impl Display, ext: impl Display) -> bool {
-        Self::__is_file_extension(filename, ext)
-    }
-
-    pub fn get_file_length(&self, filename: impl Display) -> i32 {
-        Self::__get_file_length(filename)
-    }
-
-    pub fn get_file_extenstion(&self, filename: impl Display) -> Result<String, String> {
-        Self::__get_file_extenstion(filename)
-    }
-
-    pub fn get_file_name(&self, path: impl Display) -> Result<String, String> {
-        Self::__get_file_name(path)
-    }
-
-    pub fn get_file_name_without_ext(&self, path: impl Display) -> Result<String, String> {
-        Self::__get_file_name_without_ext(path)
-    }
-
-    pub fn get_directory_path(&self, path: impl Display) -> Result<String, String> {
-        Self::__get_directory_path(path)
-    }
-
-    pub fn get_prev_directory_path(&self, path: impl Display) -> Result<String, String> {
-        Self::__get_prev_directory_path(path)
-    }
-
-    pub fn get_working_directory(&self) -> Result<String, String> {
-        Self::__get_working_directory()
-    }
-
+    /// Get the directory of the running application
     pub fn get_application_directory(&self) -> Result<String, String> {
         Self::__get_application_directory()
     }
 
-    pub fn change_directory(&self, dir: impl Display) -> bool {
-        Self::__change_directory(dir)
-    }
-
-    pub fn is_path_file(&self, path: impl Display) -> bool {
-        Self::__is_path_file(path)
-    }
-
-    pub fn load_directory_files(&self, path: impl Display) -> FilePathList {
-        Self::__load_directory_files(path)
-    }
-
-    pub fn load_directory_files_ex(
-        &self,
-        path: impl Display,
-        filter: impl Display,
-        scan_subdirs: bool,
-    ) -> FilePathList {
-        Self::__load_directory_files_ex(path, filter, scan_subdirs)
-    }
-
-    pub fn unload_directory_files(&self, files: FilePathList) {
-        Self::__unload_directory_files(files)
-    }
-
-    pub fn is_file_dropped(&self) -> bool {
-        Self::__is_file_dropped()
-    }
-
-    pub fn load_dropped_files() -> FilePathList {
-        Self::__load_dropped_files()
-    }
-
-    pub fn unload_dropped_files(&self, files: FilePathList) {
-        Self::__unload_dropped_files(files)
-    }
-
-    pub fn get_file_mod_time(&self, filename: impl Display) -> i64 {
-        Self::__get_file_mod_time(filename)
-    }
-
-    // Compression/Encoding functionality
-
-    pub fn compress_data(&self, data: &mut Vec<u8>) -> Result<Vec<u8>, String> {
-        Self::__compress_data(data)
-    }
-
-    pub fn decompress_data(&self, data: &mut Vec<u8>) -> Result<Vec<u8>, String> {
-        Self::__decompress_data(data)
-    }
-
-    pub fn encode_data_base64(&self, data: &mut Vec<u8>) -> Result<String, String> {
-        Self::__encode_data_base64(data)
-    }
-
-    pub fn decode_data_base64(&self, data: &str) -> Result<Vec<u8>, String> {
-        Self::__decode_data_base64(data)
-    }
-
     // Automation events functionality
 
+    /// Load automation events list from file, NULL for empty list, capacity = MAX_AUTOMATION_EVENTS
     pub fn load_automation_event_list(
         &self,
         filename: impl Display,
@@ -1685,10 +1784,12 @@ impl Rcore {
         Self::__load_automation_event_list(filename)
     }
 
+    /// Unload automation events list from file
     pub fn unload_automation_event_list(&self, list: AutomationEventList) {
         Self::__unload_automation_event_list(list)
     }
 
+    /// Export automation events list as text file
     pub fn export_automation_event_list(
         &self,
         list: AutomationEventList,
@@ -1697,178 +1798,220 @@ impl Rcore {
         Self::__export_automation_event_list(list, filename)
     }
 
+    /// Set automation event list to record to
     pub fn set_automation_event_list(&self, list: AutomationEventList) {
         Self::__set_automation_event_list(list)
     }
 
+    /// Set automation event internal base frame to start recording
     pub fn set_automation_event_base_frame(&self, frame: i32) {
         Self::__set_automation_event_base_frame(frame)
     }
 
+    /// Start recording automation events (AutomationEventList must be set)
     pub fn start_automation_event_record(&self) {
         Self::__start_automation_event_record()
     }
 
+    /// Stop recording automation events
     pub fn stop_automation_event_record(&self) {
         Self::__stop_automation_event_record()
     }
 
+    /// Play a recorded automation event
     pub fn play_automation_event(&self, event: AutomationEvent) {
         Self::__play_automation_event(event)
     }
 
     // Input-related methods: keyboard
 
+    /// Check whether a key has been pressed once
     pub fn is_key_pressed(&self, key: KeyboardKey) -> bool {
         Self::__is_key_pressed(key)
     }
 
+    /// Check whether a key has been pressed again (Only PLATFORM_DESKTOP)
     pub fn is_key_pressed_repeat(&self, key: KeyboardKey) -> bool {
         Self::__is_key_pressed_repeat(key)
     }
 
+    /// Check whether a key is being pressed
     pub fn is_key_down(&self, key: KeyboardKey) -> bool {
         Self::__is_key_down(key)
     }
 
+    /// Check whether a key has been released once
     pub fn is_key_released(&self, key: KeyboardKey) -> bool {
         Self::__is_key_released(key)
     }
 
+    /// Check whether a key is NOT being pressed
     pub fn is_key_up(&self, key: KeyboardKey) -> bool {
         Self::__is_key_up(key)
     }
 
+    /// Get key pressed, call it multiple times for keys queued, returns KeyboardKey::Null when the queue is empty
     pub fn get_key_pressed(&self) -> KeyboardKey {
         Self::__get_key_pressed()
     }
 
+    /// Get char pressed (unicode), call it multiple times for chars queued, returns empty when the queue is empty
     pub fn get_char_pressed(&self) -> String {
         Self::__get_char_pressed()
     }
 
+    /// Set a custom key to exit program (default is KeyboardKey::Escape)
     pub fn set_exit_key(&self, key: KeyboardKey) {
         Self::__set_exit_key(key)
     }
 
     // Input-related methods: gamepads
 
+    /// Check whether a gamepad is available
     pub fn is_gamepad_available(&self, gamepad: i32) -> bool {
         Self::__is_gamepad_available(gamepad)
     }
 
+    /// Get gamepad internal name id
     pub fn get_gamepad_name(&self, gamepad: i32) -> Result<String, String> {
         Self::__get_gamepad_name(gamepad)
     }
 
+    /// Check whether a gamepad button has been pressed once
     pub fn is_gamepad_button_pressed(&self, gamepad: i32, button: GamepadButton) -> bool {
         Self::__is_gamepad_button_pressed(gamepad, button)
     }
 
+    /// Check whether a gamepad button is being pressed
     pub fn is_gamepad_button_down(&self, gamepad: i32, button: GamepadButton) -> bool {
         Self::__is_gamepad_button_down(gamepad, button)
     }
 
+    /// Check whether a gamepad button has been released once
     pub fn is_gamepad_button_released(&self, gamepad: i32, button: GamepadButton) -> bool {
         Self::__is_gamepad_button_released(gamepad, button)
     }
 
+    /// Check whether a gamepad button is NOT being pressed
     pub fn is_gamepad_button_up(&self, gamepad: i32, button: GamepadButton) -> bool {
         Self::__is_gamepad_button_up(gamepad, button)
     }
 
+    /// Get the last gamepad button pressed
     pub fn get_gamepad_button_pressed(&self) -> GamepadButton {
         Self::__get_gamepad_button_pressed()
     }
 
+    /// Get gamepad axis count for a gamepad
     pub fn get_gamepad_axis_count(&self, gamepad: i32) -> i32 {
         Self::__get_gamepad_axis_count(gamepad)
     }
 
+    /// Get axis movement value for a gamepad axis
     pub fn get_gamepad_axis_movement(&self, gamepad: i32, axis: GamepadAxis) -> f32 {
         Self::__get_gamepad_axis_movement(gamepad, axis)
     }
 
+    /// Set internal gamepad mappings (SDL_GameControllerDB)
     pub fn set_gamepad_mappings(&self, mappings: impl Display) -> i32 {
         Self::__set_gamepad_mappings(mappings)
     }
 
     // Input-related methods: mouse
 
+    /// Check whether a mouse button has been pressed once
     pub fn is_mouse_button_pressed(&self, button: MouseButton) -> bool {
         Self::__is_mouse_button_pressed(button)
     }
 
+    /// Check whether a mouse button is being pressed
     pub fn is_mouse_button_down(&self, button: MouseButton) -> bool {
         Self::__is_mouse_button_down(button)
     }
 
+    /// Check whether a mouse button has been released once
     pub fn is_mouse_button_released(&self, button: MouseButton) -> bool {
         Self::__is_mouse_button_released(button)
     }
 
+    /// Check whether a mouse button is NOT being pressed
     pub fn is_mouse_button_up(&self, button: MouseButton) -> bool {
         Self::__is_mouse_button_up(button)
     }
 
+    /// Get mouse position X
     pub fn get_mouse_x(&self) -> i32 {
         Self::__get_mouse_x()
     }
 
+    /// Get mouse position Y
     pub fn get_mouse_y(&self) -> i32 {
         Self::__get_mouse_y()
     }
 
+    // Get mouse position XY
     pub fn get_mouse_position(&self) -> Vector2 {
         Self::__get_mouse_position()
     }
 
+    /// Get mouse delta between frames
     pub fn get_mouse_delta(&self) -> Vector2 {
         Self::__get_mouse_delta()
     }
 
+    /// Set mouse position XY
     pub fn set_mouse_position(&self, x: i32, y: i32) {
         Self::__set_mouse_position(x, y)
     }
 
+    // Set mouse offset
     pub fn set_mouse_offset(&self, x: i32, y: i32) {
         Self::__set_mouse_offset(x, y)
     }
 
+    /// Set mouse scaling
     pub fn set_mouse_scale(&self, x: f32, y: f32) {
         Self::__set_mouse_scale(x, y)
     }
 
+    // Get mouse wheel movement for X or Y, whichever is larger
     pub fn get_mouse_wheel_move(&self) -> f32 {
         Self::__get_mouse_wheel_move()
     }
 
+    /// Get mouse wheel movement for both X and Y
     pub fn get_mouse_wheel_move_v(&self) -> Vector2 {
         Self::__get_mouse_wheel_move_v()
     }
 
+    /// Set mouse cursor
     pub fn set_mouse_cursor(&self, cursor: MouseCursor) {
         Self::__set_mouse_cursor(cursor)
     }
 
     // Input-related methods: touch
 
+    /// Get touch position X for touch point 0 (relative to screen size)
     pub fn get_touch_x(&self) -> i32 {
         Self::__get_touch_x()
     }
 
+    /// Get touch position Y for touch point 0 (relative to screen size)
     pub fn get_touch_y(&self) -> i32 {
         Self::__get_touch_y()
     }
 
+    /// Get touch position XY for a touch point index (relative to screen size)
     pub fn get_touch_position(&self, index: i32) -> Vector2 {
         Self::__get_touch_position(index)
     }
 
+    /// Get touch point identifier for given index
     pub fn get_touch_point_id(&self, index: i32) -> i32 {
         Self::__get_touch_point_id(index)
     }
 
+    /// Get number of touch points
     pub fn get_touch_point_count(&self) -> i32 {
         Self::__get_touch_point_count()
     }
