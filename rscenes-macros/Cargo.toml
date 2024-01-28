@@ -1,6 +1,6 @@
 [package]
 name          = "rscenes-macros"
-version       = "1.0.0"
+version       = "0.1.0"
 authors       = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info"]
 license       = "BSD-3-Clause"
 readme        = "../README.md"

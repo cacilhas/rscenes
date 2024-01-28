@@ -1,6 +1,6 @@
 [package]
 name          = "rscenes"
-version       = "2.0.0"
+version       = "1.9.0"
 authors       = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info"]
 license       = "BSD-3-Clause"
 readme        = "../README.md"
@@ -16,9 +16,7 @@ edition       = "2021"
 resolution = "0.1"
 
 [dependencies.rscenes-macros]
-version = "1.0"
 path = "../rscenes-macros"
 
 [dependencies.rscenes-raylib-connector]
-version = "1.0"
 path = "../rscenes-raylib-connector"
