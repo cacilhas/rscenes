@@ -1,31 +1,22 @@
 extern crate proc_macro;
 
-use core::panic;
-
-use proc_macro::{TokenStream, TokenTree};
+use proc_macro::{Literal, TokenStream, TokenTree};
 use quote::quote;
-use syn::{parse2, parse_macro_input, ItemFn, Stmt};
+use syn::{parse_macro_input, ItemFn};
 
 #[proc_macro_attribute]
 pub fn draw(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input: ItemFn = parse_macro_input!(item as ItemFn);
     let original = input.block.stmts;
 
-    let attr = match attr.into_iter().next() {
-        Some(TokenTree::Literal(data)) => data.to_string(),
-        _ => panic!("unexpected syntax"),
+    let attr: DrawType = match attr.into_iter().next() {
+        Some(TokenTree::Literal(attr)) => attr.into(),
+        Some(attr) => panic!("unexpected attribute {}", attr),
+        None => panic!("draw macro expects one attribute: 2d or 3d"),
     };
 
-    let body = Stmt::Expr(
-        parse2(quote! {
-            #(#original)*
-        })
-        .unwrap(),
-        None,
-    );
-
-    let output = match attr.as_str() {
-        "2d" => quote! {
+    let output = match attr {
+        DrawType::Draw2D => quote! {
             fn draw_2d(&self, connector: &rscenes::prelude::Connector2D) -> Result<(), String> {
                 let camera = self.get_camera_2d(),
                 rcore.begin_mode_2D(camera);
@@ -50,28 +41,13 @@ pub fn draw(attr: TokenStream, item: TokenStream) -> TokenStream {
                 textures: rscenes::prelude::Rtextures,
                 rtext: rscenes::prelude::Rtext,
                 raudio: rscenes::prelude::Raudio,
-                camera: Box<rscenes::prelude::Camera2D>,
+                camera: rscenes::prelude::Camera2D,
             ) -> Result<(), String {
-                #body
+                #(#original)*
                 Ok(())
             }
         },
-        "3d" => quote! {
-            fn draw_3d(&self, connector: &rscenes::prelude::Connector3D) -> Result<(), String> {
-                let rcore = connector.recore;
-                let rgestures = connector.rgestures;
-                let rcamera = connector.rcamera;
-                let rtextures = connector.rtextures;
-                let rmodels = connector.rmodels;
-                let raudio = connector.raudio;
-                let camera = self.get_camera_3d();
-
-                rcore.begin_mode_3D(camera);
-                #body
-                rcore.end_mode_3D();
-                Ok(())
-            }
-
+        DrawType::Draw3D => quote! {
             fn draw_3d(&self, connector: &rscenes::prelude::Connector3D) -> Result<(), String> {
                 let camera = self.get_camera_3d(),
                 rcore.begin_mode_3D(camera);
@@ -96,14 +72,28 @@ pub fn draw(attr: TokenStream, item: TokenStream) -> TokenStream {
                 textures: rscenes::prelude::Rtextures,
                 rmodels: rscenes::prelude::Rmodels,
                 raudio: rscenes::prelude::Raudio,
-                camera: Box<rscenes::prelude::Camera2D>,
+                camera: rscenes::prelude::Camera2D,
             ) -> Result<(), String {
-                #body
+                #(#original)*
                 Ok(())
             }
         },
-        unknown => panic!("unpexpected attribute {}", unknown),
     };
 
     output.into()
+}
+
+enum DrawType {
+    Draw2D,
+    Draw3D,
+}
+
+impl From<Literal> for DrawType {
+    fn from(value: Literal) -> Self {
+        match value.to_string().as_str() {
+            "2d" | "2D" => DrawType::Draw2D,
+            "3d" | "3D" => DrawType::Draw3D,
+            value => panic!("unexpected attribute: draw({})", value),
+        }
+    }
 }
