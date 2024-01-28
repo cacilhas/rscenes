@@ -1,7 +1,6 @@
-use raylib_ffi::*;
-use std::fmt::Display;
-
 use crate::utils::array_from_c;
+use raylib_ffi::*;
+use std::{ffi::c_void, fmt::Display};
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Raudio;
@@ -257,6 +256,79 @@ impl Raudio {
     }
 
     // AudioStream management methods
+
+    pub(crate) fn __load_audio_stream(
+        sample_rate: u32,
+        sample_size: u32,
+        channels: u32,
+    ) -> Result<AudioStream, String> {
+        unsafe {
+            // TODO: test whether audio stream was properly loaded
+            Ok(LoadAudioStream(sample_rate, sample_size, channels))
+        }
+    }
+
+    pub(crate) fn __is_audio_stream_ready(stream: AudioStream) -> bool {
+        unsafe { IsAudioStreamReady(stream) }
+    }
+
+    pub(crate) fn __unload_audio_stream(stream: AudioStream) {
+        unsafe { UnloadAudioStream(stream) }
+    }
+
+    pub(crate) fn __update_audio_stream(stream: AudioStream, data: Vec<u8>) {
+        unsafe {
+            let count = data.len() as i32;
+            let data = data.as_ptr() as *const c_void;
+            UpdateAudioStream(stream, data, count)
+        }
+    }
+
+    pub(crate) fn __is_audio_stream_processed(stream: AudioStream) -> bool {
+        unsafe { IsAudioStreamProcessed(stream) }
+    }
+
+    pub(crate) fn __play_audio_stream(stream: AudioStream) {
+        unsafe { PlayAudioStream(stream) }
+    }
+
+    pub(crate) fn __pause_audio_stream(stream: AudioStream) {
+        unsafe { PauseAudioStream(stream) }
+    }
+
+    pub(crate) fn __resume_audio_stream(stream: AudioStream) {
+        unsafe { ResumeAudioStream(stream) }
+    }
+
+    pub(crate) fn __is_audio_stream_playing(stream: AudioStream) -> bool {
+        unsafe { IsAudioStreamPlaying(stream) }
+    }
+
+    pub(crate) fn __stop_audio_stream(stream: AudioStream) {
+        unsafe { StopAudioStream(stream) }
+    }
+
+    pub(crate) fn __set_audio_stream_volume(stream: AudioStream, volume: f32) {
+        unsafe { SetAudioStreamVolume(stream, volume) }
+    }
+
+    pub(crate) fn __set_audio_stream_pitch(stream: AudioStream, pitch: f32) {
+        unsafe { SetAudioStreamPitch(stream, pitch) }
+    }
+
+    pub(crate) fn __set_audio_stream_pan(stream: AudioStream, pan: f32) {
+        unsafe { SetAudioStreamPan(stream, pan) }
+    }
+
+    pub(crate) fn __set_audio_stream_buffer_size_default(size: i32) {
+        unsafe { SetAudioStreamBufferSizeDefault(size) }
+    }
+
+    // TODO: SetAudioStreamCallback
+    // TODO: AttachAudioStreamProcessor
+    // TODO: DetachAudioStreamProcessor
+    // TODO: AttachAudioMixedProcessor
+    // TODO: DetachAudioMixedProcessor
 }
 
 /// Exported methods
@@ -458,4 +530,65 @@ impl Raudio {
     }
 
     // AudioStream management methods
+
+    pub fn load_audio_stream(
+        &self,
+        sample_rate: u32,
+        sample_size: u32,
+        channels: u32,
+    ) -> Result<AudioStream, String> {
+        Self::__load_audio_stream(sample_rate, sample_size, channels)
+    }
+
+    pub fn is_audio_stream_ready(&self, stream: AudioStream) -> bool {
+        Self::__is_audio_stream_ready(stream)
+    }
+
+    pub fn unload_audio_stream(&self, stream: AudioStream) {
+        Self::__unload_audio_stream(stream)
+    }
+
+    pub fn update_audio_stream(&self, stream: AudioStream, data: Vec<u8>) {
+        Self::__update_audio_stream(stream, data)
+    }
+
+    pub fn is_audio_stream_processed(&self, stream: AudioStream) -> bool {
+        Self::__is_audio_stream_processed(stream)
+    }
+
+    pub fn play_audio_stream(&self, stream: AudioStream) {
+        Self::__play_audio_stream(stream)
+    }
+
+    pub fn pause_audio_stream(&self, stream: AudioStream) {
+        Self::__pause_audio_stream(stream)
+    }
+
+    pub fn resume_audio_stream(&self, stream: AudioStream) {
+        Self::__resume_audio_stream(stream)
+    }
+
+    pub fn is_audio_stream_playing(&self, stream: AudioStream) -> bool {
+        Self::__is_audio_stream_playing(stream)
+    }
+
+    pub fn stop_audio_stream(&self, stream: AudioStream) {
+        Self::__play_audio_stream(stream)
+    }
+
+    pub fn set_audio_stream_volume(&self, stream: AudioStream, volume: f32) {
+        Self::__set_audio_stream_volume(stream, volume)
+    }
+
+    pub fn set_audio_stream_pitch(&self, stream: AudioStream, pitch: f32) {
+        Self::__set_audio_stream_pitch(stream, pitch)
+    }
+
+    pub fn set_audio_stream_pan(&self, stream: AudioStream, pan: f32) {
+        Self::__set_audio_stream_pan(stream, pan)
+    }
+
+    pub fn set_audio_stream_buffer_size_default(&self, size: i32) {
+        Self::__set_audio_stream_buffer_size_default(size)
+    }
 }

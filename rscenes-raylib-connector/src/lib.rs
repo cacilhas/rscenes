@@ -12,6 +12,7 @@ mod utils;
 pub mod interface;
 
 pub mod assets {
+    pub use crate::ext::audio_stream::AudioStreamExt;
     pub use crate::ext::camera::{Camera2DExt, Camera3DExt};
     pub use crate::ext::codepoints::Codepoints;
     pub use crate::ext::color::ColorExt;
