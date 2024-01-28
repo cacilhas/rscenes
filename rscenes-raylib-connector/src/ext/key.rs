@@ -1,8 +1,6 @@
-use std::char;
-
-use raylib_ffi::enums::KeyboardKey;
-
 use crate::rcore::Rcore;
+use raylib_ffi::enums::KeyboardKey;
+use std::char;
 
 pub trait KeyboardKeyExt: Sized {
     fn get_pressed() -> Self;

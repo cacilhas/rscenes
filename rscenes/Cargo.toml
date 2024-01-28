@@ -12,6 +12,9 @@ categories    = ["api-bindings", "game-engines", "graphics"]
 keywords      = ["raylib", "scenes"]
 edition       = "2021"
 
+[dependencies]
+resolution = "0.1"
+
 [dependencies.rscenes-macros]
 version = "1.0"
 path = "../rscenes-macros"
