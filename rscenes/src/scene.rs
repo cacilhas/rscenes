@@ -3,7 +3,7 @@ use crate::state::State;
 use rscenes_raylib_connector::{assets::*, interface::*};
 use std::fmt::Debug;
 
-pub trait Scene: Debug {
+pub trait Scene: Debug + 'static {
     /// Implement get_camera_2d() to return your own camera
     fn get_camera_2d(&self) -> Camera2D {
         Camera2D::empty()

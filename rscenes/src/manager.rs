@@ -1,5 +1,3 @@
-use std::any::Any;
-
 use crate::{
     connectors::{Connector2D, Connector3D},
     scene::Scene,
@@ -35,33 +33,13 @@ impl Rscenes {
         if self.scenes.is_empty() {
             return Err("no initial scene supplied".to_owned());
         }
+        self.setup()?;
 
+        let mut reload = true;
         let connector = RaylibConnector::default();
         let connector_3d = Connector3D::default();
         let connector_2d = Connector2D::default();
         let rcore = connector.rcore;
-
-        rcore.set_target_fps(60);
-        let (width, height) = match self.window_size {
-            (0, 0) => current_resolution().unwrap_or((800, 600)),
-            (0, height) => {
-                let (width, _) = current_resolution().unwrap_or((800, 600));
-                (width, height)
-            }
-            (width, 0) => {
-                let (_, height) = current_resolution().unwrap_or((800, 600));
-                (width, height)
-            }
-            (width, height) => (width, height),
-        };
-        rcore.init_window(width, height, &self.title);
-
-        if let Some(scene) = self.scenes.last_mut() {
-            for callback in self.setups.iter() {
-                callback(scene, connector)?;
-            }
-        }
-        let mut reload = true;
 
         'mainloop: while !rcore.window_should_close() {
             let scene = match self.scenes.last_mut() {
@@ -107,15 +85,30 @@ impl Rscenes {
         Ok(())
     }
 
-    pub fn scene_downcast_ref<T: 'static>(scene: &Box<dyn Scene>) -> Option<&T> {
-        let scene: &dyn Any = scene;
-        scene.downcast_ref::<T>()
-    }
+    fn setup(&mut self) -> Result<(), String> {
+        let connector = RaylibConnector::default();
+        let rcore = connector.rcore;
 
-    pub fn scene_downcast_mut<T: 'static>(scene: &mut Box<dyn Scene>) -> Option<&mut T> {
-        let scene: &mut dyn Any = scene;
-        scene.downcast_mut::<T>()
+        rcore.set_target_fps(60);
+        let (width, height) = match self.window_size {
+            (0, 0) => current_resolution().unwrap_or((800, 600)),
+            (0, height) => {
+                let (width, _) = current_resolution().unwrap_or((800, 600));
+                (width, height)
+            }
+            (width, 0) => {
+                let (_, height) = current_resolution().unwrap_or((800, 600));
+                (width, height)
+            }
+            (width, height) => (width, height),
+        };
+        rcore.init_window(width, height, &self.title);
+        for callback in self.setups.iter() {
+            callback(connector)?;
+        }
+
+        Ok(())
     }
 }
 
-pub trait SetupCallback = Fn(&mut Box<dyn Scene>, RaylibConnector) -> Result<(), String> + 'static;
+pub trait SetupCallback = Fn(RaylibConnector) -> Result<(), String> + 'static;
