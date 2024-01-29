@@ -151,14 +151,30 @@ pub trait ColorExt: Sized {
     const SLATEGRAY: Self;
     const DARKSLATEGRAY: Self;
 
+    /// Get Color from normalized values [0..1]
+    fn from_normalized(normalized: Vector4) -> Self;
+    /// Get a Color from HSV values, hue [0..360], saturation/value [0..1]
+    fn from_hsv(hue: f32, saturation: f32, value: f32) -> Self;
+    /// Get Color structure from hexadecimal value
+    fn from_hex_value(hex_value: u32) -> Self;
+
+    /// Get color with alpha applied, alpha goes from 0.0 to 1.0
     fn fade(self, alpha: f32) -> Self;
+    /// Get hexadecimal value for a Color
     fn to_int(self) -> i32;
+    /// Get Color normalized as float [0..1]
     fn normalize(self) -> Vector4;
+    /// Get HSV values for a Color, hue [0..360], saturation/value [0..1]
     fn to_hsv(self) -> Vector3;
+    /// Get color multiplied with another color
     fn tint(self, tint: Self) -> Self;
+    /// Get color with brightness correction, brightness factor goes from -1.0 to 1.0
     fn brightness(self, factor: f32) -> Self;
+    /// Get color with contrast correction, contrast values between -1.0 and 1.0
     fn contrast(self, contrast: f32) -> Self;
+    /// Get color with alpha applied, alpha goes from 0.0 to 1.0
     fn alpha(self, alpha: f32) -> Self;
+    /// Get src alpha-blended into dst color with tint
     fn alpha_blend(self, src: Self, tint: Self) -> Self;
 }
 
@@ -904,6 +920,18 @@ impl ColorExt for Color {
         b: 0x4f,
         a: 0xff,
     };
+
+    fn from_normalized(normalized: Vector4) -> Self {
+        Rtextures::__color_from_normalized(normalized)
+    }
+
+    fn from_hsv(hue: f32, saturation: f32, value: f32) -> Self {
+        Rtextures::__color_from_hsv(hue, saturation, value)
+    }
+
+    fn from_hex_value(hex_value: u32) -> Self {
+        Rtextures::__get_color(hex_value)
+    }
 
     fn fade(self, alpha: f32) -> Self {
         Rtextures::__fade(self, alpha)

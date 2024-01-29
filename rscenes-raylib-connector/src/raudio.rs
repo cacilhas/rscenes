@@ -160,14 +160,15 @@ impl Raudio {
             let raw = LoadWaveSamples(wave);
             // TODO: review this calculation
             let count = wave.frameCount * wave.sampleSize / 32;
-            array_from_c(raw, count as usize, || {
+            let res = array_from_c(raw, count as usize, || {
                 "couldn't load samples from wave".to_owned()
-            })
+            })?
+            .iter()
+            .map(|e| *e)
+            .collect::<Vec<_>>();
+            UnloadWaveSamples(raw);
+            Ok(res)
         }
-    }
-
-    pub(crate) fn __unload_wave_samples(samples: &mut Vec<f32>) {
-        unsafe { UnloadWaveSamples(samples.as_mut_ptr()) }
     }
 
     // Music management methods
@@ -335,136 +336,163 @@ impl Raudio {
 impl Raudio {
     // Audio device management
 
+    /// Initialize audio device and context
     pub fn init_audio_device(&self) {
         Self::__init_audio_device()
     }
 
+    /// Close the audio device and context
     pub fn close_audio_device(&self) {
         Self::__close_audio_device()
     }
 
+    /// Check whether audio device has been initialized successfully
     pub fn is_audio_device_ready(&self) -> bool {
         Self::__is_audio_device_ready()
     }
 
+    /// Set master volume (listener)
     pub fn set_master_volume(&self, volume: f32) {
         Self::__set_master_volume(volume)
     }
 
+    /// Get master volume (listener)
     pub fn get_master_volume(&self) -> f32 {
         Self::__get_master_volume()
     }
 
     // Wave/Sound loading/unloading methods
 
+    /// Load wave data from file
     pub fn load_wave(&self, filename: impl Display) -> Result<Wave, String> {
         Self::__load_wave(filename)
     }
 
+    /// Load wave from memory buffer, fileType refers to extension: i.e. '.wav'
     pub fn load_wave_from_memory(&self, tpe: WaveType, data: Vec<u8>) -> Result<Wave, String> {
         Self::__load_wave_from_memory(tpe, data)
     }
 
+    /// Check whether wave data is ready
     pub fn is_wave_ready(&self, wave: Wave) -> bool {
         Self::__is_wave_ready(wave)
     }
 
+    /// Load sound from file
     pub fn load_sound(&self, filename: impl Display) -> Result<Sound, String> {
         Self::__load_sound(filename)
     }
 
+    /// Load sound from wave data
     pub fn load_sound_from_wave(&self, wave: Wave) -> Sound {
         Self::__load_sound_from_wave(wave)
     }
 
+    /// Create a new sound that shares the same sample data as the source sound, does not own the sound data
     pub fn load_sound_alias(&self, source: Sound) -> Sound {
         Self::__load_sound_alias(source)
     }
 
+    /// Check whether a sound is ready
     pub fn is_sound_ready(&self, sound: Sound) -> bool {
         Self::__is_sound_ready(sound)
     }
 
+    /// Unload wave data
     pub fn unload_wave(&self, wave: Wave) {
         Self::__unload_wave(wave)
     }
 
+    /// Unload sound
     pub fn unload_sound(&self, sound: Sound) {
         Self::__unload_sound(sound)
     }
 
+    /// Unload a sound alias (does not deallocate sample data)
     pub fn unload_sound_alias(&self, sound: Sound) {
         Self::__unload_sound_alias(sound)
     }
 
+    /// Export wave data to file, returns true on success
     pub fn export_wave(&self, wave: Wave, filename: impl Display) -> bool {
         Self::__export_wave(wave, filename)
     }
 
+    /// Export wave sample data to code (.h), returns true on success
     pub fn export_wave_as_code(&self, wave: Wave, filename: impl Display) -> bool {
         Self::__export_wave_as_code(wave, filename)
     }
 
     // Wave/Sound management methods
 
+    /// Play a sound
     pub fn play_sound(&self, sound: Sound) {
         Self::__play_sound(sound)
     }
 
+    /// Stop playing a sound
     pub fn stop_sound(&self, sound: Sound) {
         Self::__stop_sound(sound)
     }
 
+    /// Pause a sound
     pub fn pause_sound(&self, sound: Sound) {
         Self::__pause_sound(sound)
     }
 
+    /// Resume a paused sound
     pub fn resume_sound(&self, sound: Sound) {
         Self::__resume_sound(sound)
     }
 
+    /// Check whether a sound is currently playing
     pub fn is_sound_playing(&self, sound: Sound) -> bool {
         Self::__is_sound_playing(sound)
     }
 
+    /// Set volume for a sound (1.0 is max level)
     pub fn set_sound_volume(&self, sound: Sound, volume: f32) {
         Self::__set_sound_volume(sound, volume)
     }
 
+    /// Set pitch for a sound (1.0 is base level)
     pub fn set_sound_pitch(&self, sound: Sound, pitch: f32) {
         Self::__set_sound_pitch(sound, pitch)
     }
 
+    /// Set pan for a sound (0.5 is center)
     pub fn set_sound_pan(&self, sound: Sound, pan: f32) {
         Self::__set_sound_pan(sound, pan)
     }
 
+    /// Copy a wave to a new wave
     pub fn wave_copy(&self, wave: Wave) -> Wave {
         Self::__wave_copy(wave)
     }
 
+    // Crop a wave to defined samples range
     pub fn wave_crop(&self, wave: &mut Wave, init_sample: i32, final_sample: i32) {
         Self::__wave_crop(wave, init_sample, final_sample)
     }
 
+    /// Convert wave data to desired format
     pub fn wave_format(&self, wave: &mut Wave, sample_rate: i32, sample_size: i32, channels: i32) {
         Self::__wave_format(wave, sample_rate, sample_size, channels)
     }
 
+    /// Load samples data from wave as a 32bit float data array
     pub fn load_wave_samples(&self, wave: Wave) -> Result<Vec<f32>, String> {
         Self::__load_wave_samples(wave)
     }
 
-    pub fn unload_wave_samples(&self, samples: &mut Vec<f32>) {
-        Self::__unload_wave_samples(samples)
-    }
-
     // Music management methods
 
+    /// Load music stream from file
     pub fn load_music_stream(&self, filename: impl Display) -> Result<Music, String> {
         Self::__load_music_stream(filename)
     }
 
+    /// Load music stream from data
     pub fn load_music_stream_from_memory(
         &self,
         tpe: impl Display,
@@ -473,64 +501,79 @@ impl Raudio {
         Self::__load_music_stream_from_memory(tpe, data)
     }
 
+    /// Check whether a music stream is ready
     pub fn is_music_ready(&self, music: Music) -> bool {
         Self::__is_music_ready(music)
     }
 
+    /// Unload music stream
     pub fn unload_music_stream(&self, music: Music) {
         Self::__unload_music_stream(music)
     }
 
+    /// Start music playing
     pub fn play_music_stream(&self, music: Music) {
         Self::__play_music_stream(music)
     }
 
+    /// Check whether music is playing
     pub fn is_music_stream_playing(&self, music: Music) -> bool {
         Self::__is_music_stream_playing(music)
     }
 
+    /// Updates buffers for music streaming
     pub fn update_music_stream(&self, music: Music) {
         Self::__update_music_stream(music)
     }
 
+    /// Stop music playing
     pub fn stop_music_stream(&self, music: Music) {
         Self::__stop_music_stream(music)
     }
 
+    /// Pause music playing
     pub fn pause_music_stream(&self, music: Music) {
         Self::__pause_music_stream(music)
     }
 
+    /// Resume playing paused music
     pub fn resume_music_stream(&self, music: Music) {
         Self::__resume_music_stream(music)
     }
 
+    /// Seek music to a position (in seconds)
     pub fn seek_music_stream(&self, music: Music, position: f32) {
         Self::__seek_music_stream(music, position)
     }
 
+    /// Set volume for music (1.0 is max level)
     pub fn set_music_volume(&self, music: Music, volume: f32) {
         Self::__set_music_volume(music, volume)
     }
 
+    /// Set pitch for a music (1.0 is base level)
     pub fn set_music_pitch(&self, music: Music, pitch: f32) {
         Self::__set_music_pitch(music, pitch)
     }
 
+    /// Set pan for a music (0.5 is center)
     pub fn set_music_pan(&self, music: Music, pan: f32) {
         Self::__set_music_pan(music, pan)
     }
 
+    /// Get music time length (in seconds)
     pub fn get_music_time_length(&self, music: Music) -> f32 {
         Self::__get_music_time_length(music)
     }
 
+    /// Get current music time played (in seconds)
     pub fn get_music_time_played(&self, music: Music) -> f32 {
         Self::__get_music_time_played(music)
     }
 
     // AudioStream management methods
 
+    /// Load audio stream (to stream raw audio pcm data)
     pub fn load_audio_stream(
         &self,
         sample_rate: u32,
@@ -540,54 +583,67 @@ impl Raudio {
         Self::__load_audio_stream(sample_rate, sample_size, channels)
     }
 
+    /// Check whether an audio stream is ready
     pub fn is_audio_stream_ready(&self, stream: AudioStream) -> bool {
         Self::__is_audio_stream_ready(stream)
     }
 
+    /// Unload audio stream and free memory
     pub fn unload_audio_stream(&self, stream: AudioStream) {
         Self::__unload_audio_stream(stream)
     }
 
+    /// Update audio stream buffers with data
     pub fn update_audio_stream(&self, stream: AudioStream, data: Vec<u8>) {
         Self::__update_audio_stream(stream, data)
     }
 
+    /// Check whether any audio stream buffers requires refill
     pub fn is_audio_stream_processed(&self, stream: AudioStream) -> bool {
         Self::__is_audio_stream_processed(stream)
     }
 
+    /// Play audio stream
     pub fn play_audio_stream(&self, stream: AudioStream) {
         Self::__play_audio_stream(stream)
     }
 
+    /// Pause audio stream
     pub fn pause_audio_stream(&self, stream: AudioStream) {
         Self::__pause_audio_stream(stream)
     }
 
+    /// Resume audio stream
     pub fn resume_audio_stream(&self, stream: AudioStream) {
         Self::__resume_audio_stream(stream)
     }
 
+    /// Check whether audio stream is playing
     pub fn is_audio_stream_playing(&self, stream: AudioStream) -> bool {
         Self::__is_audio_stream_playing(stream)
     }
 
+    /// Stop audio stream
     pub fn stop_audio_stream(&self, stream: AudioStream) {
-        Self::__play_audio_stream(stream)
+        Self::__stop_audio_stream(stream)
     }
 
+    /// Set volume for audio stream (1.0 is max level)
     pub fn set_audio_stream_volume(&self, stream: AudioStream, volume: f32) {
         Self::__set_audio_stream_volume(stream, volume)
     }
 
+    /// Set pitch for audio stream (1.0 is base level)
     pub fn set_audio_stream_pitch(&self, stream: AudioStream, pitch: f32) {
         Self::__set_audio_stream_pitch(stream, pitch)
     }
 
+    /// Set pan for audio stream (0.5 is centered)
     pub fn set_audio_stream_pan(&self, stream: AudioStream, pan: f32) {
         Self::__set_audio_stream_pan(stream, pan)
     }
 
+    /// Default size for new audio streams
     pub fn set_audio_stream_buffer_size_default(&self, size: i32) {
         Self::__set_audio_stream_buffer_size_default(size)
     }

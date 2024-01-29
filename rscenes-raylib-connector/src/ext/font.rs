@@ -3,11 +3,17 @@ use raylib_ffi::*;
 use std::fmt::Display;
 
 pub trait FontExt: Sized {
+    /// Get the default Font
     fn default() -> Self;
+    /// Load font from file into GPU memory (VRAM)
     fn load(filename: impl Display) -> Result<Self, String>;
+    /// Load font from Image (XNA style)
     fn load_from_image(image: Image, key: Color, first_char: i32) -> Result<Self, String>;
+    /// Check whether a font is ready
     fn is_ready(self) -> bool;
+    /// Unload font from GPU memory (VRAM)
     fn unload(self);
+    /// Export font as code file, returns true on success
     fn export_as_code(self, filename: impl Display) -> bool;
 }
 

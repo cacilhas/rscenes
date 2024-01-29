@@ -331,18 +331,25 @@ impl Rtextures {
         unsafe {
             let mut size: i32 = 0;
             let raw = LoadImagePalette(image, max_size, &mut size);
-            array_from_c(raw, size as usize, || {
+            let res = array_from_c(raw, size as usize, || {
                 "failed to load pallet from image".to_owned()
+            })?
+            // Copy array elements to the stack
+            .iter()
+            .map(|e| Color {
+                r: e.r,
+                g: e.g,
+                b: e.b,
+                a: e.a,
             })
+            .collect::<Vec<_>>();
+            UnloadImagePalette(raw);
+            Ok(res)
         }
     }
 
     pub(crate) fn __unload_image_colors(colors: *mut Color) {
         unsafe { UnloadImageColors(colors) }
-    }
-
-    pub(crate) fn __unload_image_palette(colors: &mut Vec<Color>) {
-        unsafe { UnloadImagePalette(colors.as_mut_ptr()) }
     }
 
     pub(crate) fn __get_image_alpha_border(image: Image, threshold: f32) -> Rectangle {
@@ -699,10 +706,12 @@ impl Rtextures {
 impl Rtextures {
     // Image loading
 
+    /// Load image from file into CPU memory (RAM)
     pub fn load_image(&self, filename: impl Display) -> Result<Image, String> {
         Self::__load_image(filename)
     }
 
+    /// Load image from RAW file data
     pub fn load_image_raw(
         &self,
         filename: impl Display,
@@ -714,6 +723,7 @@ impl Rtextures {
         Self::__load_image_raw(filename, width, height, format, header_size)
     }
 
+    /// Load image from SVG file data or string with specified size
     pub fn load_image_svg(
         &self,
         filename_or_string: impl Display,
@@ -723,10 +733,12 @@ impl Rtextures {
         Self::__load_image_svg(filename_or_string, width, height)
     }
 
+    /// Load image sequence from file (frames appended to image.data)
     pub fn load_image_anim(&self, filename: impl Display) -> Result<(Image, i32), String> {
         Self::__load_image_anim(filename)
     }
 
+    /// Load image from memory buffer, fileType refers to extension: i.e. '.png'
     pub fn load_image_from_memory(
         &self,
         tpe: ImageType,
@@ -735,40 +747,49 @@ impl Rtextures {
         Self::__load_image_from_memory(tpe, data)
     }
 
+    /// Load image from GPU texture data
     pub fn load_image_from_texture(&self, texture: Texture2D) -> Image {
         Self::__load_image_from_texture(texture)
     }
 
+    /// Load image from screen buffer and (screenshot)
     pub fn load_image_from_screen(&self) -> Image {
         Self::__load_image_from_screen()
     }
 
+    /// Check whether an image is ready
     pub fn is_image_ready(&self, image: Image) -> bool {
         Self::__is_image_ready(image)
     }
 
+    /// Unload image from CPU memory (RAM)
     pub fn unload_image(&self, image: Image) {
         Self::__unload_image(image)
     }
 
+    /// Export image data to file, returns true on success
     pub fn export_image(&self, image: Image, filename: impl Display) -> bool {
         Self::__export_image(image, filename)
     }
 
+    /// Export image to memory buffer
     pub fn export_image_to_memory(&self, image: Image, tpe: ImageType) -> Result<Vec<u8>, String> {
         Self::__export_image_to_memory(image, tpe)
     }
 
+    /// Export image as code file defining an array of bytes, returns true on success
     pub fn export_image_as_code(&self, image: Image, filename: impl Display) -> bool {
         Self::__export_image_as_code(image, filename)
     }
 
     // Image generation methods
 
+    /// Generate image: plain color
     pub fn gen_image_color(&self, width: i32, height: i32, color: Color) -> Image {
         Self::__gen_image_color(width, height, color)
     }
 
+    /// Generate image: linear gradient, direction in radians, 0=Vertical gradient
     pub fn gen_image_gradient_linear(
         &self,
         width: i32,
@@ -780,6 +801,7 @@ impl Rtextures {
         Self::__gen_image_gradient_linear(width, height, angle, start, end)
     }
 
+    /// Generate image: radial gradient
     pub fn gen_image_gradient_radial(
         &self,
         width: i32,
@@ -791,6 +813,7 @@ impl Rtextures {
         Self::__gen_image_gradient_radial(width, height, density, inner, outer)
     }
 
+    // Generate image: square gradient
     pub fn gen_image_gradient_square(
         &self,
         width: i32,
@@ -802,6 +825,7 @@ impl Rtextures {
         Self::__gen_image_gradient_square(width, height, density, inner, outer)
     }
 
+    /// Generate image: checked
     pub fn gen_image_checked(
         &self,
         width: i32,
@@ -814,10 +838,12 @@ impl Rtextures {
         Self::__gen_image_checked(width, height, checks_x, checks_y, col1, col2)
     }
 
+    /// Generate image: white noise
     pub fn gen_image_white_noise(&self, width: i32, height: i32, factor: f32) -> Image {
         Self::__gen_image_white_noise(width, height, factor)
     }
 
+    /// Generate image: perlin noise
     pub fn gen_image_perlin_noise(
         &self,
         width: i32,
@@ -829,28 +855,34 @@ impl Rtextures {
         Self::__gen_image_perlin_noise(width, height, offset_x, offset_y, scale)
     }
 
+    /// Generate image: cellular algorithm, bigger tileSize means bigger cells
     pub fn gen_image_cellular(&self, width: i32, height: i32, tile_size: i32) -> Image {
         Self::__gen_image_cellular(width, height, tile_size)
     }
 
+    /// Generate image: grayscale image from text data
     pub fn gen_image_text(&self, width: i32, height: i32, text: impl Display) -> Image {
         Self::__gen_image_text(width, height, text)
     }
 
     // Image manipulation methods
 
+    /// Create an image duplicate (useful for transformations)
     pub fn image_copy(&self, image: Image) -> Image {
         Self::__image_copy(image)
     }
 
+    /// Create an image from another image piece
     pub fn image_from_image(&self, image: Image, rec: Rectangle) -> Image {
         Self::__image_from_image(image, rec)
     }
 
+    /// Create an image from text (default font)
     pub fn image_text(&self, text: impl Display, font_size: i32, color: Color) -> Image {
         Self::__image_text(text, font_size, color)
     }
 
+    /// Create an image from text (custom sprite font)
     pub fn image_text_ex(
         &self,
         font: Font,
@@ -862,46 +894,57 @@ impl Rtextures {
         Self::__image_text_ex(font, text, font_size, spacing, tint)
     }
 
+    /// Convert image data to desired format
     pub fn image_format(&self, image: &mut Image, format: PixelFormat) {
         Self::__image_format(image, format)
     }
 
+    /// Convert image to POT (power-of-two)
     pub fn image_to_pot(&self, image: &mut Image, fill: Color) {
         Self::__image_to_pot(image, fill)
     }
 
+    /// Crop an image to a defined rectangle
     pub fn image_crop(&self, image: &mut Image, crop: Rectangle) {
         Self::__image_crop(image, crop)
     }
 
+    /// Crop image depending on alpha value
     pub fn image_alpha_crop(&self, image: &mut Image, threshold: f32) {
         Self::__image_alpha_crop(image, threshold)
     }
 
+    /// Clear alpha channel to desired color
     pub fn image_alpha_clear(&self, image: &mut Image, color: Color, threshold: f32) {
         Self::__image_alpha_clear(image, color, threshold)
     }
 
+    /// Apply alpha mask to image
     pub fn image_alpha_mask(&self, image: &mut Image, alpha_mask: Image) {
         Self::__image_alpha_mask(image, alpha_mask)
     }
 
+    /// Premultiply alpha channel
     pub fn image_alpha_premultiply(&self, image: &mut Image) {
         Self::__image_alpha_premultiply(image)
     }
 
+    /// Apply Gaussian blur using a box blur approximation
     pub fn image_blur_gaussian(&self, image: &mut Image, blur_size: i32) {
         Self::__image_blur_gaussian(image, blur_size)
     }
 
+    /// Resize image (Bicubic scaling algorithm)
     pub fn image_resize(&self, image: &mut Image, width: i32, height: i32) {
         Self::__image_resize(image, width, height)
     }
 
+    /// Resize image (Nearest-Neighbor scaling algorithm)
     pub fn image_resize_nn(&self, image: &mut Image, width: i32, height: i32) {
         Self::__image_resize_nn(image, width, height)
     }
 
+    // Resize canvas and fill with color
     pub fn image_resize_canvas(
         &self,
         image: &mut Image,
@@ -914,96 +957,114 @@ impl Rtextures {
         Self::__image_resize_canvas(image, width, height, offset_x, offset_y, fill)
     }
 
+    /// Compute all mipmap levels for a provided image
     pub fn image_mipmaps(&self, image: &mut Image) {
         Self::__image_mipmaps(image)
     }
 
+    /// Dither image data to 16bpp or lower (Floyd-Steinberg dithering)
     pub fn image_dither(&self, image: &mut Image, r: i32, g: i32, b: i32, a: i32) {
         Self::__image_dither(image, r, g, b, a)
     }
 
+    /// Flip image vertically
     pub fn image_flip_vertical(&self, image: &mut Image) {
         Self::__image_flip_vertical(image)
     }
 
+    /// Flip image horizontally
     pub fn image_flip_horizontal(&self, image: &mut Image) {
         Self::__image_flip_horizontal(image)
     }
 
+    // Rotate image by input angle in radians
     pub fn image_rotate(&self, image: &mut Image, angle: f32) {
         Self::__image_rotate(image, angle)
     }
 
+    /// Rotate image clockwise 90°
     pub fn image_rotate_cw(&self, image: &mut Image) {
         Self::__image_rotate_cw(image)
     }
 
+    // Rotate image counter-clockwise 90°
     pub fn image_rotate_ccw(&self, image: &mut Image) {
         Self::__image_rotate_ccw(image)
     }
 
+    /// Modify image color: tint
     pub fn image_color_tint(&self, image: &mut Image, tint: Color) {
         Self::__image_color_tint(image, tint)
     }
 
+    /// Modify image color: invert
     pub fn image_color_invert(&self, image: &mut Image) {
         Self::__image_color_invert(image)
     }
 
+    /// Modify image color: grayscale
     pub fn image_color_grayscale(&self, image: &mut Image) {
         Self::__image_color_grayscale(image)
     }
 
+    /// Modify image color: contrast (-100 to 100)
     pub fn image_color_contrast(&self, image: &mut Image, contrast: f32) {
         Self::__image_color_contrast(image, contrast)
     }
 
+    /// Modify image color: brightness (-255 to 255)
     pub fn image_color_brightness(&self, image: &mut Image, brightness: i32) {
         Self::__image_color_brightness(image, brightness)
     }
 
+    /// Modify image color: replace color
     pub fn image_color_replace(&self, image: &mut Image, color: Color, replace: Color) {
         Self::__image_color_replace(image, color, replace)
     }
 
+    /// Load color data from image as a Color array (RGBA - 32bit)
     pub fn load_image_colors(&self, image: Image) -> *mut Color {
         Self::__load_image_colors(image)
     }
 
+    /// Load colors palette from image as a Color array (RGBA - 32bit)
     pub fn load_image_pallete(&self, image: Image, max_size: i32) -> Result<Vec<Color>, String> {
         Self::__load_image_pallete(image, max_size)
     }
 
+    /// Unload color data loaded with LoadImageColors()
     pub fn unload_image_colors(&self, colors: *mut Color) {
         Self::__unload_image_colors(colors)
     }
 
-    pub fn unload_image_palette(&self, colors: &mut Vec<Color>) {
-        Self::__unload_image_palette(colors)
-    }
-
+    /// Get image alpha border rectangle
     pub fn get_image_alpha_border(&self, image: Image, threshold: f32) -> Rectangle {
         Self::__get_image_alpha_border(image, threshold)
     }
 
+    /// Get image pixel color at (x, y) position
     pub fn get_image_color(&self, image: Image, x: i32, y: i32) -> Color {
         Self::__get_image_color(image, x, y)
     }
 
     // Image drawing methods
 
+    /// Clear image background with given color
     pub fn image_clear_background(&self, image: &mut Image, color: Color) {
         Self::__image_clear_background(image, color)
     }
 
+    /// Draw pixel within an image
     pub fn image_draw_pixel(&self, image: &mut Image, x: i32, y: i32, color: Color) {
         Self::__image_draw_pixel(image, x, y, color)
     }
 
+    /// Draw pixel within an image (Vector version)
     pub fn image_draw_pixel_v(&self, image: &mut Image, position: Vector2, color: Color) {
         Self::__image_draw_pixel_v(image, position, color)
     }
 
+    /// Draw line within an image
     pub fn image_draw_line(
         &self,
         image: &mut Image,
@@ -1016,10 +1077,12 @@ impl Rtextures {
         Self::__image_draw_line(image, start_x, start_y, end_x, end_y, color)
     }
 
+    /// Draw line within an image (Vector version)
     pub fn image_draw_line_v(&self, image: &mut Image, start: Vector2, end: Vector2, color: Color) {
         Self::__image_draw_line_v(image, start, end, color)
     }
 
+    /// Draw a filled circle within an image
     pub fn image_draw_circle(
         &self,
         image: &mut Image,
@@ -1031,6 +1094,7 @@ impl Rtextures {
         Self::__image_draw_circle(image, center_x, center_y, radius, color)
     }
 
+    /// Draw a filled circle within an image (Vector version)
     pub fn image_draw_circle_v(
         &self,
         image: &mut Image,
@@ -1041,6 +1105,7 @@ impl Rtextures {
         Self::__image_draw_circle_v(image, center, radius, color)
     }
 
+    /// Draw circle outline within an image
     pub fn image_draw_circle_lines(
         &self,
         image: &mut Image,
@@ -1052,6 +1117,7 @@ impl Rtextures {
         Self::__image_draw_circle_lines(image, center_x, center_y, radius, color)
     }
 
+    /// Draw circle outline within an image (Vector version)
     pub fn image_draw_circle_lines_v(
         &self,
         image: &mut Image,
@@ -1062,6 +1128,7 @@ impl Rtextures {
         Self::__image_draw_circle_lines_v(image, center, radius, color)
     }
 
+    /// Draw rectangle within an image
     pub fn image_draw_rectangle(
         &self,
         image: &mut Image,
@@ -1074,6 +1141,7 @@ impl Rtextures {
         Self::__image_draw_rectangle(image, x, y, width, height, color)
     }
 
+    /// Draw rectangle within an image (Vector version)
     pub fn image_draw_rectangle_v(
         &self,
         image: &mut Image,
@@ -1084,10 +1152,12 @@ impl Rtextures {
         Self::__image_draw_rectangle_v(image, position, size, color)
     }
 
+    /// Draw rectangle within an image
     pub fn image_draw_rectangle_rec(&self, image: &mut Image, rec: Rectangle, color: Color) {
         Self::__image_draw_rectangle_rec(image, rec, color)
     }
 
+    /// Draw rectangle lines within an image
     pub fn image_draw_rectangle_lines(
         &self,
         image: &mut Image,
@@ -1098,6 +1168,7 @@ impl Rtextures {
         Self::__image_draw_rectangle_lines(image, rec, thick, color)
     }
 
+    /// Draw a source image within a destination image (tint applied to source)
     pub fn image_draw(
         &self,
         image: &mut Image,
@@ -1109,6 +1180,7 @@ impl Rtextures {
         Self::__image_draw(image, src, src_rec, dst_rec, tint)
     }
 
+    /// Draw text (using default font) within an image (destination)
     pub fn image_draw_text(
         &self,
         image: &mut Image,
@@ -1121,6 +1193,7 @@ impl Rtextures {
         Self::__image_draw_text(image, text, x, y, font_size, color)
     }
 
+    /// Draw text (custom sprite font) within an image (destination)
     pub fn image_draw_text_ex(
         &self,
         image: &mut Image,
@@ -1136,14 +1209,17 @@ impl Rtextures {
 
     // Texture loading methods
 
+    /// Load texture from file into GPU memory (VRAM)
     pub fn load_texture(&self, filename: impl Display) -> Result<Texture2D, String> {
         Self::__load_texture(filename)
     }
 
+    /// Load texture from image data
     pub fn load_texture_from_image(&self, image: Image) -> Result<Texture2D, String> {
         Self::__load_texture_from_image(image)
     }
 
+    /// Load cubemap from image, multiple image cubemap layouts supported
     pub fn load_texture_cubemap(
         &self,
         image: Image,
@@ -1152,58 +1228,71 @@ impl Rtextures {
         Self::__load_texture_cubemap(image, layout)
     }
 
+    /// Load texture for rendering (framebuffer)
     pub fn load_render_texture(&self, width: i32, height: i32) -> RenderTexture2D {
         Self::__load_render_texture(width, height)
     }
 
+    /// Check whether a texture is ready
     pub fn is_texture_ready(&self, texture: Texture2D) -> bool {
         Self::__is_texture_ready(texture)
     }
 
+    /// Unload texture from GPU memory (VRAM)
     pub fn unload_texture(&self, texture: Texture2D) {
         Self::__unload_texture(texture)
     }
 
+    /// Check whether a render texture is ready
     pub fn is_render_texture_ready(&self, target: RenderTexture2D) -> bool {
         Self::__is_render_texture_ready(target)
     }
 
+    /// Unload render texture from GPU memory (VRAM)
     pub fn unload_render_texture(&self, target: RenderTexture2D) {
         Self::__unload_render_texture(target)
     }
 
+    /// Update GPU texture with new data
     pub fn update_texture(&self, texture: Texture2D, pixels: &[u8]) {
         Self::__update_texture(texture, pixels)
     }
 
+    /// Update GPU texture rectangle with new data
     pub fn update_texture_rec(&self, texture: Texture2D, rec: Rectangle, pixels: &[u8]) {
         Self::__update_texture_rec(texture, rec, pixels)
     }
 
     // Texture configuration methods
 
+    /// Generate GPU mipmaps for a texture
     pub fn gen_texture_mipmaps(&self, texture: &mut Texture2D) {
         Self::__gen_texture_mipmaps(texture)
     }
 
+    /// Set texture scaling filter mode
     pub fn set_texture_filter(&self, texture: Texture2D, filter: TextureFilter) {
         Self::__set_texture_filter(texture, filter)
     }
 
+    /// Set texture wrapping mode
     pub fn set_texture_wrap(&self, texture: Texture2D, wrap: TextureWrap) {
         Self::__set_texture_wrap(texture, wrap)
     }
 
     // Texture drawing methods
 
+    // Draw a Texture2D
     pub fn draw_texture(&self, texture: Texture2D, x: i32, y: i32, tint: Color) {
         Self::__draw_texture(texture, x, y, tint)
     }
 
+    /// Draw a Texture2D with position defined as Vector2
     pub fn draw_texture_v(&self, texture: Texture2D, position: Vector2, tint: Color) {
         Self::__draw_texture_v(texture, position, tint)
     }
 
+    /// Draw a Texture2D with extended parameters
     pub fn draw_texture_ex(
         &self,
         texture: Texture2D,
@@ -1215,6 +1304,7 @@ impl Rtextures {
         Self::__draw_texture_ex(texture, position, rotation, scale, tint)
     }
 
+    /// Draw a part of a texture defined by a rectangle
     pub fn draw_texture_rec(
         &self,
         texture: Texture2D,
@@ -1225,6 +1315,7 @@ impl Rtextures {
         Self::__draw_texture_rec(texture, source, position, tint)
     }
 
+    /// Draw a part of a texture defined by a rectangle with pro parameters
     pub fn draw_texture_pro(
         &self,
         texture: Texture2D,
@@ -1237,6 +1328,7 @@ impl Rtextures {
         Self::__draw_texture_pro(texture, source, dest, origin, rotation, tint)
     }
 
+    /// Draws a texture (or part of it) that stretches or shrinks nicely
     pub fn draw_texture_n_patch(
         &self,
         texture: Texture2D,
@@ -1251,62 +1343,77 @@ impl Rtextures {
 
     // Color/pixel related methods
 
+    /// Get color with alpha applied, alpha goes from 0.0 to 1.0
     pub fn fade(&self, color: Color, alpha: f32) -> Color {
         Self::__fade(color, alpha)
     }
 
+    /// Get hexadecimal value for a Color
     pub fn color_to_int(&self, color: Color) -> i32 {
         Self::__color_to_int(color)
     }
 
+    /// Get Color normalized as float [0..1]
     pub fn color_normalize(&self, color: Color) -> Vector4 {
         Self::__color_normalize(color)
     }
 
+    /// Get Color from normalized values [0..1]
     pub fn color_from_normalized(&self, normalized: Vector4) -> Color {
         Self::__color_from_normalized(normalized)
     }
 
+    /// Get HSV values for a Color, hue [0..360], saturation/value [0..1]
     pub fn color_to_hsv(&self, color: Color) -> Vector3 {
         Self::__color_to_hsv(color)
     }
 
+    /// Get a Color from HSV values, hue [0..360], saturation/value [0..1]
     pub fn color_from_hsv(&self, hue: f32, saturation: f32, value: f32) -> Color {
         Self::__color_from_hsv(hue, saturation, value)
     }
 
+    /// Get color multiplied with another color
     pub fn color_tint(&self, color: Color, tint: Color) -> Color {
         Self::__color_tint(color, tint)
     }
 
+    /// Get color with brightness correction, brightness factor goes from -1.0 to 1.0
     pub fn color_brightness(&self, color: Color, factor: f32) -> Color {
         Self::__color_brightness(color, factor)
     }
 
+    /// Get color with contrast correction, contrast values between -1.0 and 1.0
     pub fn color_contrast(&self, color: Color, contrast: f32) -> Color {
         Self::__color_contrast(color, contrast)
     }
 
+    /// Get color with alpha applied, alpha goes from 0.0 to 1.0
     pub fn color_alpha(&self, color: Color, alpha: f32) -> Color {
         Self::__color_alpha(color, alpha)
     }
 
+    /// Get src alpha-blended into dst color with tint
     pub fn color_alpha_blend(&self, dst: Color, src: Color, tint: Color) -> Color {
         Self::__color_alpha_blend(dst, src, tint)
     }
 
+    /// Get Color structure from hexadecimal value
     pub fn get_color(&self, hex_value: u32) -> Color {
         Self::__get_color(hex_value)
     }
 
+    /// Get Color from a source pixel pointer of certain format
     pub fn get_pixel_color(&self, ptr: &mut Vec<u8>, format: PixelFormat) -> Color {
         Self::__get_pixel_color(ptr, format)
     }
 
+    /// Set color formatted into destination pixel pointer
     pub fn set_pixel_color(&self, ptr: &mut Vec<u8>, color: Color, format: PixelFormat) {
         Self::__set_pixel_color(ptr, color, format)
     }
 
+    /// Get pixel data size in bytes for certain format
     pub fn get_pixel_data_size(&self, width: i32, height: i32, format: impl Into<usize>) -> i32 {
         Self::__get_pixel_data_size(width, height, format)
     }

@@ -3,8 +3,11 @@ use raylib_ffi::*;
 use std::fmt::Display;
 
 pub trait ModelAnimationExt: Sized {
+    /// Load model animations from file
     fn load(filename: impl Display) -> Result<Vec<Self>, String>;
+    /// Unload animation data
     fn unload(self);
+    /// Unload animation array data
     fn unload_animations(anims: Vec<Self>);
 }
 

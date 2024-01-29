@@ -4,15 +4,24 @@ use crate::rtextures::Rtextures;
 use raylib_ffi::{enums::*, *};
 
 pub trait TextureExt: Sized {
+    /// Load texture from file into GPU memory (VRAM)
     fn load(filename: impl Display) -> Result<Self, String>;
+    /// Load texture from image data
     fn load_from_image(image: Image) -> Result<Self, String>;
 
+    /// Check whether a texture is ready
     fn is_ready(self) -> bool;
+    /// Unload texture from GPU memory (VRAM)
     fn unload(self);
+    /// Update GPU texture with new data
     fn update_gpu(self, pixels: &[u8]) -> Self;
+    /// Update GPU texture rectangle with new data
     fn update_gpu_rec(self, rec: Rectangle, pixels: &[u8]) -> Self;
+    /// Generate GPU mipmaps for a texture
     fn gen_mipmaps(&mut self) -> &mut Self;
+    /// Set texture scaling filter mode
     fn set_filter(self, filter: TextureFilter) -> Self;
+    /// Set texture wrapping mode
     fn set_wrap(self, wrap: TextureWrap) -> Self;
 }
 

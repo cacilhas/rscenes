@@ -3,6 +3,7 @@ use crate::rcamera::Rcamera;
 use raylib_ffi::{enums::*, *};
 
 pub trait Camera2DExt: Sized {
+    /// Return a new camera with default values
     fn empty() -> Self;
 }
 
@@ -18,8 +19,11 @@ impl Camera2DExt for Camera2D {
 }
 
 pub trait Camera3DExt {
+    /// Return a new camera with default values
     fn empty() -> Self;
+    /// Update camera position for selected mode
     fn update(&mut self, mode: CameraMode);
+    /// Update camera movement/rotation
     fn update_pro(&mut self, movement: Vector3, rotation: Vector3, zoom: f32);
 }
 

@@ -9,10 +9,12 @@ pub struct Codepoints {
 }
 
 impl Codepoints {
+    /// Load all codepoints from a UTF-8 text string, codepoints count returned by parameter
     pub fn load(text: impl Display) -> Result<Self, String> {
         Rtext::__load_codepoints(text)
     }
 
+    /// Create a new codepoint set from a C resource
     pub(crate) fn new(ptr: *mut i32, count: i32) -> Self {
         Self {
             inner: ptr,
@@ -21,18 +23,22 @@ impl Codepoints {
         }
     }
 
+    /// Unload codepoints data from memory
     pub fn unload(self) {
         Rtext::__unload_codepoints(self)
     }
 
+    /// Return amount of codepoints
     pub fn len(&self) -> usize {
         self.count
     }
 
+    /// Return whether the set is empty
     pub fn is_empty(&self) -> bool {
         self.count == 0
     }
 
+    /// Get a codepoint from a specific index
     pub fn get(&self, index: usize) -> Result<i32, String> {
         if self.inner.is_null() {
             return Err("null codepoints".to_owned());

@@ -1,19 +1,29 @@
-use std::fmt::Display;
-
+/// Set texture wrapping mode
 use crate::raudio::Raudio;
 use raylib_ffi::*;
+use std::fmt::Display;
 
 pub trait WaveExt: Sized {
+    /// Load wave data from file
     fn load(filename: impl Display) -> Result<Self, String>;
+    /// Load wave from memory buffer, fileType refers to extension: i.e. '.wav'
     fn load_from_memory(tpe: WaveType, data: Vec<u8>) -> Result<Self, String>;
 
+    /// Check whether wave data is ready
     fn is_ready(self) -> bool;
+    /// Unload wave data
     fn unload(self);
+    /// Export wave data to file, returns true on success
     fn export(self, filename: impl Display) -> bool;
+    /// Export wave sample data to code (.h), returns true on success
     fn export_as_code(self, filename: impl Display) -> bool;
+    /// Copy a wave to a new wave
     fn copy(self) -> Self;
+    // Crop a wave to defined samples range
     fn crop(&mut self, init_sample: i32, final_sample: i32);
+    /// Convert wave data to desired format
     fn format(&mut self, sample_rate: i32, sample_size: i32, channels: i32);
+    /// Load samples data from wave as a 32bit float data array
     fn load_samples(self) -> Result<Vec<f32>, String>;
 }
 
