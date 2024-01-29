@@ -21,6 +21,12 @@ impl Player {
     }
 
     pub fn update(&mut self, connector: PlainConnector, dt: f32) -> Result<(), String> {
+        self.r#move(dt);
+        self.constraint(connector);
+        Ok(())
+    }
+
+    fn r#move(&mut self, dt: f32) {
         if KeyboardKey::Left.is_down() {
             self.x -= PLAYER_SPEED * dt;
         }
@@ -33,7 +39,9 @@ impl Player {
         if KeyboardKey::Down.is_down() {
             self.y += PLAYER_SPEED * dt;
         }
+    }
 
+    fn constraint(&mut self, connector: PlainConnector) {
         let width = connector.get_render_width();
         let height = connector.get_render_height();
         let min_x = 0.0;
@@ -53,8 +61,6 @@ impl Player {
         if self.y > max_y {
             self.y = max_y;
         }
-
-        Ok(())
     }
 }
 
