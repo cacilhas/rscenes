@@ -23,28 +23,15 @@ pub fn draw(attr: TokenStream, item: TokenStream) -> TokenStream {
                 let rcore = connector.rcore;
                 rcore.begin_mode_2d(camera);
 
-                fn draw(
-                    rcore: rscenes::prelude::Rcore,
-                    rgestures: rscenes::prelude::Rgestures,
-                    rshapes: rscenes::prelude::Rshapes,
-                    textures: rscenes::prelude::Rtextures,
-                    rtext: rscenes::prelude::Rtext,
-                    raudio: rscenes::prelude::Raudio,
-                    camera: rscenes::prelude::Camera2D,
-                ) -> Result<(), String> {
+                let res = || -> Result<(), String> {
+                    let rgestures = connector.rgestures;
+                    let rshapes = connector.rshapes;
+                    let rtextures = connector.rtextures;
+                    let rtext = connector.rtext;
+                    let raudio = connector.raudio;
                     #(#original)*
                     Ok(())
-                }
-
-                let res = draw(
-                    rcore,
-                    connector.rgestures,
-                    connector.rshapes,
-                    connector.rtextures,
-                    connector.rtext,
-                    connector.raudio,
-                    camera,
-                );
+                }();
 
                 rcore.end_mode_2d();
                 res
@@ -57,28 +44,15 @@ pub fn draw(attr: TokenStream, item: TokenStream) -> TokenStream {
                 let rcore = connector.rcore;
                 rcore.begin_mode_3d(camera);
 
-                fn draw(
-                    rcore: rscenes::prelude::Rcore,
-                    rgestures: rscenes::prelude::Rgestures,
-                    rcamera: rscenes::prelude::Rcamera,
-                    textures: rscenes::prelude::Rtextures,
-                    rmodels: rscenes::prelude::Rmodels,
-                    raudio: rscenes::prelude::Raudio,
-                    camera: rscenes::prelude::Camera2D,
-                ) -> Result<(), String> {
+                let res = || -> Result<(), String> {
+                    let gestures = connector.rgestures;
+                    let rcamera = connector.rcamera;
+                    let rtextures = connector.rtextures;
+                    let rmodels = connector.rmodels;
+                    let raudio = connector.raudio;
                     #(#original)*
                     Ok(())
-                }
-
-                let res = draw(
-                    rcore,
-                    connector.rgestures,
-                    connector.rcamera,
-                    connector.rtextures,
-                    connector.rmodels,
-                    connector.raudio,
-                    camera,
-                );
+                }();
 
                 rcore.end_mode_3d();
                 res
