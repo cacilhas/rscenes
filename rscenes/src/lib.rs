@@ -5,7 +5,7 @@ mod scene;
 mod state;
 
 pub mod prelude {
-    pub use crate::connectors::{Connector2D, Connector3D};
+    pub use crate::connectors::*;
     pub use crate::manager::*;
     pub use crate::scene::Scene;
     pub use crate::state::State;

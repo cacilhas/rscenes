@@ -12,8 +12,6 @@ mod rtext;
 mod rtextures;
 mod utils;
 
-pub mod interface;
-
 pub mod assets {
     pub use crate::ext::audio_stream::AudioStreamExt;
     pub use crate::ext::camera::{Camera2DExt, Camera3DExt};
@@ -40,4 +38,15 @@ pub mod assets {
         RenderTexture, Shader, Sound, Texture2D, TextureCubemap, Transform, Vector2, Vector3,
         Vector4, VrDeviceInfo, VrStereoConfig, Wave,
     };
+}
+
+pub mod interface {
+    pub use crate::raudio::Raudio;
+    pub use crate::rcamera::Rcamera;
+    pub use crate::rcore::Rcore;
+    pub use crate::rgestures::Rgestures;
+    pub use crate::rmodels::Rmodels;
+    pub use crate::rshapes::Rshapes;
+    pub use crate::rtext::Rtext;
+    pub use crate::rtextures::Rtextures;
 }

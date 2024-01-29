@@ -1,15 +1,16 @@
 use raylib_ffi::{enums::CameraMode, *};
+use std::fmt::Debug;
 
 #[derive(Clone, Copy, Debug, Default)]
-pub struct Rcamera;
+pub(crate) struct RcameraImpl;
 
 /// Crate only methods
-impl Rcamera {
-    pub(crate) fn __update_camera(camera: &mut Camera3D, mode: impl Into<usize>) {
+impl RcameraImpl {
+    pub fn __update_camera(camera: &mut Camera3D, mode: impl Into<usize>) {
         unsafe { UpdateCamera(camera, mode.into() as i32) }
     }
 
-    pub(crate) fn __update_camera_pro(
+    pub fn __update_camera_pro(
         camera: &mut Camera3D,
         movement: Vector3,
         rotation: Vector3,
@@ -20,20 +21,20 @@ impl Rcamera {
 }
 
 /// Exported methods
-impl Rcamera {
+pub trait Rcamera: Debug {
     /// Update camera position for selected mode
-    pub fn update_camera(&self, camera: &mut Camera3D, mode: CameraMode) {
-        Self::__update_camera(camera, mode)
+    fn update_camera(&self, camera: &mut Camera3D, mode: CameraMode) {
+        RcameraImpl::__update_camera(camera, mode)
     }
 
     /// Update camera movement/rotation
-    pub fn update_camera_pro(
+    fn update_camera_pro(
         &self,
         camera: &mut Camera3D,
         movement: Vector3,
         rotation: Vector3,
         zoom: f32,
     ) {
-        Self::__update_camera_pro(camera, movement, rotation, zoom)
+        RcameraImpl::__update_camera_pro(camera, movement, rotation, zoom)
     }
 }

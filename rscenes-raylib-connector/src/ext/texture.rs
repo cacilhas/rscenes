@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use crate::rtextures::Rtextures;
+use crate::rtextures::RtexturesImpl;
 use raylib_ffi::{enums::*, *};
 
 pub trait TextureExt: Sized {
@@ -27,43 +27,43 @@ pub trait TextureExt: Sized {
 
 impl TextureExt for Texture2D {
     fn load(filename: impl Display) -> Result<Self, String> {
-        Rtextures::__load_texture(filename)
+        RtexturesImpl::__load_texture(filename)
     }
 
     fn load_from_image(image: Image) -> Result<Self, String> {
-        Rtextures::__load_texture_from_image(image)
+        RtexturesImpl::__load_texture_from_image(image)
     }
 
     fn is_ready(self) -> bool {
-        Rtextures::__is_texture_ready(self)
+        RtexturesImpl::__is_texture_ready(self)
     }
 
     fn unload(self) {
-        Rtextures::__unload_texture(self)
+        RtexturesImpl::__unload_texture(self)
     }
 
     fn update_gpu(self, pixels: &[u8]) -> Self {
-        Rtextures::__update_texture(self, pixels);
+        RtexturesImpl::__update_texture(self, pixels);
         self
     }
 
     fn update_gpu_rec(self, rec: Rectangle, pixels: &[u8]) -> Self {
-        Rtextures::__update_texture_rec(self, rec, pixels);
+        RtexturesImpl::__update_texture_rec(self, rec, pixels);
         self
     }
 
     fn gen_mipmaps(&mut self) -> &mut Self {
-        Rtextures::__gen_texture_mipmaps(self);
+        RtexturesImpl::__gen_texture_mipmaps(self);
         self
     }
 
     fn set_filter(self, filter: TextureFilter) -> Self {
-        Rtextures::__set_texture_filter(self, filter);
+        RtexturesImpl::__set_texture_filter(self, filter);
         self
     }
 
     fn set_wrap(self, wrap: TextureWrap) -> Self {
-        Rtextures::__set_texture_wrap(self, wrap);
+        RtexturesImpl::__set_texture_wrap(self, wrap);
         self
     }
 }
@@ -74,7 +74,7 @@ pub trait TextureCubemapExt: Sized {
 
 impl TextureCubemapExt for TextureCubemap {
     fn load(image: Image, layout: CubemapLayout) -> Result<Self, String> {
-        Rtextures::__load_texture_cubemap(image, layout)
+        RtexturesImpl::__load_texture_cubemap(image, layout)
     }
 }
 
@@ -87,14 +87,14 @@ pub trait RenderTextureExt {
 
 impl RenderTextureExt for RenderTexture2D {
     fn load(width: i32, height: i32) -> Self {
-        Rtextures::__load_render_texture(width, height)
+        RtexturesImpl::__load_render_texture(width, height)
     }
 
     fn is_ready(self) -> bool {
-        Rtextures::__is_render_texture_ready(self)
+        RtexturesImpl::__is_render_texture_ready(self)
     }
 
     fn unload(self) {
-        Rtextures::__unload_render_texture(self)
+        RtexturesImpl::__unload_render_texture(self)
     }
 }

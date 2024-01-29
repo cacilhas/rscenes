@@ -19,22 +19,21 @@ struct BallsScene {
 }
 
 impl Scene for BallsScene {
-    fn setup(&mut self, connector: RaylibConnector) -> Result<(), String> {
-        let rcore = connector.rcore;
-        let width = rcore.get_render_width();
-        let height = rcore.get_render_height();
+    fn setup(&mut self, connector: PlainConnector) -> Result<(), String> {
+        let width = connector.get_render_width();
+        let height = connector.get_render_height();
         self.x = (width - self.ball.width) / 2;
         self.y = (height - self.ball.height) / 2;
         Ok(())
     }
 
     #[draw(shapes)]
-    fn draw(&self) {
-        let width = rcore.get_render_width();
-        let height = rcore.get_render_height();
-        rcore.clear_background(Color::CYAN);
-        rshapes.draw_rectangle(0, 0, width / 2, height, Color::GREEN);
-        rtextures.draw_texture(
+    fn draw(&self, connector: Connector2D) {
+        let width = connector.get_render_width();
+        let height = connector.get_render_height();
+        connector.clear_background(Color::CYAN);
+        connector.draw_rectangle(0, 0, width / 2, height, Color::GREEN);
+        connector.draw_texture(
             Texture2D::load_from_image(self.ball)?,
             self.x,
             self.y,

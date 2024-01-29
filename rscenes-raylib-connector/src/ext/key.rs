@@ -1,4 +1,4 @@
-use crate::rcore::Rcore;
+use crate::rcore::RcoreImpl;
 use raylib_ffi::enums::KeyboardKey;
 use std::char;
 
@@ -23,11 +23,11 @@ pub trait KeyboardKeyExt: Sized {
 
 impl KeyboardKeyExt for KeyboardKey {
     fn get_pressed() -> Self {
-        Rcore::__get_key_pressed()
+        RcoreImpl::__get_key_pressed()
     }
 
     fn get_pressed_char() -> String {
-        Rcore::__get_char_pressed()
+        RcoreImpl::__get_char_pressed()
     }
 
     fn to_string(self) -> String {
@@ -37,22 +37,22 @@ impl KeyboardKeyExt for KeyboardKey {
     }
 
     fn is_pressed(self) -> bool {
-        Rcore::__is_key_pressed(self)
+        RcoreImpl::__is_key_pressed(self)
     }
 
     fn is_pressed_repeat(self) -> bool {
-        Rcore::__is_key_pressed_repeat(self)
+        RcoreImpl::__is_key_pressed_repeat(self)
     }
 
     fn is_down(self) -> bool {
-        Rcore::__is_key_down(self)
+        RcoreImpl::__is_key_down(self)
     }
 
     fn is_released(self) -> bool {
-        Rcore::__is_key_released(self)
+        RcoreImpl::__is_key_released(self)
     }
 
     fn is_up(self) -> bool {
-        Rcore::__is_key_up(self)
+        RcoreImpl::__is_key_up(self)
     }
 }

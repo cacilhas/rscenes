@@ -1,4 +1,4 @@
-use crate::raudio::Raudio;
+use crate::raudio::RaudioImpl;
 use raylib_ffi::*;
 use std::fmt::Display;
 
@@ -36,58 +36,58 @@ pub trait SoundExt: Sized {
 
 impl SoundExt for Sound {
     fn load(filename: impl Display) -> Result<Self, String> {
-        Raudio::__load_sound(filename)
+        RaudioImpl::__load_sound(filename)
     }
 
     fn load_from_wave(wave: Wave) -> Self {
-        Raudio::__load_sound_from_wave(wave)
+        RaudioImpl::__load_sound_from_wave(wave)
     }
 
     fn alias(self) -> Self {
-        Raudio::__load_sound_alias(self)
+        RaudioImpl::__load_sound_alias(self)
     }
 
     fn is_ready(self) -> bool {
-        Raudio::__is_sound_ready(self)
+        RaudioImpl::__is_sound_ready(self)
     }
 
     fn unload(self) {
-        Raudio::__unload_sound(self)
+        RaudioImpl::__unload_sound(self)
     }
 
     fn unload_alias(self) {
-        Raudio::__unload_sound_alias(self)
+        RaudioImpl::__unload_sound_alias(self)
     }
 
     fn play(self) {
-        Raudio::__play_sound(self)
+        RaudioImpl::__play_sound(self)
     }
 
     fn stop(self) {
-        Raudio::__stop_sound(self)
+        RaudioImpl::__stop_sound(self)
     }
 
     fn pause(self) {
-        Raudio::__pause_sound(self)
+        RaudioImpl::__pause_sound(self)
     }
 
     fn resume(self) {
-        Raudio::__resume_sound(self)
+        RaudioImpl::__resume_sound(self)
     }
 
     fn is_playing(self) -> bool {
-        Raudio::__is_sound_playing(self)
+        RaudioImpl::__is_sound_playing(self)
     }
 
     fn set_volume(self, volume: f32) {
-        Raudio::__set_sound_volume(self, volume)
+        RaudioImpl::__set_sound_volume(self, volume)
     }
 
     fn set_pitch(self, pitch: f32) {
-        Raudio::__set_sound_pitch(self, pitch)
+        RaudioImpl::__set_sound_pitch(self, pitch)
     }
 
     fn set_pan(self, pan: f32) {
-        Raudio::__set_sound_pan(self, pan)
+        RaudioImpl::__set_sound_pan(self, pan)
     }
 }

@@ -1,4 +1,4 @@
-use crate::rmodels::Rmodels;
+use crate::rmodels::RmodelsImpl;
 use raylib_ffi::*;
 use std::fmt::Display;
 
@@ -13,14 +13,14 @@ pub trait ModelAnimationExt: Sized {
 
 impl ModelAnimationExt for ModelAnimation {
     fn load(filename: impl Display) -> Result<Vec<Self>, String> {
-        Rmodels::__load_model_animations(filename)
+        RmodelsImpl::__load_model_animations(filename)
     }
 
     fn unload(self) {
-        Rmodels::__unload_model_animation(self)
+        RmodelsImpl::__unload_model_animation(self)
     }
 
     fn unload_animations(anims: &mut [Self]) {
-        Rmodels::__unload_model_animations(anims)
+        RmodelsImpl::__unload_model_animations(anims)
     }
 }

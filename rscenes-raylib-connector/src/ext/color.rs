@@ -1,4 +1,4 @@
-use crate::rtextures::Rtextures;
+use crate::rtextures::RtexturesImpl;
 use raylib_ffi::{colors, Color, Vector3, Vector4};
 
 pub trait ColorExt: Sized {
@@ -922,50 +922,50 @@ impl ColorExt for Color {
     };
 
     fn from_normalized(normalized: Vector4) -> Self {
-        Rtextures::__color_from_normalized(normalized)
+        RtexturesImpl::__color_from_normalized(normalized)
     }
 
     fn from_hsv(hue: f32, saturation: f32, value: f32) -> Self {
-        Rtextures::__color_from_hsv(hue, saturation, value)
+        RtexturesImpl::__color_from_hsv(hue, saturation, value)
     }
 
     fn from_hex_value(hex_value: u32) -> Self {
-        Rtextures::__get_color(hex_value)
+        RtexturesImpl::__get_color(hex_value)
     }
 
     fn fade(self, alpha: f32) -> Self {
-        Rtextures::__fade(self, alpha)
+        RtexturesImpl::__fade(self, alpha)
     }
 
     fn to_int(self) -> i32 {
-        Rtextures::__color_to_int(self)
+        RtexturesImpl::__color_to_int(self)
     }
 
     fn normalize(self) -> Vector4 {
-        Rtextures::__color_normalize(self)
+        RtexturesImpl::__color_normalize(self)
     }
 
     fn to_hsv(self) -> Vector3 {
-        Rtextures::__color_to_hsv(self)
+        RtexturesImpl::__color_to_hsv(self)
     }
 
     fn tint(self, tint: Self) -> Self {
-        Rtextures::__color_tint(self, tint)
+        RtexturesImpl::__color_tint(self, tint)
     }
 
     fn brightness(self, factor: f32) -> Self {
-        Rtextures::__color_brightness(self, factor)
+        RtexturesImpl::__color_brightness(self, factor)
     }
 
     fn contrast(self, contrast: f32) -> Self {
-        Rtextures::__color_contrast(self, contrast)
+        RtexturesImpl::__color_contrast(self, contrast)
     }
 
     fn alpha(self, alpha: f32) -> Self {
-        Rtextures::__color_alpha(self, alpha)
+        RtexturesImpl::__color_alpha(self, alpha)
     }
 
     fn alpha_blend(self, src: Self, tint: Self) -> Self {
-        Rtextures::__color_alpha_blend(self, src, tint)
+        RtexturesImpl::__color_alpha_blend(self, src, tint)
     }
 }

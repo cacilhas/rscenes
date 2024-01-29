@@ -1,4 +1,4 @@
-use crate::rtext::Rtext;
+use crate::rtext::RtextImpl;
 use raylib_ffi::*;
 use std::fmt::Display;
 
@@ -19,26 +19,26 @@ pub trait FontExt: Sized {
 
 impl FontExt for Font {
     fn default() -> Self {
-        Rtext::__get_default_font()
+        RtextImpl::__get_default_font()
     }
 
     fn load(filename: impl Display) -> Result<Self, String> {
-        Rtext::__load_font(filename)
+        RtextImpl::__load_font(filename)
     }
 
     fn load_from_image(image: Image, key: Color, first_char: i32) -> Result<Self, String> {
-        Rtext::__load_font_from_image(image, key, first_char)
+        RtextImpl::__load_font_from_image(image, key, first_char)
     }
 
     fn is_ready(self) -> bool {
-        Rtext::__is_font_ready(self)
+        RtextImpl::__is_font_ready(self)
     }
 
     fn unload(self) {
-        Rtext::__unload_font(self)
+        RtextImpl::__unload_font(self)
     }
 
     fn export_as_code(self, filename: impl Display) -> bool {
-        Rtext::__export_font_as_code(self, filename)
+        RtextImpl::__export_font_as_code(self, filename)
     }
 }

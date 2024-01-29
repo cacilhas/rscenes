@@ -1,8 +1,4 @@
-use crate::{
-    connectors::{Connector2D, Connector3D},
-    scene::Scene,
-    state::State,
-};
+use crate::{connectors::*, scene::Scene, state::State};
 use resolution::current_resolution;
 use rscenes_raylib_connector::interface::*;
 
@@ -35,49 +31,47 @@ impl Rscenes {
         }
         self.setup()?;
 
-        let mut reload = true;
-        let connector = RaylibConnector::default();
+        let mut reloaded = true;
+        let plain_connector = PlainConnector::default();
         let connector_3d = Connector3D::default();
         let connector_2d = Connector2D::default();
-        let rcore = connector.rcore;
 
-        'mainloop: while !rcore.window_should_close() {
+        'mainloop: while !plain_connector.window_should_close() {
             let scene = match self.scenes.last_mut() {
                 Some(scene) => scene,
                 None => break 'mainloop,
             };
 
-            if reload {
-                scene.setup(connector)?;
-                reload = false;
+            if reloaded {
+                scene.setup(plain_connector)?;
+                reloaded = false;
             }
 
-            match scene.update(connector, rcore.get_frame_time())? {
+            match scene.update(plain_connector, plain_connector.get_frame_time())? {
                 State::Keep => {
-                    rcore.begin_drawing();
+                    plain_connector.begin_drawing();
                     scene.draw_3d(connector_3d)?;
                     scene.draw_2d(connector_2d)?;
-                    rcore.end_drawing();
+                    plain_connector.end_drawing();
                 }
 
                 State::Next(next_scene) => {
                     {
-                        scene.exit(connector)?;
+                        scene.exit(plain_connector)?;
                     }
                     self.scenes.push(next_scene);
-                    reload = true;
+                    reloaded = true;
                 }
 
                 State::Prev => {
                     if let Some(mut scene) = self.scenes.pop() {
-                        scene.exit(connector)?;
+                        scene.exit(plain_connector)?;
                     }
-                    reload = true;
+                    reloaded = true;
                 }
 
                 State::Quit => {
-                    rcore.close_window();
-                    break 'mainloop;
+                    plain_connector.close_window();
                 }
             }
         }
@@ -86,10 +80,9 @@ impl Rscenes {
     }
 
     fn setup(&mut self) -> Result<(), String> {
-        let connector = RaylibConnector::default();
-        let rcore = connector.rcore;
+        let connector = PlainConnector::default();
 
-        rcore.set_target_fps(60);
+        connector.set_target_fps(60);
         let (width, height) = match self.window_size {
             (0, 0) => current_resolution().unwrap_or((800, 600)),
             (0, height) => {
@@ -102,7 +95,7 @@ impl Rscenes {
             }
             (width, height) => (width, height),
         };
-        rcore.init_window(width, height, &self.title);
+        connector.init_window(width, height, &self.title);
         for callback in self.setups.iter() {
             callback(connector)?;
         }
@@ -111,4 +104,4 @@ impl Rscenes {
     }
 }
 
-pub trait SetupCallback = Fn(RaylibConnector) -> Result<(), String> + 'static;
+pub trait SetupCallback = Fn(PlainConnector) -> Result<(), String> + 'static;

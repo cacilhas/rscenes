@@ -1,4 +1,4 @@
-use crate::rtext::Rtext;
+use crate::rtext::RtextImpl;
 use std::{fmt::Display, marker::PhantomData};
 
 #[derive(Clone, Copy, Debug)]
@@ -11,7 +11,7 @@ pub struct Codepoints {
 impl Codepoints {
     /// Load all codepoints from a UTF-8 text string, codepoints count returned by parameter
     pub fn load(text: impl Display) -> Result<Self, String> {
-        Rtext::__load_codepoints(text)
+        RtextImpl::__load_codepoints(text)
     }
 
     /// Create a new codepoint set from a C resource
@@ -25,7 +25,7 @@ impl Codepoints {
 
     /// Unload codepoints data from memory
     pub fn unload(self) {
-        Rtext::__unload_codepoints(self)
+        RtextImpl::__unload_codepoints(self)
     }
 
     /// Return amount of codepoints

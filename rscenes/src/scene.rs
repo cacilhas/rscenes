@@ -1,6 +1,6 @@
 use crate::connectors::*;
 use crate::state::State;
-use rscenes_raylib_connector::{assets::*, interface::*};
+use rscenes_raylib_connector::assets::*;
 use std::fmt::Debug;
 
 pub trait Scene: Debug + 'static {
@@ -16,13 +16,13 @@ pub trait Scene: Debug + 'static {
 
     /// Implement setup() to run a procedure whenever the scene is reloaded
     #[allow(unused)]
-    fn setup(&mut self, connector: RaylibConnector) -> Result<(), String> {
+    fn setup(&mut self, connector: PlainConnector) -> Result<(), String> {
         Ok(())
     }
 
     /// Implement exit() to run a procedure whenever exiting the schene
     #[allow(unused)]
-    fn exit(&mut self, connector: RaylibConnector) -> Result<(), String> {
+    fn exit(&mut self, connector: PlainConnector) -> Result<(), String> {
         Ok(())
     }
 
@@ -40,7 +40,7 @@ pub trait Scene: Debug + 'static {
 
     /// update() runs every loop
     #[allow(unused)]
-    fn update(&mut self, connector: RaylibConnector, dt: f32) -> Result<State, String> {
+    fn update(&mut self, connector: PlainConnector, dt: f32) -> Result<State, String> {
         Ok(State::Keep)
     }
 }
