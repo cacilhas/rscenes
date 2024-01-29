@@ -35,14 +35,10 @@ impl Rscenes {
         }
 
         let connector = RaylibConnector::default();
-        let (rcore, rgestures, rcamera) = match connector {
-            RaylibConnector {
-                rcore,
-                rgestures,
-                rcamera,
-                ..
-            } => (rcore, rgestures, rcamera),
-        };
+        let connector_3d = Connector3D::default();
+        let connector_2d = Connector2D::default();
+        let rcore = connector.rcore;
+
         rcore.set_target_fps(60);
         let (width, height) = match self.window_size {
             (0, 0) => current_resolution().unwrap_or((800, 600)),
@@ -59,43 +55,53 @@ impl Rscenes {
         rcore.init_window(width, height, &self.title);
 
         for callback in self.setups.iter() {
-            callback(rcore, rgestures, rcamera)?;
+            callback(connector)?;
         }
-
-        if let Some(scene) = self.scenes.last_mut() {
-            scene.setup(connector)?
-        }
+        let mut reload = true;
 
         'mainloop: while !rcore.window_should_close() {
             let scene = match self.scenes.last_mut() {
                 Some(scene) => scene,
-                None => break,
+                None => break 'mainloop,
             };
 
+            if reload {
+                scene.setup(connector)?;
+                reload = false;
+            }
+
             match scene.update(connector, rcore.get_frame_time())? {
-                State::Keep => (),
-                State::Next(scene) => {
-                    self.scenes.push(scene);
-                    continue 'mainloop;
+                State::Keep => {
+                    rcore.begin_drawing();
+                    scene.draw_3d(connector_3d)?;
+                    scene.draw_2d(connector_2d)?;
+                    rcore.end_drawing();
                 }
+
+                State::Next(next_scene) => {
+                    {
+                        scene.exit(connector)?;
+                    }
+                    self.scenes.push(next_scene);
+                    reload = true;
+                }
+
                 State::Prev => {
-                    self.scenes.pop();
-                    continue 'mainloop;
+                    if let Some(mut scene) = self.scenes.pop() {
+                        scene.exit(connector)?;
+                    }
+                    reload = true;
                 }
+
                 State::Quit => {
                     rcore.close_window();
                     break 'mainloop;
                 }
             }
-
-            rcore.begin_drawing();
-            scene.draw_3d(Connector3D::default())?;
-            scene.draw_2d(Connector2D::default())?;
-            rcore.end_drawing();
         }
 
         Ok(())
     }
 }
 
-pub trait SetupCallback = Fn(Rcore, Rgestures, Rcamera) -> Result<(), String> + 'static;
+pub trait SetupCallback = Fn(RaylibConnector) -> Result<(), String> + 'static;

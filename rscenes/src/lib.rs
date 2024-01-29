@@ -10,8 +10,5 @@ pub mod prelude {
     pub use crate::scene::Scene;
     pub use crate::state::State;
     pub use rscenes_macros::draw;
-    pub use rscenes_raylib_connector::{
-        assets::*,
-        interface::{RaylibConnector, Rcamera, Rcore, Rgestures},
-    };
+    pub use rscenes_raylib_connector::{assets::*, interface::*};
 }
