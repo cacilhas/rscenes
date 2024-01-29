@@ -1,5 +1,3 @@
-use std::any::Any;
-
 use rscenes::prelude::*;
 
 fn main() -> Result<(), String> {
@@ -29,8 +27,7 @@ impl Scene for BallsScene {
 }
 
 fn load_assets(scene: &mut Box<dyn Scene>, _connector: RaylibConnector) -> Result<(), String> {
-    let scene: &mut dyn Any = scene;
-    if let Some(scene) = scene.downcast_mut::<BallsScene>() {
+    if let Some(scene) = Rscenes::scene_downcast_mut::<BallsScene>(scene) {
         scene.ball = Some(Image::load("./assets/ball_blue_large.png")?);
     }
     Ok(())

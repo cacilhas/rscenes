@@ -1,3 +1,5 @@
+use std::any::Any;
+
 use crate::{
     connectors::{Connector2D, Connector3D},
     scene::Scene,
@@ -103,6 +105,16 @@ impl Rscenes {
         }
 
         Ok(())
+    }
+
+    pub fn scene_downcast_ref<T: 'static>(scene: &Box<dyn Scene>) -> Option<&T> {
+        let scene: &dyn Any = scene;
+        scene.downcast_ref::<T>()
+    }
+
+    pub fn scene_downcast_mut<T: 'static>(scene: &mut Box<dyn Scene>) -> Option<&mut T> {
+        let scene: &mut dyn Any = scene;
+        scene.downcast_mut::<T>()
     }
 }
 
