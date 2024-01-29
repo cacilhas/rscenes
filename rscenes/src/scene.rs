@@ -1,8 +1,7 @@
-use std::fmt::Debug;
-
 use crate::connectors::*;
 use crate::state::State;
 use rscenes_raylib_connector::{assets::*, interface::*};
+use std::fmt::Debug;
 
 pub trait Scene: Debug {
     /// Implement get_camera_2d() to return your own camera

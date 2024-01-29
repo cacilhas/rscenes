@@ -54,8 +54,10 @@ impl Rscenes {
         };
         rcore.init_window(width, height, &self.title);
 
-        for callback in self.setups.iter() {
-            callback(connector)?;
+        if let Some(scene) = self.scenes.last_mut() {
+            for callback in self.setups.iter() {
+                callback(scene, connector)?;
+            }
         }
         let mut reload = true;
 
@@ -104,4 +106,4 @@ impl Rscenes {
     }
 }
 
-pub trait SetupCallback = Fn(RaylibConnector) -> Result<(), String> + 'static;
+pub trait SetupCallback = Fn(&mut Box<dyn Scene>, RaylibConnector) -> Result<(), String> + 'static;
