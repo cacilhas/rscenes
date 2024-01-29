@@ -28,7 +28,8 @@ impl Scene for BallsScene {
 
 fn load_assets(scene: &mut Box<dyn Scene>, _connector: RaylibConnector) -> Result<(), String> {
     if let Some(scene) = Rscenes::scene_downcast_mut::<BallsScene>(scene) {
-        scene.ball = Some(Image::load("./assets/ball_blue_large.png")?);
+        let data = include_bytes!("./assets/ball_blue_large.png");
+        scene.ball = Some(Image::load_from_memory(ImageType::Png, data)?);
     }
     Ok(())
 }
