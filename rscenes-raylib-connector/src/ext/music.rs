@@ -6,7 +6,7 @@ pub trait MusicExt: Sized {
     /// Load music stream from file
     fn load(filename: impl Display) -> Result<Self, String>;
     /// Load music stream from data
-    fn load_from_memory(tpe: impl Display, data: Vec<u8>) -> Result<Self, String>;
+    fn load_from_memory(tpe: impl Display, data: &[u8]) -> Result<Self, String>;
 
     /// Check whether a music stream is ready
     fn is_ready(self) -> bool;
@@ -43,7 +43,7 @@ impl MusicExt for Music {
         Raudio::__load_music_stream(filename)
     }
 
-    fn load_from_memory(tpe: impl Display, data: Vec<u8>) -> Result<Self, String> {
+    fn load_from_memory(tpe: impl Display, data: &[u8]) -> Result<Self, String> {
         Raudio::__load_music_stream_from_memory(tpe, data)
     }
 

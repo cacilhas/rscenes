@@ -42,13 +42,10 @@ impl Raudio {
         }
     }
 
-    pub(crate) fn __load_wave_from_memory(
-        tpe: impl Display,
-        data: Vec<u8>,
-    ) -> Result<Wave, String> {
+    pub(crate) fn __load_wave_from_memory(tpe: impl Display, data: &[u8]) -> Result<Wave, String> {
         unsafe {
             let size = data.len() as i32;
-            let wave = LoadWaveFromMemory(rl_str!(tpe), data.as_ptr(), size);
+            let wave = LoadWaveFromMemory(rl_str!(tpe), data.to_owned().as_ptr(), size);
             if wave.data.is_null() {
                 Err("error loading wave from memory".to_owned())
             } else {
@@ -186,7 +183,7 @@ impl Raudio {
 
     pub(crate) fn __load_music_stream_from_memory(
         tpe: impl Display,
-        data: Vec<u8>,
+        data: &[u8],
     ) -> Result<Music, String> {
         unsafe {
             let size = data.len() as i32;
@@ -277,7 +274,7 @@ impl Raudio {
         unsafe { UnloadAudioStream(stream) }
     }
 
-    pub(crate) fn __update_audio_stream(stream: AudioStream, data: Vec<u8>) {
+    pub(crate) fn __update_audio_stream(stream: AudioStream, data: &[u8]) {
         unsafe {
             let count = data.len() as i32;
             let data = data.as_ptr() as *const c_void;
@@ -369,7 +366,7 @@ impl Raudio {
     }
 
     /// Load wave from memory buffer, fileType refers to extension: i.e. '.wav'
-    pub fn load_wave_from_memory(&self, tpe: WaveType, data: Vec<u8>) -> Result<Wave, String> {
+    pub fn load_wave_from_memory(&self, tpe: WaveType, data: &[u8]) -> Result<Wave, String> {
         Self::__load_wave_from_memory(tpe, data)
     }
 
@@ -496,7 +493,7 @@ impl Raudio {
     pub fn load_music_stream_from_memory(
         &self,
         tpe: impl Display,
-        data: Vec<u8>,
+        data: &[u8],
     ) -> Result<Music, String> {
         Self::__load_music_stream_from_memory(tpe, data)
     }
@@ -594,7 +591,7 @@ impl Raudio {
     }
 
     /// Update audio stream buffers with data
-    pub fn update_audio_stream(&self, stream: AudioStream, data: Vec<u8>) {
+    pub fn update_audio_stream(&self, stream: AudioStream, data: &[u8]) {
         Self::__update_audio_stream(stream, data)
     }
 

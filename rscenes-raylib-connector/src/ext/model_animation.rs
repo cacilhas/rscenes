@@ -8,7 +8,7 @@ pub trait ModelAnimationExt: Sized {
     /// Unload animation data
     fn unload(self);
     /// Unload animation array data
-    fn unload_animations(anims: Vec<Self>);
+    fn unload_animations(anims: &[Self]);
 }
 
 impl ModelAnimationExt for ModelAnimation {
@@ -20,7 +20,7 @@ impl ModelAnimationExt for ModelAnimation {
         Rmodels::__unload_model_animation(self)
     }
 
-    fn unload_animations(anims: Vec<Self>) {
+    fn unload_animations(anims: &[Self]) {
         Rmodels::__unload_model_animations(anims)
     }
 }

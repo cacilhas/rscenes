@@ -12,7 +12,7 @@ pub trait AudioStreamExt: Sized {
     /// Unload audio stream and free memory
     fn unload(self);
     /// Update audio stream buffers with data
-    fn update(self, data: Vec<u8>);
+    fn update(self, data: &[u8]);
     /// Check whether any audio stream buffers requires refill
     fn is_processed(self) -> bool;
     /// Play audio stream
@@ -50,7 +50,7 @@ impl AudioStreamExt for AudioStream {
         Raudio::__unload_audio_stream(self)
     }
 
-    fn update(self, data: Vec<u8>) {
+    fn update(self, data: &[u8]) {
         Raudio::__update_audio_stream(self, data)
     }
 

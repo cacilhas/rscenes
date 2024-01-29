@@ -60,14 +60,14 @@ impl Rtext {
 
     pub(crate) fn __load_font_from_memory(
         tpe: impl Display,
-        data: &mut Vec<u8>,
+        data: &[u8],
         font_size: i32,
         codepoints: Codepoints,
     ) -> Result<Font, String> {
         unsafe {
             let data_size = data.len() as i32;
             let codepoints_count = codepoints.len() as i32;
-            let data = data.as_mut_ptr() as *mut c_uchar;
+            let data = data.to_owned().as_mut_ptr() as *mut c_uchar;
             let font = LoadFontFromMemory(
                 rl_str!(tpe),
                 data,
@@ -353,7 +353,7 @@ impl Rtext {
     pub fn load_font_from_memory(
         &self,
         tpe: impl Display, // TODO: implement a font type enum
-        data: &mut Vec<u8>,
+        data: &[u8],
         font_size: i32,
         codepoints: Codepoints,
     ) -> Result<Font, String> {

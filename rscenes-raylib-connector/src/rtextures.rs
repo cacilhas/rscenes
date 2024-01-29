@@ -72,11 +72,11 @@ impl Rtextures {
 
     pub(crate) fn __load_image_from_memory(
         tpe: impl Display,
-        data: &mut Vec<u8>,
+        data: &[u8],
     ) -> Result<Image, String> {
         unsafe {
             let size = data.len() as i32;
-            let data = data.as_mut_ptr();
+            let data = data.to_owned().as_mut_ptr();
             let image = LoadImageFromMemory(rl_str!(tpe), data, size);
             if image.data.is_null() {
                 Err("failed to load image from memory".to_owned())
@@ -739,11 +739,7 @@ impl Rtextures {
     }
 
     /// Load image from memory buffer, fileType refers to extension: i.e. '.png'
-    pub fn load_image_from_memory(
-        &self,
-        tpe: ImageType,
-        data: &mut Vec<u8>,
-    ) -> Result<Image, String> {
+    pub fn load_image_from_memory(&self, tpe: ImageType, data: &[u8]) -> Result<Image, String> {
         Self::__load_image_from_memory(tpe, data)
     }
 

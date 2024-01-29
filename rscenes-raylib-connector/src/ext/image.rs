@@ -18,7 +18,7 @@ pub trait ImageExt: Sized {
     /// Load image sequence from file (frames appended to image.data)
     fn load_anim(filename: impl Display) -> Result<(Self, i32), String>;
     /// Load image from memory buffer, fileType refers to extension: i.e. '.png'
-    fn load_from_memory(tpe: ImageType, data: &mut Vec<u8>) -> Result<Self, String>;
+    fn load_from_memory(tpe: ImageType, data: &[u8]) -> Result<Self, String>;
     /// Load image from GPU texture data
     fn load_from_texture(texture: Texture2D) -> Self;
     /// Load image from screen buffer and (screenshot)
@@ -250,7 +250,7 @@ impl ImageExt for Image {
         Rtextures::__load_image_from_texture(texture)
     }
 
-    fn load_from_memory(tpe: ImageType, data: &mut Vec<u8>) -> Result<Self, String> {
+    fn load_from_memory(tpe: ImageType, data: &[u8]) -> Result<Self, String> {
         Rtextures::__load_image_from_memory(tpe, data)
     }
 

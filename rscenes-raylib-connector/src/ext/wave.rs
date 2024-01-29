@@ -7,7 +7,7 @@ pub trait WaveExt: Sized {
     /// Load wave data from file
     fn load(filename: impl Display) -> Result<Self, String>;
     /// Load wave from memory buffer, fileType refers to extension: i.e. '.wav'
-    fn load_from_memory(tpe: WaveType, data: Vec<u8>) -> Result<Self, String>;
+    fn load_from_memory(tpe: WaveType, data: &[u8]) -> Result<Self, String>;
 
     /// Check whether wave data is ready
     fn is_ready(self) -> bool;
@@ -32,7 +32,7 @@ impl WaveExt for Wave {
         Raudio::__load_wave(filename)
     }
 
-    fn load_from_memory(tpe: WaveType, data: Vec<u8>) -> Result<Self, String> {
+    fn load_from_memory(tpe: WaveType, data: &[u8]) -> Result<Self, String> {
         Raudio::__load_wave_from_memory(tpe, data)
     }
 

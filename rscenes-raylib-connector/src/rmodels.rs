@@ -421,10 +421,10 @@ impl Rmodels {
         unsafe { UnloadModelAnimation(anim) }
     }
 
-    pub(crate) fn __unload_model_animations(mut anims: Vec<ModelAnimation>) {
+    pub(crate) fn __unload_model_animations(mut anims: &[ModelAnimation]) {
         unsafe {
             let count = anims.len() as i32;
-            UnloadModelAnimations(anims.as_mut_ptr(), count)
+            UnloadModelAnimations(anims.to_owned().as_mut_ptr(), count)
         }
     }
 
@@ -941,7 +941,7 @@ impl Rmodels {
     }
 
     /// Unload animation array data
-    pub fn unload_model_animations(&self, anims: Vec<ModelAnimation>) {
+    pub fn unload_model_animations(&self, anims: &[ModelAnimation]) {
         Self::__unload_model_animations(anims)
     }
 
