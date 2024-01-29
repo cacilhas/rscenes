@@ -36,8 +36,8 @@ pub fn draw(attr: TokenStream, item: TokenStream) -> TokenStream {
     }
     let con_name = Ident::new(
         &con_name.expect(&format!(
-            "connection not found in fn {} arguments",
-            input.sig.ident
+            "connection not found in fn {}({:?}) arguments",
+            input.sig.ident, args
         )),
         Span::call_site().into(),
     );
