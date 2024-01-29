@@ -6,3 +6,5 @@ members = [
   "rscenes", "rscenes-macros",
   "rscenes-raylib-connector",
 ]
+
+exclude = ["examples"]
