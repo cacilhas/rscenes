@@ -1,43 +1,47 @@
+mod player;
+
+use crate::player::Player;
 use rscenes::prelude::*;
 
 fn main() -> Result<(), String> {
     let mut manager = Rscenes::default();
     manager.title = "Rscenes Test".to_owned();
     manager.set_init(Box::new(BallsScene {
-        ball: Image::load("src/assets/ball_blue_large.png")?,
-        x: 0,
-        y: 0,
+        player: Player::default(),
     }));
     manager.start()
 }
 
 #[derive(Debug)]
 struct BallsScene {
-    ball: Image,
-    x: i32,
-    y: i32,
+    player: Player,
 }
 
 impl Scene for BallsScene {
     fn setup(&mut self, connector: PlainConnector) -> Result<(), String> {
         let width = connector.get_render_width();
         let height = connector.get_render_height();
-        self.x = (width - self.ball.width) / 2;
-        self.y = (height - self.ball.height) / 2;
+        self.player.x = (width - self.player.ball.width) as f32 / 2.0;
+        self.player.y = (height - self.player.ball.height) as f32 / 2.0;
         Ok(())
+    }
+
+    fn update(&mut self, connector: PlainConnector, dt: f32) -> Result<State, String> {
+        self.player.update(connector, dt)?;
+        Ok(State::Keep)
     }
 
     #[draw(shapes)]
     fn draw(&self, connector: Connector2D) {
         let width = connector.get_render_width();
         let height = connector.get_render_height();
+
         connector.clear_background(Color::CYAN);
         connector.draw_rectangle(0, 0, width / 2, height, Color::GREEN);
-        connector.draw_texture(
-            Texture2D::load_from_image(self.ball)?,
-            self.x,
-            self.y,
-            Color::WHITE,
-        );
+        let width = connector.get_render_width();
+        if self.player.x < (width - self.player.ball.width) as f32 / 2.0 {
+            connector.draw_fps(5, 5);
+        }
+        self.player.draw(connector)?;
     }
 }

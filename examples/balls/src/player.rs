@@ -1,0 +1,69 @@
+use rscenes::prelude::*;
+
+const PLAYER_SPEED: f32 = 500.0;
+
+#[derive(Debug)]
+pub struct Player {
+    pub ball: Image,
+    pub x: f32,
+    pub y: f32,
+}
+
+impl Player {
+    pub fn draw(&self, connector: Connector2D) -> Result<(), String> {
+        connector.draw_texture(
+            Texture2D::load_from_image(self.ball)?,
+            self.x as i32,
+            self.y as i32,
+            Color::WHITE,
+        );
+        Ok(())
+    }
+
+    pub fn update(&mut self, connector: PlainConnector, dt: f32) -> Result<(), String> {
+        if KeyboardKey::Left.is_down() {
+            self.x -= PLAYER_SPEED * dt;
+        }
+        if KeyboardKey::Right.is_down() {
+            self.x += PLAYER_SPEED * dt;
+        }
+        if KeyboardKey::Up.is_down() {
+            self.y -= PLAYER_SPEED * dt;
+        }
+        if KeyboardKey::Down.is_down() {
+            self.y += PLAYER_SPEED * dt;
+        }
+
+        let width = connector.get_render_width();
+        let height = connector.get_render_height();
+        let min_x = 0.0;
+        let min_y = 0.0;
+        let max_x = (width - self.ball.width) as f32;
+        let max_y = (height - self.ball.height) as f32;
+
+        if self.x < min_x {
+            self.x = min_x;
+        }
+        if self.x > max_x {
+            self.x = max_x;
+        }
+        if self.y < min_y {
+            self.y = min_y;
+        }
+        if self.y > max_y {
+            self.y = max_y;
+        }
+
+        Ok(())
+    }
+}
+
+impl Default for Player {
+    fn default() -> Self {
+        Self {
+            ball: Image::load("src/assets/ball_blue_large.png").unwrap(),
+            x: 0.0,
+            y: 0.0,
+        }
+    }
+}
