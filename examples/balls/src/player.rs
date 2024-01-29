@@ -27,16 +27,16 @@ impl Player {
     }
 
     fn r#move(&mut self, dt: f32) {
-        if KeyboardKey::Left.is_down() {
+        if KeyboardKey::Left.is_down() || KeyboardKey::A.is_down() {
             self.x -= PLAYER_SPEED * dt;
         }
-        if KeyboardKey::Right.is_down() {
+        if KeyboardKey::Right.is_down() || KeyboardKey::D.is_down() {
             self.x += PLAYER_SPEED * dt;
         }
-        if KeyboardKey::Up.is_down() {
+        if KeyboardKey::Up.is_down() || KeyboardKey::W.is_down() {
             self.y -= PLAYER_SPEED * dt;
         }
-        if KeyboardKey::Down.is_down() {
+        if KeyboardKey::Down.is_down() || KeyboardKey::S.is_down() {
             self.y += PLAYER_SPEED * dt;
         }
     }
