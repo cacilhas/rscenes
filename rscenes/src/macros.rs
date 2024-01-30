@@ -14,4 +14,18 @@ macro_rules! setup {
             Ok(())
         }
     };
+
+    (move |$con:ident| { $($stmt:expr)* }) => {
+        move |$con| -> Result<(), String> {
+            $($stmt)*
+            Ok(())
+        }
+    };
+
+    (move |$con:ident| $stmt:expr) => {
+        move |$con| -> Result<(), String> {
+            $stmt;
+            Ok(())
+        }
+    };
 }
