@@ -79,10 +79,17 @@ impl Foe {
             x: angle.cos() * FOE_SPEED,
             y: angle.sin() * FOE_SPEED,
         };
-        self.pluck_sounds
-            .push(Sound::load("src/assets/pluck_001.ogg")?);
-        self.pluck_sounds
-            .push(Sound::load("src/assets/pluck_002.ogg")?);
+
+        let data = include_bytes!("assets/pluck_001.ogg");
+        let wave = Wave::load_from_memory(WaveType::Ogg, data)?;
+        self.pluck_sounds.push(Sound::load_from_wave(wave));
+        wave.unload();
+
+        let data = include_bytes!("assets/pluck_002.ogg");
+        let wave = Wave::load_from_memory(WaveType::Ogg, data)?;
+        self.pluck_sounds.push(Sound::load_from_wave(wave));
+        wave.unload();
+
         Ok(())
     }
 }
