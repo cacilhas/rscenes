@@ -98,3 +98,12 @@ impl Default for Foe {
         }
     }
 }
+
+impl Drop for Foe {
+    fn drop(&mut self) {
+        self.ball.unload();
+        for sound in self.pluck_sounds.iter_mut() {
+            sound.unload();
+        }
+    }
+}
