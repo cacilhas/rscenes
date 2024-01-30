@@ -14,7 +14,7 @@ fn main() -> Result<(), String> {
         player: Player::default(),
         foes: (0..4).map(|_| Foe::default()).collect::<Vec<_>>(),
     }));
-    setup![manager, |con| con.init_audio_device()];
+    manager.add_setup(setup!(|con| con.init_audio_device()));
     manager.start()
 }
 
