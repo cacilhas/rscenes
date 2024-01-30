@@ -1,10 +1,12 @@
 #![feature(trait_alias)]
 mod connectors;
+mod macros;
 mod manager;
 mod scene;
 mod state;
 
 pub mod prelude {
+    pub use super::setup;
     pub use crate::connectors::*;
     pub use crate::manager::*;
     pub use crate::scene::Scene;
