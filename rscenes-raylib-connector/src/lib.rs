@@ -28,6 +28,7 @@ pub mod assets {
     pub use crate::ext::ray::RayExt;
     pub use crate::ext::sound::SoundExt;
     pub use crate::ext::texture::{RenderTextureExt, TextureCubemapExt, TextureExt};
+    pub use crate::ext::trace_log_level::TraceLogLevelExt;
     pub use crate::ext::vector::{Vector2Ext, Vector3Ext};
     pub use crate::ext::wave::{WaveExt, WaveType};
     pub use crate::ext::window_handle::WindowHandle;

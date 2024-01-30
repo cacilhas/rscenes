@@ -13,6 +13,7 @@ pub mod music;
 pub mod ray;
 pub mod sound;
 pub mod texture;
+pub mod trace_log_level;
 pub mod vector;
 pub mod wave;
 pub mod window_handle;

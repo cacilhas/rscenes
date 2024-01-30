@@ -549,18 +549,12 @@ impl RcoreImpl {
         unsafe { OpenURL(rl_str!(url)) }
     }
 
-    pub fn __trace_log(level: TraceLogLevel, text: impl Display) {
-        unsafe {
-            let level: usize = level.into();
-            TraceLog(level as i32, rl_str!(text))
-        }
+    pub fn __trace_log(level: impl Into<usize>, text: impl Display) {
+        unsafe { TraceLog(level.into() as i32, rl_str!(text)) }
     }
 
-    pub fn __set_trace_log_level(level: TraceLogLevel) {
-        unsafe {
-            let level: usize = level.into();
-            SetTraceLogLevel(level as i32)
-        }
+    pub fn __set_trace_log_level(level: impl Into<usize>) {
+        unsafe { SetTraceLogLevel(level.into() as i32) }
     }
 
     // pub fn __mem_alloc(size: usize) -> *mut c_void {

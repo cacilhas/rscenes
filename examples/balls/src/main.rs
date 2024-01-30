@@ -6,6 +6,8 @@ use foe::Foe;
 use rscenes::prelude::*;
 
 fn main() -> Result<(), String> {
+    TraceLogLevel::Error.set_default();
+
     let mut manager = Rscenes::default();
     manager.title = "Rscenes Test".to_owned();
     manager.set_init(Box::new(BallsScene {

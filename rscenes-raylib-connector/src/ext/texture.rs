@@ -1,7 +1,6 @@
-use std::fmt::Display;
-
 use crate::rtextures::RtexturesImpl;
 use raylib_ffi::{enums::*, *};
+use std::fmt::Display;
 
 pub trait TextureExt: Sized {
     /// Load texture from file into GPU memory (VRAM)
