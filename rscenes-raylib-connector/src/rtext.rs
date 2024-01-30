@@ -70,7 +70,8 @@ impl RtextImpl {
         unsafe {
             let data_size = data.len() as i32;
             let codepoints_count = codepoints.len() as i32;
-            let data = data.to_owned().as_mut_ptr() as *mut c_uchar;
+            let mut data = data.iter().map(|e| *e).collect::<Vec<_>>();
+            let data = data.as_mut_ptr() as *mut c_uchar;
             let font = LoadFontFromMemory(
                 rl_str!(tpe),
                 data,

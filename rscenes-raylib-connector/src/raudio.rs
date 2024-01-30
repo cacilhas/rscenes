@@ -59,7 +59,7 @@ impl RaudioImpl {
     pub fn __load_wave_from_memory(tpe: impl Display, data: &[u8]) -> Result<Wave, String> {
         unsafe {
             let size = data.len() as i32;
-            let wave = LoadWaveFromMemory(rl_str!(tpe), data.to_owned().as_ptr(), size);
+            let wave = LoadWaveFromMemory(rl_str!(tpe), data.as_ptr(), size);
             if wave.data.is_null() {
                 Err(
                     "error loading wave from memory, have you initialised the audio device?"

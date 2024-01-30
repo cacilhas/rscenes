@@ -66,8 +66,9 @@ impl Player {
 
 impl Default for Player {
     fn default() -> Self {
+        let data = include_bytes!("assets/ball_blue_large.png");
         Self {
-            ball: Image::load("src/assets/ball_blue_large.png").unwrap(),
+            ball: Image::load_from_memory(ImageType::Png, data).unwrap(),
             x: 0.0,
             y: 0.0,
         }

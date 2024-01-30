@@ -4,6 +4,7 @@ use std::{
     f32::consts::PI,
     ffi::c_void,
     fmt::{Debug, Display},
+    path::Path,
 };
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -17,7 +18,14 @@ impl RtexturesImpl {
         unsafe {
             let image = LoadImage(rl_str!(filename));
             if image.data.is_null() {
-                Err(format!("couldn't load image from {}", filename))
+                if Path::new(&format!("{}", filename)).exists() {
+                    Err(format!("couldn't load image from {}", filename))
+                } else {
+                    Err(format!(
+                        "couldn't load image from {}, file not found",
+                        filename
+                    ))
+                }
             } else {
                 Ok(image)
             }
@@ -40,7 +48,14 @@ impl RtexturesImpl {
                 header_size,
             );
             if image.data.is_null() {
-                Err(format!("couldn't load image from {}", filename))
+                if Path::new(&format!("{}", filename)).exists() {
+                    Err(format!("couldn't load image from {}", filename))
+                } else {
+                    Err(format!(
+                        "couldn't load image from {}, file not found",
+                        filename
+                    ))
+                }
             } else {
                 Ok(image)
             }
@@ -67,7 +82,14 @@ impl RtexturesImpl {
             let mut frames: i32 = 0;
             let image = LoadImageAnim(rl_str!(filename), &mut frames);
             if image.data.is_null() {
-                Err(format!("couldn't load image from {}", filename))
+                if Path::new(&format!("{}", filename)).exists() {
+                    Err(format!("couldn't load image from {}", filename))
+                } else {
+                    Err(format!(
+                        "couldn't load image from {}, file not found",
+                        filename
+                    ))
+                }
             } else {
                 Ok((image, frames))
             }
@@ -78,7 +100,8 @@ impl RtexturesImpl {
     pub fn __load_image_from_memory(tpe: impl Display, data: &[u8]) -> Result<Image, String> {
         unsafe {
             let size = data.len() as i32;
-            let data = data.to_owned().as_mut_ptr();
+            let mut data = data.iter().map(|e| *e).collect::<Vec<_>>();
+            let data = data.as_mut_ptr();
             let image = LoadImageFromMemory(rl_str!(tpe), data, size);
             if image.data.is_null() {
                 Err("failed to load image from memory".to_owned())
@@ -503,7 +526,14 @@ impl RtexturesImpl {
         unsafe {
             let texture = LoadTexture(rl_str!(filename));
             if texture.id == 0 {
-                Err(format!("couldn't load texture from {}", filename))
+                if Path::new(&format!("{}", filename)).exists() {
+                    Err(format!("couldn't load texture from {}", filename))
+                } else {
+                    Err(format!(
+                        "couldn't load texture from {}, file not found",
+                        filename
+                    ))
+                }
             } else {
                 Ok(texture)
             }

@@ -96,8 +96,9 @@ impl Foe {
 
 impl Default for Foe {
     fn default() -> Self {
+        let data = include_bytes!("assets/ball_red_large.png");
         Self {
-            ball: Image::load("src/assets/ball_red_large.png").unwrap(),
+            ball: Image::load_from_memory(ImageType::Png, data).unwrap(),
             x: 0.0,
             y: 0.0,
             movement: Vector2 { x: 0.0, y: 0.0 },
