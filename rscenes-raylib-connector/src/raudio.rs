@@ -3,6 +3,7 @@ use raylib_ffi::*;
 use std::{
     ffi::c_void,
     fmt::{Debug, Display},
+    path::Path,
 };
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -38,7 +39,17 @@ impl RaudioImpl {
         unsafe {
             let wave = LoadWave(rl_str!(filename));
             if wave.data.is_null() {
-                Err(format!("error loading wave from {}", filename))
+                if Path::new(&filename.to_string()).exists() {
+                    Err(format!(
+                        "error loading wave from {}, have you initialised the audio device?",
+                        filename
+                    ))
+                } else {
+                    Err(format!(
+                        "error loading wave from {}, file not found",
+                        filename
+                    ))
+                }
             } else {
                 Ok(wave)
             }
@@ -50,7 +61,10 @@ impl RaudioImpl {
             let size = data.len() as i32;
             let wave = LoadWaveFromMemory(rl_str!(tpe), data.to_owned().as_ptr(), size);
             if wave.data.is_null() {
-                Err("error loading wave from memory".to_owned())
+                Err(
+                    "error loading wave from memory, have you initialised the audio device?"
+                        .to_owned(),
+                )
             } else {
                 Ok(wave)
             }
@@ -64,8 +78,18 @@ impl RaudioImpl {
     pub fn __load_sound(filename: impl Display) -> Result<Sound, String> {
         unsafe {
             let sound = LoadSound(rl_str!(filename));
-            if sound.stream.buffer.is_null() {
-                Err(format!("error loading sound from {}", filename))
+            if sound.stream.channels == 0 {
+                if Path::new(&filename.to_string()).exists() {
+                    Err(format!(
+                        "error loading sound from {}, have you initialised the audio device?",
+                        filename
+                    ))
+                } else {
+                    Err(format!(
+                        "error loading sound from {}, file not found",
+                        filename
+                    ))
+                }
             } else {
                 Ok(sound)
             }
