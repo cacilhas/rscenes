@@ -13,6 +13,7 @@ fn main() -> Result<(), String> {
     manager.set_init(Box::new(BallsScene {
         player: Player::default(),
         foes: (0..4).map(|_| Foe::default()).collect::<Vec<_>>(),
+        game_over: false,
         collision_sound: None,
     }));
     manager.add_setup(setup!(|con| con.init_audio_device()));
@@ -23,6 +24,7 @@ fn main() -> Result<(), String> {
 struct BallsScene {
     player: Player,
     foes: Vec<Foe>,
+    game_over: bool,
     collision_sound: Option<Sound>,
 }
 
@@ -45,13 +47,17 @@ impl Scene for BallsScene {
     }
 
     fn update(&mut self, connector: PlainConnector, dt: f32) -> Result<State, String> {
-        self.player.update(connector, dt)?;
+        if !self.game_over {
+            self.player.update(connector, dt)?;
+        }
         for foe in self.foes.iter_mut() {
             foe.update(connector, dt);
             let dx = (foe.x - self.player.x).powf(2.0);
             let dy = (foe.y - self.player.y).powf(2.0);
             let min = (foe.radius + self.player.radius).powf(2.0);
             if dx + dy < min {
+                self.game_over = true;
+                self.player.x = -2.0 * self.player.radius;
                 if let Some(collision) = self.collision_sound {
                     if !collision.is_playing() {
                         collision.play();
@@ -70,10 +76,12 @@ impl Scene for BallsScene {
         connector.clear_background(Color::CYAN);
         connector.draw_rectangle(0, 0, width / 2, height, Color::GREEN);
         let width = connector.get_render_width();
-        if self.player.x < (width - self.player.ball.width) as f32 / 2.0 {
+        if self.game_over || self.player.x < (width - self.player.ball.width) as f32 / 2.0 {
             connector.draw_fps(5, 5);
         }
-        self.player.draw(connector)?;
+        if !self.game_over {
+            self.player.draw(connector)?;
+        }
 
         for foe in self.foes.iter() {
             foe.draw(connector)?;
