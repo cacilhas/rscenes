@@ -9,6 +9,7 @@ pub struct Foe {
     pub ball: Image,
     pub x: f32,
     pub y: f32,
+    pub radius: f32,
     pub movement: Vector2,
     pub pluck_sounds: Vec<Sound>,
 }
@@ -68,27 +69,29 @@ impl Foe {
     }
 
     pub fn setup(&mut self, connector: PlainConnector) -> Result<(), String> {
-        let width = (connector.get_render_width() - self.ball.width) as f32;
-        let height = (connector.get_render_height() - self.ball.height) as f32;
-        let min_x = self.ball.width as f32 / 2.0;
-        let min_y = self.ball.height as f32 / 2.0;
-        self.x = random::<f32>() * width + min_x;
-        self.y = random::<f32>() * height + min_y;
-        let angle: f32 = random::<f32>() * TAU;
-        self.movement = Vector2 {
-            x: angle.cos() * FOE_SPEED,
-            y: angle.sin() * FOE_SPEED,
-        };
+        if self.pluck_sounds.is_empty() {
+            let width = (connector.get_render_width() - self.ball.width) as f32;
+            let height = (connector.get_render_height() - self.ball.height) as f32;
+            let min_x = self.ball.width as f32 / 2.0;
+            let min_y = self.ball.height as f32 / 2.0;
+            self.x = random::<f32>() * width + min_x;
+            self.y = random::<f32>() * height + min_y;
+            let angle: f32 = random::<f32>() * TAU;
+            self.movement = Vector2 {
+                x: angle.cos() * FOE_SPEED,
+                y: angle.sin() * FOE_SPEED,
+            };
 
-        let data = include_bytes!("assets/pluck_001.ogg");
-        let wave = Wave::load_from_memory(WaveType::Ogg, data)?;
-        self.pluck_sounds.push(Sound::load_from_wave(wave));
-        wave.unload();
+            let data = include_bytes!("assets/pluck_001.ogg");
+            let wave = Wave::load_from_memory(WaveType::Ogg, data)?;
+            self.pluck_sounds.push(Sound::load_from_wave(wave));
+            wave.unload();
 
-        let data = include_bytes!("assets/pluck_002.ogg");
-        let wave = Wave::load_from_memory(WaveType::Ogg, data)?;
-        self.pluck_sounds.push(Sound::load_from_wave(wave));
-        wave.unload();
+            let data = include_bytes!("assets/pluck_002.ogg");
+            let wave = Wave::load_from_memory(WaveType::Ogg, data)?;
+            self.pluck_sounds.push(Sound::load_from_wave(wave));
+            wave.unload();
+        }
 
         Ok(())
     }
@@ -97,10 +100,13 @@ impl Foe {
 impl Default for Foe {
     fn default() -> Self {
         let data = include_bytes!("assets/ball_red_large.png");
+        let ball = Image::load_from_memory(ImageType::Png, data).unwrap();
+        let radius = (ball.width + ball.height) as f32 / 4.0;
         Self {
-            ball: Image::load_from_memory(ImageType::Png, data).unwrap(),
+            ball,
             x: 0.0,
             y: 0.0,
+            radius,
             movement: Vector2 { x: 0.0, y: 0.0 },
             pluck_sounds: vec![],
         }

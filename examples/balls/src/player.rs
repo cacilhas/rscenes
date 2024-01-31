@@ -7,6 +7,7 @@ pub struct Player {
     pub ball: Image,
     pub x: f32,
     pub y: f32,
+    pub radius: f32,
 }
 
 impl Player {
@@ -67,10 +68,14 @@ impl Player {
 impl Default for Player {
     fn default() -> Self {
         let data = include_bytes!("assets/ball_blue_large.png");
+        let ball = Image::load_from_memory(ImageType::Png, data).unwrap();
+        let radius = (ball.width + ball.height) as f32 / 4.0;
+
         Self {
-            ball: Image::load_from_memory(ImageType::Png, data).unwrap(),
+            ball,
             x: 0.0,
             y: 0.0,
+            radius,
         }
     }
 }

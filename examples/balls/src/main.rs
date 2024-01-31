@@ -13,6 +13,7 @@ fn main() -> Result<(), String> {
     manager.set_init(Box::new(BallsScene {
         player: Player::default(),
         foes: (0..4).map(|_| Foe::default()).collect::<Vec<_>>(),
+        collision_sound: None,
     }));
     manager.add_setup(setup!(|con| con.init_audio_device()));
     manager.start()
@@ -22,10 +23,17 @@ fn main() -> Result<(), String> {
 struct BallsScene {
     player: Player,
     foes: Vec<Foe>,
+    collision_sound: Option<Sound>,
 }
 
 impl Scene for BallsScene {
     fn setup(&mut self, connector: PlainConnector) -> Result<(), String> {
+        if self.collision_sound.is_none() {
+            let data = include_bytes!("assets/impactBell_heavy_000.ogg");
+            let wave = Wave::load_from_memory(WaveType::Ogg, data)?;
+            self.collision_sound = Some(Sound::load_from_wave(wave));
+        }
+
         let width = connector.get_render_width();
         let height = connector.get_render_height();
         self.player.x = (width - self.player.ball.width) as f32 / 2.0;
@@ -40,6 +48,16 @@ impl Scene for BallsScene {
         self.player.update(connector, dt)?;
         for foe in self.foes.iter_mut() {
             foe.update(connector, dt);
+            let dx = (foe.x - self.player.x).powf(2.0);
+            let dy = (foe.y - self.player.y).powf(2.0);
+            let min = (foe.radius + self.player.radius).powf(2.0);
+            if dx + dy < min {
+                if let Some(collision) = self.collision_sound {
+                    if !collision.is_playing() {
+                        collision.play();
+                    }
+                }
+            }
         }
         Ok(State::Keep)
     }
