@@ -1,6 +1,9 @@
 use crate::{connectors::*, scene::Scene, state::State};
 use resolution::current_resolution;
-use rscenes_raylib_connector::interface::*;
+use rscenes_raylib_connector::{
+    assets::{TraceLogLevel, TraceLogLevelExt},
+    interface::*,
+};
 
 /// Control the game
 #[derive(Default)]
@@ -25,11 +28,13 @@ impl Rscenes {
     }
 
     /// Start mainloop
-    pub fn start(&mut self) -> Result<(), String> {
+    pub fn start(&mut self) {
         if self.scenes.is_empty() {
-            return Err("no initial scene supplied".to_owned());
+            TraceLogLevel::Fatal.log("no initial scene supplied");
         }
-        self.setup()?;
+        if let Err(err) = self.setup() {
+            TraceLogLevel::Fatal.log(format!("loading setup: {}", err));
+        }
 
         let mut reloaded = true;
         let plain_connector = PlainConnector::default();
@@ -43,40 +48,54 @@ impl Rscenes {
             };
 
             if reloaded {
-                scene.setup(plain_connector)?;
+                if let Err(err) = scene.setup(plain_connector) {
+                    TraceLogLevel::Fatal.log(format!("reloading {:?} scene: {}", scene, err));
+                }
                 reloaded = false;
             }
 
-            match scene.update(plain_connector, plain_connector.get_frame_time())? {
-                State::Keep => {
+            match scene.update(plain_connector, plain_connector.get_frame_time()) {
+                Ok(State::Keep) => {
                     plain_connector.begin_drawing();
-                    scene.draw_3d(connector_3d)?;
-                    scene.draw_2d(connector_2d)?;
+                    if let Err(err) = scene.draw_3d(connector_3d) {
+                        TraceLogLevel::Error
+                            .log(format!("drawing models (3D): {:?} {}", scene, err));
+                    }
+                    if let Err(err) = scene.draw_2d(connector_2d) {
+                        TraceLogLevel::Error
+                            .log(format!("drawing shapes (2D): {:?} {}", scene, err));
+                    }
                     plain_connector.end_drawing();
                 }
 
-                State::Next(next_scene) => {
+                Ok(State::Next(next_scene)) => {
                     {
-                        scene.exit(plain_connector)?;
+                        if let Err(err) = scene.exit(plain_connector) {
+                            TraceLogLevel::Error.log(format!("exiting {:?} scene: {}", scene, err));
+                        }
                     }
                     self.scenes.push(next_scene);
                     reloaded = true;
                 }
 
-                State::Prev => {
+                Ok(State::Prev) => {
                     if let Some(mut scene) = self.scenes.pop() {
-                        scene.exit(plain_connector)?;
+                        if let Err(err) = scene.exit(plain_connector) {
+                            TraceLogLevel::Error.log(format!("exiting {:?} scene: {}", scene, err));
+                        }
                     }
                     reloaded = true;
                 }
 
-                State::Quit => {
+                Ok(State::Quit) => {
                     plain_connector.close_window();
+                }
+
+                Err(err) => {
+                    TraceLogLevel::Error.log(format!("updating {:?} scene: {}", scene, err))
                 }
             }
         }
-
-        Ok(())
     }
 
     fn setup(&mut self) -> Result<(), String> {

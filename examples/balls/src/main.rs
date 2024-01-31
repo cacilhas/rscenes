@@ -5,7 +5,7 @@ use crate::player::Player;
 use foe::Foe;
 use rscenes::prelude::*;
 
-fn main() -> Result<(), String> {
+fn main() {
     TraceLogLevel::Error.set_default();
 
     let mut manager = Rscenes::default();
@@ -17,7 +17,7 @@ fn main() -> Result<(), String> {
         collision_sound: None,
     }));
     manager.add_setup(setup!(|con| con.init_audio_device()));
-    manager.start()
+    manager.start();
 }
 
 #[derive(Debug)]
