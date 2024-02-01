@@ -29,15 +29,14 @@ pub struct MainMenu {
 }
 
 impl Scene for MainMenu {
-    fn on_setup(&mut self, rs: PlainConnector) -> Result<(), String> {
-        let font = rs.get_default_font();
-        let screen_width = rs.get_render_width() as f32;
-
-        let size = rs.measure_text_ex(font, "Nonogram", 84.0, 2.0);
+    fn on_update(&mut self, rl: PlainConnector, _: f32) -> Result<State, String> {
+        let font = rl.get_default_font();
+        let screen_width = rl.get_render_width() as f32;
+        let size = rl.measure_text_ex(font, "Nonogram", 84.0, 2.0);
         let mut bottom = size.y + 64.0;
 
         for (idx, text) in BUTTONS.iter() {
-            let size = rs.measure_text_ex(font, *text, 64.0, 1.0);
+            let size = rl.measure_text_ex(font, *text, 64.0, 1.0);
             self.buttons[*idx] = Rectangle {
                 x: (screen_width - size.x) / 2.0,
                 y: bottom,
@@ -47,38 +46,36 @@ impl Scene for MainMenu {
             bottom += size.y + 12.0;
         }
 
-        Ok(())
-    }
-
-    fn on_update(&mut self, rs: PlainConnector, _: f32) -> Result<State, String> {
-        let mouse = rs.get_mouse_position();
+        let mouse = rl.get_mouse_position();
         for idx in 0..BT_COUNT {
             let rec = self.buttons[idx];
-            self.hover[idx] = rs.check_collision_point_rec(mouse, rec);
+            self.hover[idx] = rl.check_collision_point_rec(mouse, rec);
         }
 
-        if rs.is_mouse_button_released(MouseButton::Left) {
-            if rs.check_collision_point_rec(mouse, self.buttons[LB_5X5]) {
+        if rl.is_mouse_button_released(MouseButton::Left) {
+            if rl.check_collision_point_rec(mouse, self.buttons[LB_5X5]) {
                 return Ok(State::Next(Box::new(Gameplay::new(Box::new(
                     BoardStruct::<5, 5>::random(self.easy),
                 )))));
             }
-            if rs.check_collision_point_rec(mouse, self.buttons[LB_10X10]) {
+            if rl.check_collision_point_rec(mouse, self.buttons[LB_10X10]) {
                 return Ok(State::Next(Box::new(Gameplay::new(Box::new(
                     BoardStruct::<10, 10>::random(self.easy),
                 )))));
             }
-            if rs.check_collision_point_rec(mouse, self.buttons[LB_15X15]) {
+            if rl.check_collision_point_rec(mouse, self.buttons[LB_15X15]) {
                 return Ok(State::Next(Box::new(Gameplay::new(Box::new(
                     BoardStruct::<15, 15>::random(self.easy),
                 )))));
             }
-            if rs.check_collision_point_rec(mouse, self.buttons[LB_EASY]) {
+            if rl.check_collision_point_rec(mouse, self.buttons[LB_EASY]) {
                 self.easy = !self.easy;
             }
         }
 
-        // TODO: change to the next scene
+        if KeyboardKey::F.is_released() {
+            rl.toggle_fullscreen();
+        }
 
         if KeyboardKey::Escape.is_released() {
             Ok(State::Quit)
@@ -88,26 +85,26 @@ impl Scene for MainMenu {
     }
 
     #[draw(shapes)]
-    fn draw(&self, rs: Connector2D) {
-        let screen_width = rs.get_render_width() as f32;
-        let font = rs.get_default_font();
+    fn draw(&self, rl: Connector2D) {
+        let screen_width = rl.get_render_width() as f32;
+        let font = rl.get_default_font();
 
-        rs.clear_background(BACKGROUND);
+        rl.clear_background(BACKGROUND);
 
-        let size = rs.measure_text_ex(font, "Nonogram", 84.0, 2.0);
+        let size = rl.measure_text_ex(font, "Nonogram", 84.0, 2.0);
         let position = Vector2 {
             x: (screen_width - size.x) / 2.0,
             y: 2.0,
         };
-        rs.draw_text_ex(font, "Nonogram", position, 84.0, 2.0, TITLE);
+        rl.draw_text_ex(font, "Nonogram", position, 84.0, 2.0, TITLE);
 
         if self.easy {
-            rs.draw_rectangle_rec(self.buttons[LB_EASY], EZCOLOR);
+            rl.draw_rectangle_rec(self.buttons[LB_EASY], EZCOLOR);
         }
 
         for (idx, text) in BUTTONS.iter() {
             let rec = self.buttons[*idx];
-            rs.draw_text_ex(
+            rl.draw_text_ex(
                 font,
                 *text,
                 Vector2 { x: rec.x, y: rec.y },

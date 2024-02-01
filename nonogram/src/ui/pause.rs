@@ -4,7 +4,11 @@ use rscenes::prelude::*;
 pub struct Pause;
 
 impl Scene for Pause {
-    fn on_update(&mut self, _: PlainConnector, _: f32) -> Result<State, String> {
+    fn on_update(&mut self, rl: PlainConnector, _: f32) -> Result<State, String> {
+        if KeyboardKey::F.is_released() {
+            rl.toggle_fullscreen();
+        }
+
         if KeyboardKey::F3.is_released() || KeyboardKey::Pause.is_released() {
             Ok(State::Prev(1))
         } else if KeyboardKey::Escape.is_released() {

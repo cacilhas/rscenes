@@ -232,7 +232,7 @@ impl Gameplay {
     }
 
     fn draw_info(&self, rl: Connector2D, screen: Vector2, font: Font) {
-        let size = rl.measure_text_ex(font, "F2 mute/unmute", 12.0, 1.0);
+        let size = rl.measure_text_ex(font, "F toggle fullscreen", 12.0, 1.0);
         let x = screen.x - size.x - 4.0;
         let mut y = 28.0;
         rl.draw_text_ex(
@@ -247,6 +247,15 @@ impl Gameplay {
         rl.draw_text_ex(font, "F3 pause", Vector2 { x, y }, 12.0, 1.0, Color::GRAY);
         y += 14.0;
         rl.draw_text_ex(font, "ESC abort", Vector2 { x, y }, 12.0, 1.0, Color::GRAY);
+        y += 14.0;
+        rl.draw_text_ex(
+            font,
+            "F toggle fullscreen",
+            Vector2 { x, y },
+            12.0,
+            1.0,
+            Color::GRAY,
+        );
     }
 }
 
@@ -268,6 +277,10 @@ impl Scene for Gameplay {
             || KeyboardKey::Pause.is_released() && !self.board.is_done()
         {
             return Ok(State::Next(Box::new(Pause)));
+        }
+
+        if KeyboardKey::F.is_released() {
+            rl.toggle_fullscreen();
         }
 
         let screen = rl.get_render_size();
@@ -447,47 +460,27 @@ impl Scene for Gameplay {
             );
         }
 
+        let size = rl.measure_text_ex(font, "F toggle fullscreen", 12.0, 1.0);
+        let mut x = screen.x - size.x;
         let time = {
             let secs = self.time_lapse as i32;
             let min = secs / 60;
             let hours = min / 60;
             format!("{:02}:{:02}:{:02}", hours, min % 60, secs % 60)
         };
-        //let size = measure_text_ex(font.as_ref(), &time, 12.0, 2.0);
         monospace(
             rl,
             font,
             &time,
-            Vector2 {
-                x: screen.x - 96.0,
-                y: 4.0,
-            },
+            Vector2 { x, y: 4.0 },
             12.0,
             Color::DARKGRAY,
         );
+        let size = rl.measure_text_ex(font, &time, 12.0, 2.0);
+        x += size.x;
         if self.mute {
-            rl.draw_text_ex(
-                font,
-                "M",
-                Vector2 {
-                    x: screen.x - 112.0,
-                    y: 4.0,
-                },
-                12.0,
-                0.0,
-                Color::BROWN,
-            );
-            rl.draw_text_ex(
-                font,
-                "\\",
-                Vector2 {
-                    x: screen.x - 112.0,
-                    y: 4.0,
-                },
-                12.0,
-                0.0,
-                Color::RED,
-            );
+            rl.draw_text_ex(font, "M", Vector2 { x, y: 4.0 }, 12.0, 0.0, Color::BROWN);
+            rl.draw_text_ex(font, "\\", Vector2 { x, y: 4.0 }, 12.0, 0.0, Color::RED);
         }
         self.draw_info(rl, screen, font);
     }

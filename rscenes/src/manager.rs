@@ -118,18 +118,22 @@ impl Rscenes {
         }
     }
 
+    pub fn screen_size(&self) -> (i32, i32) {
+        current_resolution().unwrap_or((800, 600))
+    }
+
     fn setup(&mut self) -> Result<(), String> {
         let connector = PlainConnector::default();
 
         connector.set_target_fps(60);
         let (width, height) = match self.window_size {
-            (0, 0) => current_resolution().unwrap_or((800, 600)),
+            (0, 0) => self.screen_size(),
             (0, height) => {
-                let (width, _) = current_resolution().unwrap_or((800, 600));
+                let (width, _) = self.screen_size();
                 (width, height)
             }
             (width, 0) => {
-                let (_, height) = current_resolution().unwrap_or((800, 600));
+                let (_, height) = self.screen_size();
                 (width, height)
             }
             (width, height) => (width, height),
