@@ -1,0 +1,2 @@
+- Fix SIGSEGV on exit
+- Test 3D models

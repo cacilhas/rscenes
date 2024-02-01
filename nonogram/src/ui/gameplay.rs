@@ -4,6 +4,8 @@ use crate::{
 };
 use rscenes::prelude::*;
 
+use super::pause::Pause;
+
 const VICTORY: [&str; 6] = ["W", "w", "v", ".", "v", "w"];
 
 #[derive(Debug)]
@@ -265,7 +267,7 @@ impl Scene for Gameplay {
         if KeyboardKey::F3.is_released()
             || KeyboardKey::Pause.is_released() && !self.board.is_done()
         {
-            // TODO: return Pause scene
+            return Ok(State::Next(Box::new(Pause)));
         }
 
         let screen = rl.get_render_size();
