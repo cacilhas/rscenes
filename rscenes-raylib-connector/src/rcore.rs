@@ -1245,6 +1245,14 @@ pub trait Rcore: Debug {
         RcoreImpl::__get_screen_height()
     }
 
+    /// Get current screen dimensions as a 2D vector
+    fn get_screen_size(&self) -> Vector2 {
+        Vector2 {
+            x: RcoreImpl::__get_screen_width() as f32,
+            y: RcoreImpl::__get_screen_height() as f32,
+        }
+    }
+
     /// Get current render width (it considers HiDPI)
     fn get_render_width(&self) -> i32 {
         RcoreImpl::__get_render_width()
@@ -1253,6 +1261,14 @@ pub trait Rcore: Debug {
     /// Get current render width (it considers HiDPI)
     fn get_render_height(&self) -> i32 {
         RcoreImpl::__get_render_height()
+    }
+
+    /// Get current render dimensions as a 2D vector
+    fn get_render_size(&self) -> Vector2 {
+        Vector2 {
+            x: RcoreImpl::__get_render_width() as f32,
+            y: RcoreImpl::__get_render_height() as f32,
+        }
     }
 
     /// Get number of connected monitors
@@ -1278,6 +1294,14 @@ pub trait Rcore: Debug {
     /// Get specified monitor height (current video mode used by monitor)
     fn get_monitor_height(&self, monitor: i32) -> i32 {
         RcoreImpl::__get_monitor_height(monitor)
+    }
+
+    /// Get specified monitor dimensions as a 2D vector
+    fn get_monitor_size(&self, monitor: i32) -> Vector2 {
+        Vector2 {
+            x: RcoreImpl::__get_monitor_width(monitor) as f32,
+            y: RcoreImpl::__get_monitor_height(monitor) as f32,
+        }
     }
 
     /// Get specified monitor physical width in millimetres

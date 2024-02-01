@@ -318,10 +318,7 @@ impl Scene for Gameplay {
         } else if rl.is_window_focused() {
             self.time_lapse += dt;
 
-            let mouse = Vector2 {
-                x: rl.get_mouse_x() as f32,
-                y: rl.get_mouse_y() as f32,
-            };
+            let mouse = rl.get_mouse_position();
 
             for y in 0..(self.size.y as usize) {
                 for x in 0..(self.size.x as usize) {
@@ -378,14 +375,8 @@ impl Scene for Gameplay {
             return Ok(());
         }
         let font = rl.get_default_font();
-        let screen = Vector2 {
-            x: rl.get_render_width() as f32,
-            y: rl.get_render_height() as f32,
-        };
-        let mouse = Vector2 {
-            x: rl.get_mouse_x() as f32,
-            y: rl.get_mouse_y() as f32,
-        };
+        let screen = rl.get_render_size();
+        let mouse = rl.get_mouse_position();
 
         for y in 0..(self.size.y as usize) {
             for x in 0..(self.size.x as usize) {

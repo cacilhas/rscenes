@@ -57,7 +57,6 @@ impl Scene for MainMenu {
         for idx in 0..BT_COUNT {
             let rec = self.buttons[idx];
             self.hover[idx] = rs.check_collision_point_rec(mouse, rec);
-            dbg!(mouse, rec, self.hover[idx]);
         }
 
         if rs.is_mouse_button_released(MouseButton::Left) {
@@ -93,7 +92,6 @@ impl Scene for MainMenu {
     #[draw(shapes)]
     fn draw(&self, rs: Connector2D) {
         let screen_width = rs.get_render_width() as f32;
-        // let screen_height = rs.get_render_height() as f32;
         let font = rs.get_default_font();
 
         rs.clear_background(BACKGROUND);
