@@ -26,10 +26,20 @@ pub struct MainMenu {
     buttons: [Rectangle; 4],
     hover: [bool; 4],
     easy: bool,
+    geom: Vector2,
 }
 
 impl Scene for MainMenu {
+    fn on_setup(&mut self, rl: PlainConnector) -> Result<(), String> {
+        self.geom = rl.get_render_size();
+        Ok(())
+    }
+
     fn on_update(&mut self, rl: PlainConnector, _: f32) -> Result<State, String> {
+        if !rl.is_window_state(ConfigFlags::BorderlessWindowedMode.into()) {
+            self.geom = rl.get_render_size();
+        }
+
         let font = rl.get_default_font();
         let screen_width = rl.get_render_width() as f32;
         let size = rl.measure_text_ex(font, "Nonogram", 84.0, 2.0);
@@ -54,19 +64,22 @@ impl Scene for MainMenu {
 
         if rl.is_mouse_button_released(MouseButton::Left) {
             if rl.check_collision_point_rec(mouse, self.buttons[LB_5X5]) {
-                return Ok(State::Next(Box::new(Gameplay::new(Box::new(
-                    BoardStruct::<5, 5>::random(self.easy),
-                )))));
+                return Ok(State::Next(Box::new(Gameplay::new(
+                    Box::new(BoardStruct::<5, 5>::random(self.easy)),
+                    self.geom,
+                ))));
             }
             if rl.check_collision_point_rec(mouse, self.buttons[LB_10X10]) {
-                return Ok(State::Next(Box::new(Gameplay::new(Box::new(
-                    BoardStruct::<10, 10>::random(self.easy),
-                )))));
+                return Ok(State::Next(Box::new(Gameplay::new(
+                    Box::new(BoardStruct::<10, 10>::random(self.easy)),
+                    self.geom,
+                ))));
             }
             if rl.check_collision_point_rec(mouse, self.buttons[LB_15X15]) {
-                return Ok(State::Next(Box::new(Gameplay::new(Box::new(
-                    BoardStruct::<15, 15>::random(self.easy),
-                )))));
+                return Ok(State::Next(Box::new(Gameplay::new(
+                    Box::new(BoardStruct::<15, 15>::random(self.easy)),
+                    self.geom,
+                ))));
             }
             if rl.check_collision_point_rec(mouse, self.buttons[LB_EASY]) {
                 self.easy = !self.easy;
@@ -74,7 +87,16 @@ impl Scene for MainMenu {
         }
 
         if KeyboardKey::F.is_released() {
-            rl.toggle_fullscreen();
+            if rl.is_window_state(ConfigFlags::BorderlessWindowedMode.into()) {
+                rl.set_window_size(self.geom.x as i32, self.geom.y as i32);
+                rl.clear_window_state(ConfigFlags::WindowTopmost.into());
+            } else {
+                let screen = rl.get_screen_size();
+                rl.set_window_size(screen.x as i32, screen.y as i32);
+                rl.set_window_state(ConfigFlags::WindowTopmost.into());
+            }
+            rl.toggle_borderless_windowed();
+            // rl.toggle_fullscreen();
         }
 
         if KeyboardKey::Escape.is_released() {
@@ -145,6 +167,7 @@ impl Default for MainMenu {
                 .try_into()
                 .unwrap(),
             easy: false,
+            geom: Vector2::ZERO,
         }
     }
 }

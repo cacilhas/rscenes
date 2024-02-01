@@ -1,12 +1,33 @@
 use rscenes::prelude::*;
 
 #[derive(Debug)]
-pub struct Pause;
+pub struct Pause {
+    geom: Vector2,
+}
+
+impl Pause {
+    pub fn new(geom: Vector2) -> Self {
+        Self { geom }
+    }
+}
 
 impl Scene for Pause {
     fn on_update(&mut self, rl: PlainConnector, _: f32) -> Result<State, String> {
+        if !rl.is_window_state(ConfigFlags::BorderlessWindowedMode.into()) {
+            self.geom = rl.get_render_size();
+        }
+
         if KeyboardKey::F.is_released() {
-            rl.toggle_fullscreen();
+            if rl.is_window_state(ConfigFlags::BorderlessWindowedMode.into()) {
+                rl.set_window_size(self.geom.x as i32, self.geom.y as i32);
+                rl.clear_window_state(ConfigFlags::WindowTopmost.into());
+            } else {
+                let screen = rl.get_screen_size();
+                rl.set_window_size(screen.x as i32, screen.y as i32);
+                rl.set_window_state(ConfigFlags::WindowTopmost.into());
+            }
+            rl.toggle_borderless_windowed();
+            // rl.toggle_fullscreen();
         }
 
         if KeyboardKey::F3.is_released() || KeyboardKey::Pause.is_released() {

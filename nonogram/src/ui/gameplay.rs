@@ -1,10 +1,9 @@
+use super::pause::Pause;
 use crate::{
     audio::{Sfx, SfxManager, SfxType},
     game::{Board, Cell},
 };
 use rscenes::prelude::*;
-
-use super::pause::Pause;
 
 const VICTORY: [&str; 6] = ["W", "w", "v", ".", "v", "w"];
 
@@ -25,10 +24,11 @@ pub struct Gameplay {
     done: bool,
     left_click: bool,
     right_click: bool,
+    geom: Vector2,
 }
 
 impl Gameplay {
-    pub fn new(board: Box<dyn Board>) -> Self {
+    pub fn new(board: Box<dyn Board>, geom: Vector2) -> Self {
         let (w, h) = board.size();
         let size = Vector2 {
             x: w as f32,
@@ -87,6 +87,7 @@ impl Gameplay {
             done: false,
             left_click: false,
             right_click: false,
+            geom,
         }
     }
 
@@ -269,6 +270,10 @@ impl Scene for Gameplay {
     }
 
     fn on_update(&mut self, rl: PlainConnector, dt: f32) -> Result<State, String> {
+        if !rl.is_window_state(ConfigFlags::BorderlessWindowedMode.into()) {
+            self.geom = rl.get_render_size();
+        }
+
         if KeyboardKey::F2.is_released() {
             self.mute = !self.mute;
         }
@@ -276,11 +281,20 @@ impl Scene for Gameplay {
         if KeyboardKey::F3.is_released()
             || KeyboardKey::Pause.is_released() && !self.board.is_done()
         {
-            return Ok(State::Next(Box::new(Pause)));
+            return Ok(State::Next(Box::new(Pause::new(self.geom))));
         }
 
         if KeyboardKey::F.is_released() {
-            rl.toggle_fullscreen();
+            if rl.is_window_state(ConfigFlags::BorderlessWindowedMode.into()) {
+                rl.set_window_size(self.geom.x as i32, self.geom.y as i32);
+                rl.clear_window_state(ConfigFlags::WindowTopmost.into());
+            } else {
+                let screen = rl.get_screen_size();
+                rl.set_window_size(screen.x as i32, screen.y as i32);
+                rl.set_window_state(ConfigFlags::WindowTopmost.into());
+            }
+            rl.toggle_borderless_windowed();
+            // rl.toggle_fullscreen();
         }
 
         let screen = rl.get_render_size();
