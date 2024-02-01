@@ -94,10 +94,13 @@ impl Rscenes {
                     reloaded = true;
                 }
 
-                Ok(State::Prev) => {
-                    if let Some(mut scene) = self.scenes.pop() {
-                        if let Err(err) = scene.on_exit(plain_connector) {
-                            TraceLogLevel::Error.log(format!("exiting {:?} scene: {}", scene, err));
+                Ok(State::Prev(count)) => {
+                    for _ in 0..count {
+                        if let Some(mut scene) = self.scenes.pop() {
+                            if let Err(err) = scene.on_exit(plain_connector) {
+                                TraceLogLevel::Error
+                                    .log(format!("exiting {:?} scene: {}", scene, err));
+                            }
                         }
                     }
                     reloaded = true;

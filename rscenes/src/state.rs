@@ -7,7 +7,7 @@ pub enum State {
     /// Add a new scene and run it
     Next(Box<dyn Scene>),
     /// Get back to the previous scene (or quit if there's no one)
-    Prev,
+    Prev(usize),
     /// Quit
     Quit,
 }

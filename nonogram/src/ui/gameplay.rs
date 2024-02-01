@@ -362,7 +362,7 @@ impl Scene for Gameplay {
         }
 
         if KeyboardKey::Escape.is_released() {
-            Ok(State::Prev)
+            Ok(State::Prev(1))
         } else {
             Ok(State::Keep)
         }
