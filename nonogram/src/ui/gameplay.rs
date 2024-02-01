@@ -476,8 +476,8 @@ impl Scene for Gameplay {
             12.0,
             Color::DARKGRAY,
         );
-        let size = rl.measure_text_ex(font, &time, 12.0, 2.0);
-        x += size.x;
+        let size = rl.measure_text_ex(font, "M", 12.0, 2.0);
+        x -= size.x + 8.0;
         if self.mute {
             rl.draw_text_ex(font, "M", Vector2 { x, y: 4.0 }, 12.0, 0.0, Color::BROWN);
             rl.draw_text_ex(font, "\\", Vector2 { x, y: 4.0 }, 12.0, 0.0, Color::RED);
