@@ -1,8 +1,7 @@
-mod game;
-mod ui;
+extern crate kodumaro_nonogram;
 
+use kodumaro_nonogram::MainMenu;
 use rscenes::prelude::*;
-use ui::MainMenu;
 
 fn main() {
     // TraceLogLevel::Error.set_default();

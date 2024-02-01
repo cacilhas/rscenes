@@ -1,6 +1,6 @@
 [package]
 name        = "kodumaro-nonogram"
-version     = "4.0.0"
+version     = "3.9.0" # TODO: 4.0.0 when finished
 authors     = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info"]
 license     = "BSD-3-Clause"
 readme      = "README.md"
@@ -24,3 +24,7 @@ fastrand = "2.0"
 
 [dependencies.rscenes]
 path = "../../rscenes"
+
+[[bin]]
+name = "nonogram"
+path = "src/bin/nonogram.rs"
