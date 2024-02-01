@@ -2,8 +2,13 @@ use crate::connectors::*;
 use crate::state::State;
 use rscenes_raylib_connector::assets::*;
 use std::fmt::Debug;
+use std::ptr;
 
 pub trait Scene: Debug + 'static {
+    fn id(&self) -> usize {
+        ptr::addr_of!(*self) as *const i32 as usize
+    }
+
     /// Implement get_camera_2d() to return your own camera
     fn get_camera_2d(&self) -> Camera2D {
         Camera2D::empty()
@@ -14,15 +19,21 @@ pub trait Scene: Debug + 'static {
         Camera3D::empty()
     }
 
-    /// Implement setup() to run a procedure whenever the scene is reloaded
+    /// Implement on_setup() to run a procedure first time the scene is loaded
     #[allow(unused)]
-    fn setup(&mut self, connector: PlainConnector) -> Result<(), String> {
+    fn on_setup(&mut self, connector: PlainConnector) -> Result<(), String> {
         Ok(())
     }
 
-    /// Implement exit() to run a procedure whenever exiting the schene
+    /// Implement on_load() to run a procedure whenever the scene is reloaded
     #[allow(unused)]
-    fn exit(&mut self, connector: PlainConnector) -> Result<(), String> {
+    fn on_load(&mut self, connector: PlainConnector) -> Result<(), String> {
+        Ok(())
+    }
+
+    /// Implement on_exit() to run a procedure whenever exiting the schene
+    #[allow(unused)]
+    fn on_exit(&mut self, connector: PlainConnector) -> Result<(), String> {
         Ok(())
     }
 
@@ -38,9 +49,9 @@ pub trait Scene: Debug + 'static {
         Ok(())
     }
 
-    /// update() runs every loop
+    /// on_update() runs every loop
     #[allow(unused)]
-    fn update(&mut self, connector: PlainConnector, dt: f32) -> Result<State, String> {
+    fn on_update(&mut self, connector: PlainConnector, dt: f32) -> Result<State, String> {
         Ok(State::Keep)
     }
 }

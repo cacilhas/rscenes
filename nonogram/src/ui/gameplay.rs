@@ -249,14 +249,12 @@ impl Gameplay {
 }
 
 impl Scene for Gameplay {
-    fn setup(&mut self, rl: PlainConnector) -> Result<(), String> {
-        if self.sfx.is_none() {
-            self.sfx = Some(Sfx::new(rl));
-        }
+    fn on_setup(&mut self, rl: PlainConnector) -> Result<(), String> {
+        self.sfx = Some(Sfx::new(rl));
         Ok(())
     }
 
-    fn update(&mut self, rl: PlainConnector, dt: f32) -> Result<State, String> {
+    fn on_update(&mut self, rl: PlainConnector, dt: f32) -> Result<State, String> {
         if KeyboardKey::F2.is_released() {
             self.mute = !self.mute;
         }

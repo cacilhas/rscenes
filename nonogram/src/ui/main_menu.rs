@@ -29,30 +29,28 @@ pub struct MainMenu {
 }
 
 impl Scene for MainMenu {
-    fn setup(&mut self, rs: PlainConnector) -> Result<(), String> {
-        if self.buttons[0].width == 0.0 {
-            let font = rs.get_default_font();
-            let screen_width = rs.get_render_width() as f32;
+    fn on_setup(&mut self, rs: PlainConnector) -> Result<(), String> {
+        let font = rs.get_default_font();
+        let screen_width = rs.get_render_width() as f32;
 
-            let size = rs.measure_text_ex(font, "Nonogram", 84.0, 2.0);
-            let mut bottom = size.y + 64.0;
+        let size = rs.measure_text_ex(font, "Nonogram", 84.0, 2.0);
+        let mut bottom = size.y + 64.0;
 
-            for (idx, text) in BUTTONS.iter() {
-                let size = rs.measure_text_ex(font, *text, 64.0, 1.0);
-                self.buttons[*idx] = Rectangle {
-                    x: (screen_width - size.x) / 2.0,
-                    y: bottom,
-                    width: size.x,
-                    height: size.y,
-                };
-                bottom += size.y + 12.0;
-            }
+        for (idx, text) in BUTTONS.iter() {
+            let size = rs.measure_text_ex(font, *text, 64.0, 1.0);
+            self.buttons[*idx] = Rectangle {
+                x: (screen_width - size.x) / 2.0,
+                y: bottom,
+                width: size.x,
+                height: size.y,
+            };
+            bottom += size.y + 12.0;
         }
 
         Ok(())
     }
 
-    fn update(&mut self, rs: PlainConnector, _: f32) -> Result<State, String> {
+    fn on_update(&mut self, rs: PlainConnector, _: f32) -> Result<State, String> {
         let mouse = rs.get_mouse_position();
         for idx in 0..BT_COUNT {
             let rec = self.buttons[idx];

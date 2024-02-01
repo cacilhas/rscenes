@@ -29,13 +29,14 @@ struct BallsScene {
 }
 
 impl Scene for BallsScene {
-    fn setup(&mut self, connector: PlainConnector) -> Result<(), String> {
-        if self.collision_sound.is_none() {
-            let data = include_bytes!("assets/impactBell_heavy_000.ogg");
-            let wave = Wave::load_from_memory(WaveType::Ogg, data)?;
-            self.collision_sound = Some(Sound::load_from_wave(wave));
-        }
+    fn on_setup(&mut self, _: PlainConnector) -> Result<(), String> {
+        let data = include_bytes!("assets/impactBell_heavy_000.ogg");
+        let wave = Wave::load_from_memory(WaveType::Ogg, data)?;
+        self.collision_sound = Some(Sound::load_from_wave(wave));
+        Ok(())
+    }
 
+    fn on_load(&mut self, connector: PlainConnector) -> Result<(), String> {
         let width = connector.get_render_width();
         let height = connector.get_render_height();
         self.player.x = (width - self.player.ball.width) as f32 / 2.0;
@@ -46,7 +47,7 @@ impl Scene for BallsScene {
         Ok(())
     }
 
-    fn update(&mut self, connector: PlainConnector, dt: f32) -> Result<State, String> {
+    fn on_update(&mut self, connector: PlainConnector, dt: f32) -> Result<State, String> {
         if !self.game_over {
             self.player.update(connector, dt)?;
         }
