@@ -11,6 +11,6 @@ fn main() {
     manager.set_init(Box::new(MainMenu::default()));
     manager.add_setup(setup!(|rs| rs.set_exit_key(KeyboardKey::Null)));
     manager.add_setup(setup!(|rs| rs.init_audio_device()));
-    manager.add_setup(setup!(|_rs| Sfx::load_assets()));
+    manager.add_setup(setup!(|_rs| SfxManager::load_assets()));
     manager.start();
 }

@@ -1,6 +1,6 @@
 use rscenes::prelude::*;
 
-static mut SFX: Option<Sfx> = None;
+static mut SFX: Option<SfxManager> = None;
 
 #[derive(Clone, Copy, Debug)]
 pub enum SfxType {
@@ -12,7 +12,7 @@ pub enum SfxType {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub struct Sfx {
+pub struct SfxManager {
     clapping: &'static [u8],
     error: &'static [u8],
     lock: &'static [u8],
@@ -20,15 +20,42 @@ pub struct Sfx {
     unset: &'static [u8],
 }
 
-impl Sfx {
+impl SfxManager {
     pub fn load_assets() {
         unsafe {
-            SFX = Some(Sfx::default());
+            SFX = Some(SfxManager::default());
         }
     }
 
-    pub fn get_instance() -> Option<Self> {
-        unsafe { SFX.clone() }
+    pub fn get_instance() -> Option<Sfx> {
+        unsafe {
+            if let Some(sfx) = SFX {
+                let wave = Wave::load_from_memory(WaveType::Wav, sfx.clapping).ok()?;
+                let clapping = Sound::load_from_wave(wave);
+                wave.unload();
+                let wave = Wave::load_from_memory(WaveType::Wav, sfx.error).ok()?;
+                let error = Sound::load_from_wave(wave);
+                wave.unload();
+                let wave = Wave::load_from_memory(WaveType::Wav, sfx.lock).ok()?;
+                let lock = Sound::load_from_wave(wave);
+                wave.unload();
+                let wave = Wave::load_from_memory(WaveType::Wav, sfx.set).ok()?;
+                let set = Sound::load_from_wave(wave);
+                wave.unload();
+                let wave = Wave::load_from_memory(WaveType::Wav, sfx.unset).ok()?;
+                let unset = Sound::load_from_wave(wave);
+                wave.unload();
+                return Some(Sfx {
+                    clapping,
+                    error,
+                    lock,
+                    set,
+                    unset,
+                });
+            }
+        }
+
+        None
     }
 
     pub fn play(&self, tpe: SfxType) -> Result<(), String> {
@@ -40,12 +67,14 @@ impl Sfx {
             SfxType::UNSET => self.unset,
         };
         let wave = Wave::load_from_memory(WaveType::Wav, data)?;
-        Sound::load_from_wave(wave).play();
+        let sound = Sound::load_from_wave(wave);
+        wave.unload();
+        sound.play();
         Ok(())
     }
 }
 
-impl Default for Sfx {
+impl Default for SfxManager {
     fn default() -> Self {
         Self {
             clapping: include_bytes!("assets/clapping.wav"),
@@ -54,5 +83,36 @@ impl Default for Sfx {
             set: include_bytes!("assets/set.wav"),
             unset: include_bytes!("assets/unset.wav"),
         }
+    }
+}
+
+#[derive(Debug)]
+pub struct Sfx {
+    clapping: Sound,
+    error: Sound,
+    lock: Sound,
+    set: Sound,
+    unset: Sound,
+}
+
+impl Sfx {
+    pub fn play(&self, tpe: SfxType) {
+        match tpe {
+            SfxType::CLAPPING => self.clapping.play(),
+            SfxType::ERROR => self.error.play(),
+            SfxType::LOCK => self.lock.play(),
+            SfxType::SET => self.set.play(),
+            SfxType::UNSET => self.unset.play(),
+        }
+    }
+}
+
+impl Drop for Sfx {
+    fn drop(&mut self) {
+        self.clapping.unload();
+        self.error.unload();
+        self.lock.unload();
+        self.set.unload();
+        self.unset.unload();
     }
 }

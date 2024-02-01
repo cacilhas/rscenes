@@ -1,5 +1,5 @@
 use crate::{
-    audio::{Sfx, SfxType},
+    audio::{Sfx, SfxManager, SfxType},
     game::{Board, Cell},
 };
 use rscenes::prelude::*;
@@ -8,6 +8,7 @@ const VICTORY: [&str; 6] = ["W", "w", "v", ".", "v", "w"];
 
 #[derive(Debug)]
 pub struct Gameplay {
+    sfx: Option<Sfx>,
     board: Box<dyn Board>,
     hhints: Vec<String>,
     vhints: Vec<String>,
@@ -54,6 +55,7 @@ impl Gameplay {
             })
             .collect::<Vec<String>>();
         Self {
+            sfx: None,
             board,
             size,
             hhints,
@@ -88,10 +90,8 @@ impl Gameplay {
 
     fn play(&self, sound: SfxType) {
         if !(self.mute) {
-            if let Some(sfx) = Sfx::get_instance() {
-                if let Err(err) = sfx.play(sound) {
-                    TraceLogLevel::Error.log(format!("playing {:?}: {}", sound, err));
-                }
+            if let Some(sfx) = &self.sfx {
+                sfx.play(sound);
             }
         }
     }
@@ -249,6 +249,14 @@ impl Gameplay {
 }
 
 impl Scene for Gameplay {
+    fn on_load(&mut self, _: PlainConnector) -> Result<(), String> {
+        self.sfx = SfxManager::get_instance();
+        if self.sfx.is_none() {
+            TraceLogLevel::Error.log("couldn't load sound effects");
+        }
+        Ok(())
+    }
+
     fn on_update(&mut self, rl: PlainConnector, dt: f32) -> Result<State, String> {
         if KeyboardKey::F2.is_released() {
             self.mute = !self.mute;
