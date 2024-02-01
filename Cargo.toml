@@ -6,9 +6,9 @@ members = [
   "rscenes",
   "rscenes-macros",
   "rscenes-raylib-connector",
-  "examples/nonogram",
+  "nonogram",
 ]
 
 exclude = [
-  "examples/balls",
+  "examples",
 ]

@@ -1,6 +1,6 @@
 # kodumaro-nonogram
 
-![Nonogram](https://github.com/cacilhas/rscenes/raw/master/examples/nonogram/nonogram.png)
+![Nonogram](https://github.com/cacilhas/rscenes/raw/master/nonogram/nonogram.png)
 
 A simple random nonogram game.
 
