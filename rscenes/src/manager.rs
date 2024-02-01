@@ -40,7 +40,7 @@ impl Rscenes {
         let plain_connector = PlainConnector::default();
         let connector_3d = Connector3D::default();
         let connector_2d = Connector2D::default();
-        let mut loaded_track: Vec<usize> = Vec::with_capacity(self.scenes.len() + 1);
+        let mut track_loaded_scenes: Vec<usize> = Vec::with_capacity(self.scenes.len() + 1);
 
         'mainloop: while !plain_connector.window_should_close() {
             let scene = match self.scenes.last_mut() {
@@ -50,16 +50,24 @@ impl Rscenes {
 
             if reloaded {
                 let scene_id = scene.id();
-                if !loaded_track.contains(&scene_id) {
-                    loaded_track.push(scene_id);
+                let first_load = !track_loaded_scenes.contains(&scene_id);
+
+                if first_load {
+                    track_loaded_scenes.push(scene_id);
                     if let Err(err) = scene.on_setup(plain_connector) {
                         TraceLogLevel::Fatal.log(format!("setting {:?} scene up: {}", scene, err));
                     }
                 }
 
                 if let Err(err) = scene.on_load(plain_connector) {
-                    TraceLogLevel::Fatal.log(format!("reloading {:?} scene: {}", scene, err));
+                    if first_load {
+                        TraceLogLevel::Fatal
+                    } else {
+                        TraceLogLevel::Error
+                    }
+                    .log(format!("reloading {:?} scene: {}", scene, err));
                 }
+
                 reloaded = false;
             }
 
