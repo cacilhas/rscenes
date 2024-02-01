@@ -1,4 +1,4 @@
-use crate::rtext::RtextImpl;
+use crate::{assets::Codepoints, rtext::RtextImpl};
 use raylib_ffi::*;
 use std::fmt::Display;
 
@@ -7,6 +7,8 @@ pub trait FontExt: Sized {
     fn default() -> Self;
     /// Load font from file into GPU memory (VRAM)
     fn load(filename: impl Display) -> Result<Self, String>;
+    /// Load font from memory buffer, fileType refers to extension: i.e. '.ttf'
+    fn load_from_memory(tpe: impl Display, data: &[u8], font_size: i32) -> Result<Self, String>;
     /// Load font from Image (XNA style)
     fn load_from_image(image: Image, key: Color, first_char: i32) -> Result<Self, String>;
     /// Check whether a font is ready
@@ -24,6 +26,10 @@ impl FontExt for Font {
 
     fn load(filename: impl Display) -> Result<Self, String> {
         RtextImpl::__load_font(filename)
+    }
+
+    fn load_from_memory(tpe: impl Display, data: &[u8], font_size: i32) -> Result<Self, String> {
+        RtextImpl::__load_font_from_memory(tpe, data, font_size, Codepoints::default())
     }
 
     fn load_from_image(image: Image, key: Color, first_char: i32) -> Result<Self, String> {

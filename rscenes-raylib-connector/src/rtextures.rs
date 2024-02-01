@@ -1423,7 +1423,7 @@ pub trait Rtextures: Debug {
     }
 
     /// Get pixel data size in bytes for certain format
-    fn get_pixel_data_size(&self, width: i32, height: i32, format: impl Into<usize>) -> i32 {
+    fn get_pixel_data_size(&self, width: i32, height: i32, format: PixelFormat) -> i32 {
         RtexturesImpl::__get_pixel_data_size(width, height, format)
     }
 }

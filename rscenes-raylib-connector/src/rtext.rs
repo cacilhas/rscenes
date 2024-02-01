@@ -6,6 +6,7 @@ use raylib_ffi::*;
 use std::{
     ffi::c_uchar,
     fmt::{Debug, Display},
+    path::Path,
 };
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -25,7 +26,14 @@ impl RtextImpl {
             if font.baseSize > 0 {
                 Ok(font)
             } else {
-                Err(format!("couldn't load font from {}", filename))
+                if Path::new(&format!("{}", filename)).exists() {
+                    Err(format!("couldn't load font from {}", filename))
+                } else {
+                    Err(format!(
+                        "couldn't load font from {}, file not found",
+                        filename
+                    ))
+                }
             }
         }
     }
@@ -41,7 +49,14 @@ impl RtextImpl {
             if font.baseSize > 0 {
                 Ok(font)
             } else {
-                Err(format!("couldn't load font from {}", filename))
+                if Path::new(&format!("{}", filename)).exists() {
+                    Err(format!("couldn't load font from {}", filename))
+                } else {
+                    Err(format!(
+                        "couldn't load font from {}, file not found",
+                        filename
+                    ))
+                }
             }
         }
     }
@@ -69,7 +84,6 @@ impl RtextImpl {
     ) -> Result<Font, String> {
         unsafe {
             let data_size = data.len() as i32;
-            let codepoints_count = codepoints.len() as i32;
             let mut data = data.iter().map(|e| *e).collect::<Vec<_>>();
             let data = data.as_mut_ptr() as *mut c_uchar;
             let font = LoadFontFromMemory(
@@ -78,7 +92,7 @@ impl RtextImpl {
                 data_size,
                 font_size,
                 codepoints.into(),
-                codepoints_count,
+                codepoints.count as i32,
             );
             if font.baseSize > 0 {
                 Ok(font)

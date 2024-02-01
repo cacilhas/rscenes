@@ -51,6 +51,17 @@ impl Codepoints {
     }
 }
 
+impl Default for Codepoints {
+    fn default() -> Self {
+        Self {
+            // TODO: try ptr::null_mut()
+            inner: (32..256).collect::<Vec<_>>().as_mut_ptr(),
+            count: 224,
+            phantom: PhantomData,
+        }
+    }
+}
+
 impl From<Codepoints> for *mut i32 {
     fn from(val: Codepoints) -> Self {
         val.inner
