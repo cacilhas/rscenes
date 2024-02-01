@@ -1,5 +1,7 @@
 use rscenes::prelude::*;
 
+use crate::{game::board::BoardStruct, Gameplay};
+
 const LB_5X5: usize = 0;
 const LB_10X10: usize = 1;
 const LB_15X15: usize = 2;
@@ -11,6 +13,13 @@ const BUTTONS: [(usize, &'static str); BT_COUNT] = [
     (LB_15X15, "15×15"),
     (LB_EASY, "Easy"),
 ];
+
+// Colours
+const BACKGROUND: Color = Color::WHEAT;
+const TITLE: Color = Color::DARKCYAN;
+const FOREGROUND: Color = Color::DARKGRAY;
+const HOVER: Color = Color::BLACK;
+const EZCOLOR: Color = Color::DARKSLATEBLUE;
 
 #[derive(Debug)]
 pub struct MainMenu {
@@ -51,10 +60,25 @@ impl Scene for MainMenu {
             dbg!(mouse, rec, self.hover[idx]);
         }
 
-        if rs.is_mouse_button_released(MouseButton::Left)
-            && rs.check_collision_point_rec(mouse, self.buttons[LB_EASY])
-        {
-            self.easy = !self.easy;
+        if rs.is_mouse_button_released(MouseButton::Left) {
+            if rs.check_collision_point_rec(mouse, self.buttons[LB_5X5]) {
+                return Ok(State::Next(Box::new(Gameplay::new(Box::new(
+                    BoardStruct::<5, 5>::random(self.easy),
+                )))));
+            }
+            if rs.check_collision_point_rec(mouse, self.buttons[LB_10X10]) {
+                return Ok(State::Next(Box::new(Gameplay::new(Box::new(
+                    BoardStruct::<10, 10>::random(self.easy),
+                )))));
+            }
+            if rs.check_collision_point_rec(mouse, self.buttons[LB_15X15]) {
+                return Ok(State::Next(Box::new(Gameplay::new(Box::new(
+                    BoardStruct::<15, 15>::random(self.easy),
+                )))));
+            }
+            if rs.check_collision_point_rec(mouse, self.buttons[LB_EASY]) {
+                self.easy = !self.easy;
+            }
         }
 
         // TODO: change to the next scene
@@ -72,17 +96,17 @@ impl Scene for MainMenu {
         // let screen_height = rs.get_render_height() as f32;
         let font = rs.get_default_font();
 
-        rs.clear_background(Color::WHEAT);
+        rs.clear_background(BACKGROUND);
 
         let size = rs.measure_text_ex(font, "Nonogram", 84.0, 2.0);
         let position = Vector2 {
             x: (screen_width - size.x) / 2.0,
             y: 2.0,
         };
-        rs.draw_text_ex(font, "Nonogram", position, 84.0, 2.0, Color::DARKCYAN);
+        rs.draw_text_ex(font, "Nonogram", position, 84.0, 2.0, TITLE);
 
         if self.easy {
-            rs.draw_rectangle_rec(self.buttons[LB_EASY], Color::DARKSLATEBLUE);
+            rs.draw_rectangle_rec(self.buttons[LB_EASY], EZCOLOR);
         }
 
         for (idx, text) in BUTTONS.iter() {
@@ -93,16 +117,16 @@ impl Scene for MainMenu {
                 Vector2 { x: rec.x, y: rec.y },
                 64.0,
                 1.0,
-                if self.hover[*idx] {
-                    Color::BLACK
-                } else if *idx == LB_EASY {
+                if *idx == LB_EASY {
                     if self.easy {
-                        Color::WHEAT
+                        BACKGROUND
                     } else {
-                        Color::DARKSLATEBLUE
+                        EZCOLOR
                     }
+                } else if self.hover[*idx] {
+                    HOVER
                 } else {
-                    Color::DARKGRAY
+                    FOREGROUND
                 },
             );
         }

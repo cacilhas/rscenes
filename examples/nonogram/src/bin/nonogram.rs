@@ -10,5 +10,6 @@ fn main() {
     manager.title = "Nonogram".to_owned();
     manager.set_init(Box::new(MainMenu::default()));
     manager.add_setup(setup!(|rs| rs.set_exit_key(KeyboardKey::Null)));
+    manager.add_setup(setup!(|rs| rs.init_audio_device()));
     manager.start();
 }

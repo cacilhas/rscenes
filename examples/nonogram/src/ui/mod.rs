@@ -1,3 +1,2 @@
-mod main_menu;
-
-pub use main_menu::MainMenu;
+pub mod gameplay;
+pub mod main_menu;

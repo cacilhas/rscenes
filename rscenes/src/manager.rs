@@ -54,9 +54,9 @@ impl Rscenes {
                 reloaded = false;
             }
 
+            plain_connector.begin_drawing();
             match scene.update(plain_connector, plain_connector.get_frame_time()) {
                 Ok(State::Keep) => {
-                    plain_connector.begin_drawing();
                     if let Err(err) = scene.draw_3d(connector_3d) {
                         TraceLogLevel::Error
                             .log(format!("drawing models (3D): {:?} {}", scene, err));
@@ -65,7 +65,6 @@ impl Rscenes {
                         TraceLogLevel::Error
                             .log(format!("drawing shapes (2D): {:?} {}", scene, err));
                     }
-                    plain_connector.end_drawing();
                 }
 
                 Ok(State::Next(next_scene)) => {
@@ -95,6 +94,7 @@ impl Rscenes {
                     TraceLogLevel::Error.log(format!("updating {:?} scene: {}", scene, err))
                 }
             }
+            plain_connector.end_drawing();
         }
     }
 

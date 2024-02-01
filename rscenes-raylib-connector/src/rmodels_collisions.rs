@@ -1,9 +1,5 @@
-use crate::utils::array_from_c;
 use raylib_ffi::*;
-use std::{
-    ffi::c_void,
-    fmt::{Debug, Display},
-};
+use std::fmt::Debug;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub(crate) struct RmodelsCollisionsImpl;

@@ -2,42 +2,50 @@ use std::fmt;
 
 use super::cell::Cell;
 
+pub trait Board: fmt::Debug {
+    fn get(&self, x: usize, y: usize) -> Result<Cell, String>;
+    fn set(&mut self, x: usize, y: usize, value: Cell) -> Result<(), String>;
+    fn get_hhint(&self, x: usize) -> Result<&Vec<usize>, String>;
+    fn get_vhint(&self, y: usize) -> Result<&Vec<usize>, String>;
+    fn size(&self) -> (usize, usize);
+    fn is_done(&self) -> bool;
+}
+
 #[derive(Debug)]
-pub struct Board<const W: usize, const H: usize> {
+pub struct BoardStruct<const W: usize, const H: usize> {
     pub hhints: [Vec<usize>; W],
     pub vhints: [Vec<usize>; H],
     data: [[Cell; W]; H],
 }
 
-impl<const W: usize, const H: usize> Default for Board<W, H> {
-    #[inline]
-    fn default() -> Self {
-        Self {
-            hhints: [(); W].map(|_| Vec::new()),
-            vhints: [(); H].map(|_| Vec::new()),
-            data: [[Cell::default(); W]; H],
-        }
-    }
-}
-
-impl<const W: usize, const H: usize> Board<W, H> {
-    pub fn get(&self, x: usize, y: usize) -> Result<Cell, String> {
+impl<const W: usize, const H: usize> Board for BoardStruct<W, H> {
+    fn get(&self, x: usize, y: usize) -> Result<Cell, String> {
         Self::check_coordinates(x, y)?;
         Ok(self.data[y][x])
     }
 
-    pub fn set(&mut self, x: usize, y: usize, value: Cell) -> Result<(), String> {
+    fn set(&mut self, x: usize, y: usize, value: Cell) -> Result<(), String> {
         Self::check_coordinates(x, y)?;
         self.data[y][x] = value;
         Ok(())
     }
 
     #[inline]
-    pub fn size(&self) -> (usize, usize) {
+    fn size(&self) -> (usize, usize) {
         (W, H)
     }
 
-    pub fn is_done(&self) -> bool {
+    fn get_hhint(&self, x: usize) -> Result<&Vec<usize>, String> {
+        Self::check_x(x)?;
+        Ok(&self.hhints[x])
+    }
+
+    fn get_vhint(&self, y: usize) -> Result<&Vec<usize>, String> {
+        Self::check_y(y)?;
+        Ok(&self.vhints[y])
+    }
+
+    fn is_done(&self) -> bool {
         let (hhints, vhints) = self.calculate();
         for x in 0..W {
             if hhints[x] != self.hhints[x] {
@@ -51,8 +59,10 @@ impl<const W: usize, const H: usize> Board<W, H> {
         }
         true
     }
+}
 
-    pub fn random(with_hints: bool) -> Board<W, H> {
+impl<const W: usize, const H: usize> BoardStruct<W, H> {
+    pub fn random(with_hints: bool) -> impl Board {
         let mut board = Self::default();
         for (x, y) in Self::pairs() {
             board.data[y][x] = (fastrand::u8(0..16u8) < 10u8).into();
@@ -154,7 +164,18 @@ impl<const W: usize, const H: usize> Board<W, H> {
     }
 }
 
-impl<const W: usize, const H: usize> fmt::Display for Board<W, H> {
+impl<const W: usize, const H: usize> Default for BoardStruct<W, H> {
+    #[inline]
+    fn default() -> Self {
+        Self {
+            hhints: [(); W].map(|_| Vec::new()),
+            vhints: [(); H].map(|_| Vec::new()),
+            data: [[Cell::default(); W]; H],
+        }
+    }
+}
+
+impl<const W: usize, const H: usize> fmt::Display for BoardStruct<W, H> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut res = String::new();
         let count = *self.hhints.clone().map(|e| e.len()).iter().max().unwrap();
@@ -195,7 +216,8 @@ mod tests {
 
     #[test]
     fn board_should_start_all_closed() {
-        let board = Board::<3, 2>::default();
+        let board = BoardStruct::<3, 2>::default();
+        let board: &dyn Board = &board;
         for y in 0..2 {
             for x in 0..3 {
                 assert_eq!(board.get(x, y).unwrap(), Cell::Closed);
@@ -205,7 +227,7 @@ mod tests {
 
     #[test]
     fn test_board_get_set() {
-        let mut board = Board::<3, 2>::default();
+        let mut board = BoardStruct::<3, 2>::default();
         board.set(0, 0, Cell::Yes).unwrap(); // +---+
         board.set(2, 0, Cell::Yes).unwrap(); // |O O|
         board.set(0, 1, Cell::Yes).unwrap(); // |OO |
@@ -219,16 +241,17 @@ mod tests {
             }
         }
         board.reset_hints();
-        assert_eq!(board.hhints.get(0).unwrap().to_owned(), vec![2]);
-        assert_eq!(board.hhints.get(1).unwrap().to_owned(), vec![1]);
-        assert_eq!(board.hhints.get(2).unwrap().to_owned(), vec![1]);
-        assert_eq!(board.vhints.get(0).unwrap().to_owned(), vec![1, 1]);
-        assert_eq!(board.vhints.get(1).unwrap().to_owned(), vec![2]);
+        let board: &dyn Board = &board;
+        assert_eq!(board.get_hhint(0).unwrap().to_owned(), vec![2]);
+        assert_eq!(board.get_hhint(1).unwrap().to_owned(), vec![1]);
+        assert_eq!(board.get_hhint(2).unwrap().to_owned(), vec![1]);
+        assert_eq!(board.get_vhint(0).unwrap().to_owned(), vec![1, 1]);
+        assert_eq!(board.get_vhint(1).unwrap().to_owned(), vec![2]);
     }
 
     #[test]
     fn it_should_test_done() {
-        let mut board = Board::<3, 2>::default();
+        let mut board = BoardStruct::<3, 2>::default();
         board.set(0, 0, Cell::Yes).unwrap(); // +---+
         board.set(2, 0, Cell::Yes).unwrap(); // |O O|
         board.set(0, 1, Cell::Yes).unwrap(); // |OO |
@@ -240,7 +263,8 @@ mod tests {
 
     #[test]
     fn it_should_return_dimensions() {
-        let board = Board::<3, 2>::default();
+        let mut board = BoardStruct::<3, 2>::default();
+        let board: &dyn Board = &mut board;
         let (w, h) = board.size();
         assert_eq!(w, 3);
         assert_eq!(h, 2);
