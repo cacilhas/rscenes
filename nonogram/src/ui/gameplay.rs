@@ -8,7 +8,6 @@ const VICTORY: [&str; 6] = ["W", "w", "v", ".", "v", "w"];
 
 #[derive(Debug)]
 pub struct Gameplay {
-    sfx: Option<Sfx>,
     board: Box<dyn Board>,
     hhints: Vec<String>,
     vhints: Vec<String>,
@@ -55,7 +54,6 @@ impl Gameplay {
             })
             .collect::<Vec<String>>();
         Self {
-            sfx: None,
             board,
             size,
             hhints,
@@ -90,8 +88,10 @@ impl Gameplay {
 
     fn play(&self, sound: SfxType) {
         if !(self.mute) {
-            if let Some(sfx) = self.sfx {
-                sfx.play(sound);
+            if let Some(sfx) = Sfx::get_instance() {
+                if let Err(err) = sfx.play(sound) {
+                    TraceLogLevel::Error.log(format!("playing {:?}: {}", sound, err));
+                }
             }
         }
     }
@@ -249,11 +249,6 @@ impl Gameplay {
 }
 
 impl Scene for Gameplay {
-    fn on_setup(&mut self, rl: PlainConnector) -> Result<(), String> {
-        self.sfx = Some(Sfx::new(rl));
-        Ok(())
-    }
-
     fn on_update(&mut self, rl: PlainConnector, dt: f32) -> Result<State, String> {
         if KeyboardKey::F2.is_released() {
             self.mute = !self.mute;
@@ -265,13 +260,10 @@ impl Scene for Gameplay {
             // TODO: return Pause scene
         }
 
-        let screen = Vector2 {
-            x: rl.get_render_width() as f32,
-            y: rl.get_render_height() as f32,
-        };
+        let screen = rl.get_render_size();
         self.board_rect = Rectangle {
-            x: screen.x,
-            y: screen.y + screen.y / 3.0,
+            x: 0.0,
+            y: screen.y / 3.0,
             width: screen.x / 1.5,
             height: screen.y / 1.5,
         };
@@ -280,8 +272,8 @@ impl Scene for Gameplay {
             y: self.board_rect.height / self.size.y,
         };
         self.hhints_rect = Rectangle {
-            x: screen.x + self.cell_size.x / 2.0,
-            y: screen.y,
+            x: self.cell_size.x / 2.0,
+            y: 0.0,
             width: screen.x / 1.5,
             height: screen.y / 3.0,
         };
