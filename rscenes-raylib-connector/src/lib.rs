@@ -7,7 +7,9 @@ mod rcamera;
 mod rcore;
 mod rgestures;
 mod rmodels;
+mod rmodels_collisions;
 mod rshapes;
+mod rshapes_collisions;
 mod rtext;
 mod rtextures;
 mod utils;
@@ -47,7 +49,9 @@ pub mod interface {
     pub use crate::rcore::Rcore;
     pub use crate::rgestures::Rgestures;
     pub use crate::rmodels::Rmodels;
+    pub use crate::rmodels_collisions::RmodelsCollisions;
     pub use crate::rshapes::Rshapes;
+    pub use crate::rshapes_collisions::RshapesCollisions;
     pub use crate::rtext::Rtext;
     pub use crate::rtextures::Rtextures;
 }

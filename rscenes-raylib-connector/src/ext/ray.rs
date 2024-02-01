@@ -1,5 +1,5 @@
 use crate::rcore::RcoreImpl;
-use crate::rmodels::RmodelsImpl;
+use crate::rmodels_collisions::RmodelsCollisionsImpl;
 use raylib_ffi::*;
 
 pub trait RayExt: Sized {
@@ -25,19 +25,19 @@ impl RayExt for Ray {
     }
 
     fn get_collision_sphere(self, center: Vector3, radius: f32) -> RayCollision {
-        RmodelsImpl::__get_raycollision_sphere(self, center, radius)
+        RmodelsCollisionsImpl::__get_raycollision_sphere(self, center, radius)
     }
 
     fn get_collision_box(self, box_: BoundingBox) -> RayCollision {
-        RmodelsImpl::__get_raycollision_box(self, box_)
+        RmodelsCollisionsImpl::__get_raycollision_box(self, box_)
     }
 
     fn get_collision_mesh(self, mesh: Mesh, transform: Matrix) -> RayCollision {
-        RmodelsImpl::__get_raycollision_mesh(self, mesh, transform)
+        RmodelsCollisionsImpl::__get_raycollision_mesh(self, mesh, transform)
     }
 
     fn get_collision_triangle(self, p1: Vector3, p2: Vector3, p3: Vector3) -> RayCollision {
-        RmodelsImpl::__get_raycollision_triangle(self, p1, p2, p3)
+        RmodelsCollisionsImpl::__get_raycollision_triangle(self, p1, p2, p3)
     }
 
     fn get_collision_quad(
@@ -47,6 +47,6 @@ impl RayExt for Ray {
         p3: Vector3,
         p4: Vector3,
     ) -> RayCollision {
-        RmodelsImpl::__get_raycollision_quad(self, p1, p2, p3, p4)
+        RmodelsCollisionsImpl::__get_raycollision_quad(self, p1, p2, p3, p4)
     }
 }

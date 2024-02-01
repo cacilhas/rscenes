@@ -3,8 +3,12 @@
 resolver = "1"
 
 members = [
-  "rscenes", "rscenes-macros",
+  "rscenes",
+  "rscenes-macros",
   "rscenes-raylib-connector",
+  "examples/nonogram",
 ]
 
-exclude = ["examples"]
+exclude = [
+  "examples/balls",
+]
