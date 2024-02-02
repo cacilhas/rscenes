@@ -460,6 +460,18 @@ impl Scene for Gameplay {
             let screen = rl.get_render_size();
             let text = VICTORY[self.vic_index as usize % VICTORY.len()];
             let size = rl.measure_text(text, 240) as f32;
+            let shadow = Color::DARKGREEN.fade(0.8);
+            rl.draw_text_ex(
+                font,
+                text,
+                Vector2 {
+                    x: 8.0 + (screen.x - size) / 2.0,
+                    y: 8.0 + (screen.y - size) / 2.0,
+                },
+                240.0,
+                0.0,
+                shadow,
+            );
             rl.draw_text_ex(
                 font,
                 text,
