@@ -1,6 +1,6 @@
 use rscenes_raylib_connector::interface::*;
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug)]
 pub struct PlainConnector;
 
 impl Rcore for PlainConnector {}
@@ -12,7 +12,7 @@ impl Rtextures for PlainConnector {}
 impl Rtext for PlainConnector {}
 impl Raudio for PlainConnector {}
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug)]
 pub struct Connector2D;
 
 impl Rcore for Connector2D {}
@@ -23,7 +23,7 @@ impl Rtextures for Connector2D {}
 impl Rtext for Connector2D {}
 impl Raudio for Connector2D {}
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug)]
 pub struct Connector3D;
 
 impl Rcore for Connector3D {}

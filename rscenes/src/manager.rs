@@ -39,9 +39,9 @@ impl Rscenes {
         }
 
         let mut reloaded = true;
-        let plain_connector = PlainConnector::default();
-        let connector_3d = Connector3D::default();
-        let connector_2d = Connector2D::default();
+        let plain_connector = PlainConnector;
+        let connector_3d = Connector3D;
+        let connector_2d = Connector2D;
         let mut track_loaded_scenes: Vec<usize> = Vec::with_capacity(self.scenes.len() + 1);
 
         'mainloop: while !plain_connector.window_should_close() {
@@ -135,7 +135,7 @@ impl Rscenes {
     }
 
     fn setup(&mut self) -> Result<(), String> {
-        let connector = PlainConnector::default();
+        let connector = PlainConnector;
 
         connector.set_target_fps(60);
         let (width, height) = match self.window_size {

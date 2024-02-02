@@ -18,8 +18,7 @@ impl RgesturesImpl {
         unsafe {
             let raw = GetGestureDetected() as usize;
             let mut res: Vec<Gesture> = vec![];
-            for &gesture in vec![
-                Gesture::Tap,
+            for &gesture in [Gesture::Tap,
                 Gesture::Doubletap,
                 Gesture::Hold,
                 Gesture::Drag,
@@ -28,8 +27,7 @@ impl RgesturesImpl {
                 Gesture::SwipeUp,
                 Gesture::SwipeDown,
                 Gesture::PinchIn,
-                Gesture::PinchOut,
-            ]
+                Gesture::PinchOut]
             .iter()
             {
                 let code: usize = gesture.into();

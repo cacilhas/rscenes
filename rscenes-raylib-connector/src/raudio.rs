@@ -181,10 +181,7 @@ impl RaudioImpl {
             let count = wave.frameCount * wave.sampleSize / 32;
             let res = array_from_c(raw, count as usize, || {
                 "couldn't load samples from wave".to_owned()
-            })?
-            .iter()
-            .map(|e| *e)
-            .collect::<Vec<_>>();
+            })?.to_vec();
             UnloadWaveSamples(raw);
             Ok(res)
         }

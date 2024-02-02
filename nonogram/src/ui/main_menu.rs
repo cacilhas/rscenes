@@ -10,7 +10,7 @@ const LB_10X10: usize = 1;
 const LB_15X15: usize = 2;
 const LB_EASY: usize = 3;
 const BT_COUNT: usize = 4;
-const BUTTONS: [(usize, &'static str); BT_COUNT] = [
+const BUTTONS: [(usize, &str); BT_COUNT] = [
     (LB_5X5, "5×5"),
     (LB_10X10, "10×10"),
     (LB_15X15, "15×15"),

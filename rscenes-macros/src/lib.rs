@@ -23,8 +23,8 @@ pub fn draw(attr: TokenStream, item: TokenStream) -> TokenStream {
             if let Type::Path(ty) = &*tpe.ty {
                 if let Type::Path(con_tpe) = &attr.get_connection_tpe() {
                     // Naïve type comparison approach
-                    if ty.path.segments.last().unwrap().ident.to_string()
-                        == con_tpe.path.segments.last().unwrap().ident.to_string()
+                    if con_tpe.path.segments.last().unwrap().ident
+                        == ty.path.segments.last().unwrap().ident
                     {
                         if let Pat::Ident(ident) = &*tpe.pat {
                             con_name = Some(ident.ident.to_string());
@@ -35,10 +35,8 @@ pub fn draw(attr: TokenStream, item: TokenStream) -> TokenStream {
         }
     }
     let con_name = Ident::new(
-        &con_name.expect(&format!(
-            "connection not found in fn {}({:?}) arguments",
-            input.sig.ident, args
-        )),
+        &con_name.unwrap_or_else(|| panic!("connection not found in fn {}({:?}) arguments",
+            input.sig.ident, args)),
         Span::call_site().into(),
     );
 
@@ -116,7 +114,10 @@ impl From<String> for DrawType {
             "shapes" => DrawType::Draw2D,
             "models" => DrawType::Draw3D,
             "hud" => DrawType::DrawHUD,
-            value => panic!("unexpected attribute: draw({})", value),
+            value => panic!(
+                "unexpected attribute: draw({}), valid attributes: shapes | models | hud",
+                value
+            ),
         }
     }
 }

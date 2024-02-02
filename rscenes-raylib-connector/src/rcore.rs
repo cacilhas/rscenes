@@ -525,11 +525,7 @@ impl RcoreImpl {
             let raw = LoadRandomSequence(count as u32, min, max);
             let res = array_from_c(raw, count, || {
                 "could not generate random sequence".to_owned()
-            })?
-            // Copy sequence to the stack
-            .iter()
-            .map(|e| *e)
-            .collect::<Vec<_>>();
+            })?.to_vec();
             UnloadRandomSequence(raw);
             Ok(res)
         }
@@ -577,11 +573,7 @@ impl RcoreImpl {
             let raw = LoadFileData(rl_str!(filename), &mut size);
             let res = array_from_c(raw, size as usize, || {
                 format!("couldn't load file data from {}", filename)
-            })?
-            // Copy data to the stack
-            .iter()
-            .map(|e| *e)
-            .collect::<Vec<_>>();
+            })?.to_vec();
             UnloadFileData(raw);
             Ok(res)
         }
@@ -605,7 +597,7 @@ impl RcoreImpl {
     pub fn __load_file_text(filename: impl Display) -> Result<String, String> {
         unsafe {
             let raw = LoadFileText(rl_str!(filename)) as *mut c_char;
-            let res = string_from_c(raw).map(|e| e.clone());
+            let res = string_from_c(raw);
             UnloadFileText(raw);
             res
         }

@@ -100,7 +100,7 @@ impl RtexturesImpl {
     pub fn __load_image_from_memory(tpe: impl Display, data: &[u8]) -> Result<Image, String> {
         unsafe {
             let size = data.len() as i32;
-            let mut data = data.iter().map(|e| *e).collect::<Vec<_>>();
+            let mut data = data.to_vec();
             let data = data.as_mut_ptr();
             let image = LoadImageFromMemory(rl_str!(tpe), data, size);
             if image.data.is_null() {

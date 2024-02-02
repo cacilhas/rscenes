@@ -25,15 +25,13 @@ impl RtextImpl {
             let font = LoadFont(rl_str!(filename));
             if font.baseSize > 0 {
                 Ok(font)
+            } else if Path::new(&format!("{}", filename)).exists() {
+                Err(format!("couldn't load font from {}", filename))
             } else {
-                if Path::new(&format!("{}", filename)).exists() {
-                    Err(format!("couldn't load font from {}", filename))
-                } else {
-                    Err(format!(
-                        "couldn't load font from {}, file not found",
-                        filename
-                    ))
-                }
+                Err(format!(
+                    "couldn't load font from {}, file not found",
+                    filename
+                ))
             }
         }
     }
@@ -48,15 +46,13 @@ impl RtextImpl {
             let font = LoadFontEx(rl_str!(filename), font_size, codepoints.into(), count);
             if font.baseSize > 0 {
                 Ok(font)
+            } else if Path::new(&format!("{}", filename)).exists() {
+                Err(format!("couldn't load font from {}", filename))
             } else {
-                if Path::new(&format!("{}", filename)).exists() {
-                    Err(format!("couldn't load font from {}", filename))
-                } else {
-                    Err(format!(
-                        "couldn't load font from {}, file not found",
-                        filename
-                    ))
-                }
+                Err(format!(
+                    "couldn't load font from {}, file not found",
+                    filename
+                ))
             }
         }
     }
@@ -84,7 +80,7 @@ impl RtextImpl {
     ) -> Result<Font, String> {
         unsafe {
             let data_size = data.len() as i32;
-            let mut data = data.iter().map(|e| *e).collect::<Vec<_>>();
+            let mut data = data.to_vec();
             let data = data.as_mut_ptr() as *mut c_uchar;
             let font = LoadFontFromMemory(
                 rl_str!(tpe),
