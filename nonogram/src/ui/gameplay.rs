@@ -9,6 +9,8 @@ use rscenes::{
 };
 
 const VICTORY: [&str; 6] = ["W", "w", "v", ".", "v", "w"];
+const THICK_LINE: f32 = 2.0;
+const BOLD_LINE: f32 = 4.0;
 
 #[derive(Debug)]
 pub struct Gameplay {
@@ -158,7 +160,7 @@ impl Gameplay {
                     x: self.board_rect.x + (i as f32 * self.cell_size.x),
                     y: self.board_rect.y + (self.size.y * self.cell_size.y),
                 },
-                if i % 5 == 0 { 4.0 } else { 2.0 },
+                if i % 5 == 0 { BOLD_LINE } else { THICK_LINE },
                 if i % 5 == 0 {
                     Color::BLACK
                 } else {
@@ -175,7 +177,7 @@ impl Gameplay {
                 x: self.board_rect.x + (self.size.x * self.cell_size.x),
                 y: self.board_rect.y + (self.size.y * self.cell_size.y),
             },
-            4.0,
+            BOLD_LINE,
             Color::BLACK,
         );
     }
@@ -217,7 +219,7 @@ impl Gameplay {
                     x: self.board_rect.x + (self.size.y * self.cell_size.x),
                     y: self.board_rect.y + (i as f32 * self.cell_size.y),
                 },
-                if i % 5 == 0 { 4.0 } else { 2.0 },
+                if i % 5 == 0 { BOLD_LINE } else { THICK_LINE },
                 if i % 5 == 0 {
                     Color::BLACK
                 } else {
@@ -234,7 +236,7 @@ impl Gameplay {
                 x: self.board_rect.x + (self.size.x * self.cell_size.x),
                 y: self.board_rect.y + (self.size.y * self.cell_size.y),
             },
-            4.0,
+            BOLD_LINE,
             Color::BLACK,
         );
     }
