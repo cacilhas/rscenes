@@ -121,3 +121,9 @@ impl Drop for Foe {
         }
     }
 }
+
+impl From<&Foe> for Vector2 {
+    fn from(foe: &Foe) -> Self {
+        Self { x: foe.x, y: foe.y }
+    }
+}

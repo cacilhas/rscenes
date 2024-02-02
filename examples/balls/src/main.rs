@@ -36,27 +36,28 @@ impl Scene for BallsScene {
         Ok(())
     }
 
-    fn on_load(&mut self, connector: PlainConnector) -> Result<(), String> {
-        let width = connector.get_render_width();
-        let height = connector.get_render_height();
-        self.player.x = (width - self.player.ball.width) as f32 / 2.0;
-        self.player.y = (height - self.player.ball.height) as f32 / 2.0;
+    fn on_load(&mut self, rl: PlainConnector) -> Result<(), String> {
+        let screen = rl.get_render_size();
+        self.player.x = (screen.x - self.player.ball.width as f32) / 2.0;
+        self.player.y = (screen.y - self.player.ball.height as f32) / 2.0;
         for foe in self.foes.iter_mut() {
-            foe.setup(connector)?;
+            foe.setup(rl)?;
         }
         Ok(())
     }
 
-    fn on_update(&mut self, connector: PlainConnector, dt: f32) -> Result<State, String> {
+    fn on_update(&mut self, rl: PlainConnector, dt: f32) -> Result<State, String> {
         if !self.game_over {
-            self.player.update(connector, dt)?;
+            self.player.update(rl, dt)?;
         }
         for foe in self.foes.iter_mut() {
-            foe.update(connector, dt);
-            let dx = (foe.x - self.player.x).powf(2.0);
-            let dy = (foe.y - self.player.y).powf(2.0);
-            let min = (foe.radius + self.player.radius).powf(2.0);
-            if dx + dy < min {
+            foe.update(rl, dt);
+            if rl.check_collision_circles(
+                (&self.player).into(),
+                self.player.radius,
+                (foe as &Foe).into(),
+                foe.radius,
+            ) {
                 self.game_over = true;
                 self.player.x = -2.0 * self.player.radius;
                 if let Some(collision) = self.collision_sound {
@@ -70,22 +71,25 @@ impl Scene for BallsScene {
     }
 
     #[draw(shapes)]
-    fn draw(&self, connector: Connector2D) {
-        let width = connector.get_render_width();
-        let height = connector.get_render_height();
-
-        connector.clear_background(Color::CYAN);
-        connector.draw_rectangle(0, 0, width / 2, height, Color::GREEN);
-        let width = connector.get_render_width();
-        if self.game_over || self.player.x < (width - self.player.ball.width) as f32 / 2.0 {
-            connector.draw_fps(5, 5);
+    fn draw(&self, rl: Connector2D) {
+        let screen = rl.get_render_size();
+        rl.clear_background(Color::CYAN);
+        let green_rec = Rectangle {
+            x: 0.0,
+            y: 0.0,
+            width: screen.x / 2.0,
+            height: screen.y,
+        };
+        rl.draw_rectangle_rec(green_rec, Color::GREEN);
+        if self.game_over || self.player.x < (screen.x - self.player.ball.width as f32) / 2.0 {
+            rl.draw_fps(5, 5);
         }
         if !self.game_over {
-            self.player.draw(connector)?;
+            self.player.draw(rl)?;
         }
 
         for foe in self.foes.iter() {
-            foe.draw(connector)?;
+            foe.draw(rl)?;
         }
     }
 }

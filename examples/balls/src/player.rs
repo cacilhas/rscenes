@@ -85,3 +85,12 @@ impl Drop for Player {
         self.ball.unload();
     }
 }
+
+impl From<&Player> for Vector2 {
+    fn from(player: &Player) -> Self {
+        Self {
+            x: player.x,
+            y: player.y,
+        }
+    }
+}
