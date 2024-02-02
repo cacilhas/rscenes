@@ -14,7 +14,7 @@ pub fn draw(attr: TokenStream, item: TokenStream) -> TokenStream {
     let attr: DrawType = match attr.into_iter().next() {
         Some(TokenTree::Ident(attr)) => attr.to_string().into(),
         Some(attr) => panic!("unexpected attribute {:?}", attr),
-        None => panic!("draw macro expects one attribute: 2d or 3d"),
+        None => panic!("draw macro expects one attribute: shades | models | hud"),
     };
 
     for arg in &input.sig.inputs {
