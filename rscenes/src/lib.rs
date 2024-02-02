@@ -5,6 +5,8 @@ mod manager;
 mod scene;
 mod state;
 
+pub mod extras;
+
 pub mod prelude {
     pub use super::setup;
     pub use crate::connectors::*;

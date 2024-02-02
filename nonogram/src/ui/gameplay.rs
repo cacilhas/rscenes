@@ -3,7 +3,7 @@ use crate::{
     audio::{Sfx, SfxManager, SfxType},
     game::{Board, Cell},
 };
-use rscenes::prelude::*;
+use rscenes::{extras::FakeFullscreen, prelude::*};
 
 const VICTORY: [&str; 6] = ["W", "w", "v", ".", "v", "w"];
 
@@ -260,6 +260,12 @@ impl Gameplay {
     }
 }
 
+impl FakeFullscreen for Gameplay {
+    fn get_geometry_mut(&mut self) -> &mut Vector2 {
+        &mut self.geom
+    }
+}
+
 impl Scene for Gameplay {
     fn on_load(&mut self, _: PlainConnector) -> Result<(), String> {
         self.sfx = SfxManager::get_instance();
@@ -270,9 +276,7 @@ impl Scene for Gameplay {
     }
 
     fn on_update(&mut self, rl: PlainConnector, dt: f32) -> Result<State, String> {
-        if !rl.is_window_state(ConfigFlags::BorderlessWindowedMode.into()) {
-            self.geom = rl.get_render_size();
-        }
+        self.update_geometry(rl);
 
         if KeyboardKey::F2.is_released() {
             self.mute = !self.mute;
@@ -285,15 +289,7 @@ impl Scene for Gameplay {
         }
 
         if KeyboardKey::F.is_released() {
-            if rl.is_window_state(ConfigFlags::BorderlessWindowedMode.into()) {
-                rl.set_window_size(self.geom.x as i32, self.geom.y as i32);
-                rl.clear_window_state(ConfigFlags::WindowTopmost.into());
-            } else {
-                let screen = rl.get_screen_size();
-                rl.set_window_size(screen.x as i32, screen.y as i32);
-                rl.set_window_state(ConfigFlags::WindowTopmost.into());
-            }
-            rl.toggle_borderless_windowed();
+            self.toggle_fake_fullscreen(rl);
             // rl.toggle_fullscreen();
         }
 

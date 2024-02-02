@@ -1,6 +1,5 @@
-use rscenes::prelude::*;
-
 use crate::{game::board::BoardStruct, Gameplay};
+use rscenes::{extras::FakeFullscreen, prelude::*};
 
 const LB_5X5: usize = 0;
 const LB_10X10: usize = 1;
@@ -29,16 +28,15 @@ pub struct MainMenu {
     geom: Vector2,
 }
 
-impl Scene for MainMenu {
-    fn on_setup(&mut self, rl: PlainConnector) -> Result<(), String> {
-        self.geom = rl.get_render_size();
-        Ok(())
+impl FakeFullscreen for MainMenu {
+    fn get_geometry_mut(&mut self) -> &mut Vector2 {
+        &mut self.geom
     }
+}
 
+impl Scene for MainMenu {
     fn on_update(&mut self, rl: PlainConnector, _: f32) -> Result<State, String> {
-        if !rl.is_window_state(ConfigFlags::BorderlessWindowedMode.into()) {
-            self.geom = rl.get_render_size();
-        }
+        self.update_geometry(rl);
 
         let font = rl.get_default_font();
         let screen_width = rl.get_render_width() as f32;
@@ -87,15 +85,7 @@ impl Scene for MainMenu {
         }
 
         if KeyboardKey::F.is_released() {
-            if rl.is_window_state(ConfigFlags::BorderlessWindowedMode.into()) {
-                rl.set_window_size(self.geom.x as i32, self.geom.y as i32);
-                rl.clear_window_state(ConfigFlags::WindowTopmost.into());
-            } else {
-                let screen = rl.get_screen_size();
-                rl.set_window_size(screen.x as i32, screen.y as i32);
-                rl.set_window_state(ConfigFlags::WindowTopmost.into());
-            }
-            rl.toggle_borderless_windowed();
+            self.toggle_fake_fullscreen(rl);
             // rl.toggle_fullscreen();
         }
 
