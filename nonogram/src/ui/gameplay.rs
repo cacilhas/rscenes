@@ -401,7 +401,7 @@ impl Scene for Gameplay {
     #[draw(shapes)]
     fn draw(&self, rl: Connector2D) {
         rl.clear_background(Color::WHEAT);
-        if !rl.is_window_focused() {
+        if !(self.board.is_done() || rl.is_window_focused()) {
             return Ok(());
         }
         let font = rl.get_default_font();
@@ -455,21 +455,15 @@ impl Scene for Gameplay {
         self.draw_lines(rl, font, mouse);
 
         if self.board.is_done() {
-            let size = rl.measure_text("V", 240) as f32;
-            let rect = Rectangle {
-                x: self.vhints_rect.x,
-                y: 0.0,
-                width: size,
-                height: 240.0,
-            };
+            let screen = rl.get_render_size();
             let text = VICTORY[self.vic_index as usize % VICTORY.len()];
             let size = rl.measure_text(text, 240) as f32;
             rl.draw_text_ex(
                 font,
                 text,
                 Vector2 {
-                    x: rect.x + (rect.width - size) / 2.0,
-                    y: rect.y,
+                    x: (screen.x - size) / 2.0,
+                    y: (screen.y - size) / 2.0,
                 },
                 240.0,
                 0.0,
