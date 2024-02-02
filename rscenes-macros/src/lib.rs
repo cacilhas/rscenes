@@ -58,6 +58,7 @@ pub fn draw(attr: TokenStream, item: TokenStream) -> TokenStream {
                 res
             }
         },
+
         DrawType::Draw3D => quote! {
 
             fn draw_3d(#(#args),*) -> Result<(), String> {
@@ -73,6 +74,22 @@ pub fn draw(attr: TokenStream, item: TokenStream) -> TokenStream {
                 res
             }
         },
+
+        DrawType::DrawHUD => quote! {
+
+            fn draw_hud(#(#args),*) -> Result<(), String> {
+                let camera = self.get_camera_2d();
+                #con_name.begin_mode_2d(camera);
+
+                let res = || -> Result<(), String> {
+                    #(#original)*
+                    Ok(())
+                }();
+
+                #con_name.end_mode_2d();
+                res
+            }
+        },
     };
 
     output.into()
@@ -81,13 +98,14 @@ pub fn draw(attr: TokenStream, item: TokenStream) -> TokenStream {
 enum DrawType {
     Draw2D,
     Draw3D,
+    DrawHUD,
 }
 
 impl DrawType {
     fn get_connection_tpe(&self) -> Type {
         match self {
-            DrawType::Draw2D => parse_quote!(rscene::prelude::Connector2D),
             DrawType::Draw3D => parse_quote!(rscene::prelude::Connector3D),
+            _ => parse_quote!(rscene::prelude::Connector2D),
         }
     }
 }
@@ -97,6 +115,7 @@ impl From<String> for DrawType {
         match value.as_str() {
             "shapes" => DrawType::Draw2D,
             "models" => DrawType::Draw3D,
+            "hud" => DrawType::DrawHUD,
             value => panic!("unexpected attribute: draw({})", value),
         }
     }

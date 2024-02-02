@@ -77,13 +77,17 @@ impl Rscenes {
             plain_connector.begin_drawing();
             match scene.on_update(plain_connector, plain_connector.get_frame_time()) {
                 Ok(State::Keep) => {
+                    if let Err(err) = scene.draw_2d(connector_2d) {
+                        TraceLogLevel::Error
+                            .log(format!("drawing shapes (2D): {:?} {:?}", scene, err));
+                    }
                     if let Err(err) = scene.draw_3d(connector_3d) {
                         TraceLogLevel::Error
                             .log(format!("drawing models (3D): {:?} {:?}", scene, err));
                     }
-                    if let Err(err) = scene.draw_2d(connector_2d) {
+                    if let Err(err) = scene.draw_hud(connector_2d) {
                         TraceLogLevel::Error
-                            .log(format!("drawing shapes (2D): {:?} {:?}", scene, err));
+                            .log(format!("drawing HUD (2D): {:?} {:?}", scene, err));
                     }
                 }
 

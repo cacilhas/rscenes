@@ -37,15 +37,21 @@ pub trait Scene: Debug + 'static {
         Ok(())
     }
 
-    /// Implement #[draw(2d)] to render 2D objects
+    /// Implement #[draw(shades)] to render 2D objects
     #[allow(unused)]
     fn draw_2d(&self, connector: Connector2D) -> Result<(), String> {
         Ok(())
     }
 
-    /// Implement #[draw(3d)] to render 3D objects
+    /// Implement #[draw(models)] to render 3D objects
     #[allow(unused)]
     fn draw_3d(&self, connector: Connector3D) -> Result<(), String> {
+        Ok(())
+    }
+
+    /// Implement #[draw(hud)] to render 2D objects on a head-up display
+    #[allow(unused)]
+    fn draw_hud(&self, connector: Connector2D) -> Result<(), String> {
         Ok(())
     }
 
