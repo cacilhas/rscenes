@@ -1,2 +1,2 @@
-- Fix SIGSEGV on exit
+- Fix font load
 - Test 3D models
