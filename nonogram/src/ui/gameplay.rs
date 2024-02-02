@@ -458,7 +458,7 @@ impl Scene for Gameplay {
             let size = rl.measure_text("V", 240) as f32;
             let rect = Rectangle {
                 x: self.vhints_rect.x,
-                y: screen.y,
+                y: 0.0,
                 width: size,
                 height: 240.0,
             };
