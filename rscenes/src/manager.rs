@@ -113,6 +113,7 @@ impl Rscenes {
                         TraceLogLevel::Error.log(format!("exiting {:?} scene: {:?}", scene, err));
                     }
                     plain_connector.close_window();
+                    break;
                 }
 
                 Err(err) => {
