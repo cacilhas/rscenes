@@ -1694,19 +1694,28 @@ pub trait Rcore: Debug {
 
     /// Swap back buffer with front buffer (screen drawing)
     fn swap_screen_buffer(&self) {
-        dbg!("avoid rcore.swap_screen_buffer(), use rcore.end_drawing() instead");
+        RcoreImpl::__trace_log(
+            TraceLogLevel::Warning,
+            "avoid rcore.swap_screen_buffer(), use rcore.end_drawing() instead",
+        );
         RcoreImpl::__swap_screen_buffer()
     }
 
     /// Register all input events
     fn poll_input_events(&self) {
-        dbg!("avoid rcore.poll_input_events(), use rcore.end_drawing() instead");
+        RcoreImpl::__trace_log(
+            TraceLogLevel::Warning,
+            "avoid rcore.poll_input_events(), use rcore.end_drawing() instead",
+        );
         RcoreImpl::__poll_input_events()
     }
 
     /// Wait for some time (halt program execution)
     fn wait_time(&self, seconds: f64) {
-        dbg!("halting execution", seconds);
+        RcoreImpl::__trace_log(
+            TraceLogLevel::Info,
+            format!("halting execution for {} seconds", seconds),
+        );
         RcoreImpl::__wait_time(seconds)
     }
 

@@ -3,7 +3,10 @@ use crate::{
     audio::{Sfx, SfxManager, SfxType},
     game::{Board, Cell},
 };
-use rscenes::{extras::FakeFullscreen, prelude::*};
+use rscenes::{
+    extras::{FakeFullscreen, XDGStore},
+    prelude::*,
+};
 
 const VICTORY: [&str; 6] = ["W", "w", "v", ".", "v", "w"];
 
@@ -515,5 +518,14 @@ fn monospace(
             0.0,
             tint,
         );
+    }
+}
+
+impl Drop for Gameplay {
+    fn drop(&mut self) {
+        let geom = (self.geom.x as i32, self.geom.y as i32);
+        if let Err(err) = XDGStore::save("nonogram", "window", geom) {
+            TraceLogLevel::Error.log(format!("error saving geometry: {:?}", err));
+        }
     }
 }

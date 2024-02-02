@@ -33,7 +33,7 @@ impl Rscenes {
             TraceLogLevel::Fatal.log("no initial scene supplied");
         }
         if let Err(err) = self.setup() {
-            TraceLogLevel::Fatal.log(format!("loading setup: {}", err));
+            TraceLogLevel::Fatal.log(format!("loading setup: {:?}", err));
         }
 
         let mut reloaded = true;
@@ -55,7 +55,8 @@ impl Rscenes {
                 if first_load {
                     track_loaded_scenes.push(scene_id);
                     if let Err(err) = scene.on_setup(plain_connector) {
-                        TraceLogLevel::Fatal.log(format!("setting {:?} scene up: {}", scene, err));
+                        TraceLogLevel::Fatal
+                            .log(format!("setting {:?} scene up: {:?}", scene, err));
                     }
                 }
 
@@ -65,7 +66,7 @@ impl Rscenes {
                     } else {
                         TraceLogLevel::Error
                     }
-                    .log(format!("reloading {:?} scene: {}", scene, err));
+                    .log(format!("reloading {:?} scene: {:?}", scene, err));
                 }
 
                 reloaded = false;
@@ -76,18 +77,19 @@ impl Rscenes {
                 Ok(State::Keep) => {
                     if let Err(err) = scene.draw_3d(connector_3d) {
                         TraceLogLevel::Error
-                            .log(format!("drawing models (3D): {:?} {}", scene, err));
+                            .log(format!("drawing models (3D): {:?} {:?}", scene, err));
                     }
                     if let Err(err) = scene.draw_2d(connector_2d) {
                         TraceLogLevel::Error
-                            .log(format!("drawing shapes (2D): {:?} {}", scene, err));
+                            .log(format!("drawing shapes (2D): {:?} {:?}", scene, err));
                     }
                 }
 
                 Ok(State::Next(next_scene)) => {
                     {
                         if let Err(err) = scene.on_exit(plain_connector) {
-                            TraceLogLevel::Error.log(format!("exiting {:?} scene: {}", scene, err));
+                            TraceLogLevel::Error
+                                .log(format!("exiting {:?} scene: {:?}", scene, err));
                         }
                     }
                     self.scenes.push(next_scene);
@@ -99,7 +101,7 @@ impl Rscenes {
                         if let Some(mut scene) = self.scenes.pop() {
                             if let Err(err) = scene.on_exit(plain_connector) {
                                 TraceLogLevel::Error
-                                    .log(format!("exiting {:?} scene: {}", scene, err));
+                                    .log(format!("exiting {:?} scene: {:?}", scene, err));
                             }
                         }
                     }
@@ -107,6 +109,9 @@ impl Rscenes {
                 }
 
                 Ok(State::Quit) => {
+                    if let Err(err) = scene.on_exit(plain_connector) {
+                        TraceLogLevel::Error.log(format!("exiting {:?} scene: {:?}", scene, err));
+                    }
                     plain_connector.close_window();
                 }
 

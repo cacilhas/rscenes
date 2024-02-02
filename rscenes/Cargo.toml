@@ -15,8 +15,20 @@ edition       = "2021"
 [dependencies]
 resolution = "0.1"
 
+[dependencies.serde]
+version = "1.0"
+optional = true
+
+[dependencies.serde_json]
+version = "1.0"
+optional = true
+
 [dependencies.rscenes-macros]
 path = "../rscenes-macros"
 
 [dependencies.rscenes-raylib-connector]
 path = "../rscenes-raylib-connector"
+
+[features]
+fake-fs = []
+storage = ["dep:serde", "dep:serde_json"]

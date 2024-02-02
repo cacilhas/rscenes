@@ -1,5 +1,9 @@
-use crate::{game::board::BoardStruct, Gameplay};
-use rscenes::{extras::FakeFullscreen, prelude::*};
+use super::gameplay::Gameplay;
+use crate::{game::board::BoardStruct, persist::Persist};
+use rscenes::{
+    extras::{FakeFullscreen, XDGStore},
+    prelude::*,
+};
 
 const LB_5X5: usize = 0;
 const LB_10X10: usize = 1;
@@ -25,7 +29,8 @@ pub struct MainMenu {
     buttons: [Rectangle; 4],
     hover: [bool; 4],
     easy: bool,
-    geom: Vector2,
+    pub geom: Vector2,
+    pub fs: bool,
 }
 
 impl FakeFullscreen for MainMenu {
@@ -35,6 +40,13 @@ impl FakeFullscreen for MainMenu {
 }
 
 impl Scene for MainMenu {
+    fn on_setup(&mut self, rl: PlainConnector) -> Result<(), String> {
+        if self.fs {
+            self.toggle_fake_fullscreen(rl);
+        }
+        Ok(())
+    }
+
     fn on_update(&mut self, rl: PlainConnector, _: f32) -> Result<State, String> {
         self.update_geometry(rl);
 
@@ -94,6 +106,18 @@ impl Scene for MainMenu {
         } else {
             Ok(State::Keep)
         }
+    }
+
+    fn on_exit(&mut self, rl: PlainConnector) -> Result<(), String> {
+        let geom: Persist = (
+            (self.geom.x as i32).max(800),
+            (self.geom.y as i32).max(600),
+            self.is_fullscreen_faked(rl),
+        );
+        if let Err(err) = XDGStore::save("nonogram", "window", geom) {
+            TraceLogLevel::Error.log(format!("error saving geometry: {:?}", err));
+        }
+        Ok(())
     }
 
     #[draw(shapes)]
@@ -158,6 +182,7 @@ impl Default for MainMenu {
                 .unwrap(),
             easy: false,
             geom: Vector2::ZERO,
+            fs: false,
         }
     }
 }

@@ -24,6 +24,7 @@ fastrand = "2.0"
 
 [dependencies.rscenes]
 path = "../rscenes"
+features = ["fake-fs", "storage"]
 
 [[bin]]
 name = "nonogram"
