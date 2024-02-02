@@ -103,11 +103,15 @@ impl Gameplay {
     }
 
     fn draw_lines(&self, rl: Connector2D, font: Font, mouse: Vector2) {
+        let factor = match self.board.size() {
+            (_, 5) => 0.5,
+            _ => 0.625,
+        };
         let font_size = if self.cell_size.x < self.cell_size.y {
             self.cell_size.x
         } else {
             self.cell_size.y
-        } * 0.75
+        } * factor
             - 2.0;
 
         self.draw_vertical_lines(
@@ -154,7 +158,7 @@ impl Gameplay {
                     x: self.board_rect.x + (i as f32 * self.cell_size.x),
                     y: self.board_rect.y + (self.size.y * self.cell_size.y),
                 },
-                2.0,
+                if i % 5 == 0 { 4.0 } else { 2.0 },
                 if i % 5 == 0 {
                     Color::BLACK
                 } else {
@@ -171,7 +175,7 @@ impl Gameplay {
                 x: self.board_rect.x + (self.size.x * self.cell_size.x),
                 y: self.board_rect.y + (self.size.y * self.cell_size.y),
             },
-            2.0,
+            4.0,
             Color::BLACK,
         );
     }
@@ -213,7 +217,7 @@ impl Gameplay {
                     x: self.board_rect.x + (self.size.y * self.cell_size.x),
                     y: self.board_rect.y + (i as f32 * self.cell_size.y),
                 },
-                2.0,
+                if i % 5 == 0 { 4.0 } else { 2.0 },
                 if i % 5 == 0 {
                     Color::BLACK
                 } else {
@@ -230,7 +234,7 @@ impl Gameplay {
                 x: self.board_rect.x + (self.size.x * self.cell_size.x),
                 y: self.board_rect.y + (self.size.y * self.cell_size.y),
             },
-            2.0,
+            4.0,
             Color::BLACK,
         );
     }
@@ -299,25 +303,25 @@ impl Scene for Gameplay {
         let screen = rl.get_render_size();
         self.board_rect = Rectangle {
             x: 0.0,
-            y: screen.y / 3.0,
-            width: screen.x / 1.5,
-            height: screen.y / 1.5,
+            y: screen.y * 0.25,
+            width: screen.x * 0.75,
+            height: screen.y * 0.75,
         };
         self.cell_size = Vector2 {
             x: self.board_rect.width / self.size.x,
             y: self.board_rect.height / self.size.y,
         };
         self.hhints_rect = Rectangle {
-            x: self.cell_size.x / 2.0,
+            x: self.cell_size.x * 0.5,
             y: 0.0,
-            width: screen.x / 1.5,
-            height: screen.y / 3.0,
+            width: screen.x * 0.75,
+            height: screen.y * 0.25,
         };
         self.vhints_rect = Rectangle {
-            x: self.board_rect.x + self.board_rect.width + self.cell_size.x / 2.0,
+            x: self.board_rect.x + self.board_rect.width + self.cell_size.x * 0.5,
             y: self.board_rect.y,
-            width: screen.x / 3.0,
-            height: screen.y / 3.0,
+            width: screen.x * 0.25,
+            height: screen.y * 0.25,
         };
 
         let left_click = rl.is_mouse_button_released(MouseButton::Left);
