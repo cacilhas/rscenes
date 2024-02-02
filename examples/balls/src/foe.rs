@@ -124,6 +124,9 @@ impl Drop for Foe {
 
 impl From<&Foe> for Vector2 {
     fn from(foe: &Foe) -> Self {
-        Self { x: foe.x, y: foe.y }
+        Self {
+            x: foe.x + foe.radius,
+            y: foe.y + foe.radius,
+        }
     }
 }

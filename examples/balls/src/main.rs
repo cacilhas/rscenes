@@ -37,9 +37,9 @@ impl Scene for BallsScene {
     }
 
     fn on_load(&mut self, rl: PlainConnector) -> Result<(), String> {
-        let screen = rl.get_render_size();
-        self.player.x = (screen.x - self.player.ball.width as f32) / 2.0;
-        self.player.y = (screen.y - self.player.ball.height as f32) / 2.0;
+        let screen = rl.get_render_rec();
+        self.player.x = (screen.width - self.player.ball.width as f32) / 2.0;
+        self.player.y = (screen.height - self.player.ball.height as f32) / 2.0;
         for foe in self.foes.iter_mut() {
             foe.setup(rl)?;
         }
@@ -72,16 +72,18 @@ impl Scene for BallsScene {
 
     #[draw(shapes)]
     fn draw(&self, rl: Connector2D) {
-        let screen = rl.get_render_size();
+        let screen = rl.get_render_rec();
         rl.clear_background(Color::CYAN);
         let green_rec = Rectangle {
             x: 0.0,
             y: 0.0,
-            width: screen.x / 2.0,
-            height: screen.y,
+            width: screen.width / 2.0,
+            height: screen.height,
         };
         rl.draw_rectangle_rec(green_rec, Color::GREEN);
-        if self.game_over || self.player.x < (screen.x - self.player.ball.width as f32) / 2.0 {
+        if self.game_over
+            || rl.check_collision_circle_rec((&self.player).into(), self.player.radius, green_rec)
+        {
             rl.draw_fps(5, 5);
         }
         if !self.game_over {

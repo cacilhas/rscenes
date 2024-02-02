@@ -1245,11 +1245,13 @@ pub trait Rcore: Debug {
         RcoreImpl::__get_screen_height()
     }
 
-    /// Get current screen dimensions as a 2D vector
-    fn get_screen_size(&self) -> Vector2 {
-        Vector2 {
-            x: RcoreImpl::__get_screen_width() as f32,
-            y: RcoreImpl::__get_screen_height() as f32,
+    /// Get current screen geometry as Rectangle
+    fn get_screen_rec(&self) -> Rectangle {
+        Rectangle {
+            x: 0.0,
+            y: 0.0,
+            width: RcoreImpl::__get_screen_width() as f32,
+            height: RcoreImpl::__get_screen_height() as f32,
         }
     }
 
@@ -1263,11 +1265,14 @@ pub trait Rcore: Debug {
         RcoreImpl::__get_render_height()
     }
 
-    /// Get current render dimensions as a 2D vector
-    fn get_render_size(&self) -> Vector2 {
-        Vector2 {
-            x: RcoreImpl::__get_render_width() as f32,
-            y: RcoreImpl::__get_render_height() as f32,
+    /// Get current render dimensions as Rectangle
+    fn get_render_rec(&self) -> Rectangle {
+        let pos = RcoreImpl::__get_window_position();
+        Rectangle {
+            x: pos.x,
+            y: pos.y,
+            width: RcoreImpl::__get_render_width() as f32,
+            height: RcoreImpl::__get_render_height() as f32,
         }
     }
 
@@ -1296,11 +1301,14 @@ pub trait Rcore: Debug {
         RcoreImpl::__get_monitor_height(monitor)
     }
 
-    /// Get specified monitor dimensions as a 2D vector
-    fn get_monitor_size(&self, monitor: i32) -> Vector2 {
-        Vector2 {
-            x: RcoreImpl::__get_monitor_width(monitor) as f32,
-            y: RcoreImpl::__get_monitor_height(monitor) as f32,
+    /// Get specified monitor geometry as Rectangle
+    fn get_monitor_rec(&self, monitor: i32) -> Rectangle {
+        let pos = RcoreImpl::__get_monitor_position(monitor);
+        Rectangle {
+            x: pos.x,
+            y: pos.y,
+            width: RcoreImpl::__get_monitor_width(monitor) as f32,
+            height: RcoreImpl::__get_monitor_height(monitor) as f32,
         }
     }
 

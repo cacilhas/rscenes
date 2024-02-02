@@ -89,8 +89,8 @@ impl Drop for Player {
 impl From<&Player> for Vector2 {
     fn from(player: &Player) -> Self {
         Self {
-            x: player.x,
-            y: player.y,
+            x: player.x + player.radius,
+            y: player.y + player.radius,
         }
     }
 }

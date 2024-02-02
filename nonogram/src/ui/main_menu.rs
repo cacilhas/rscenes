@@ -30,7 +30,6 @@ pub struct MainMenu {
     hover: [bool; 4],
     easy: bool,
     pub geom: Vector2,
-    pub fs: bool,
 }
 
 impl FakeFullscreen for MainMenu {
@@ -40,13 +39,6 @@ impl FakeFullscreen for MainMenu {
 }
 
 impl Scene for MainMenu {
-    fn on_setup(&mut self, rl: PlainConnector) -> Result<(), String> {
-        if self.fs {
-            self.toggle_fake_fullscreen(rl);
-        }
-        Ok(())
-    }
-
     fn on_update(&mut self, rl: PlainConnector, _: f32) -> Result<State, String> {
         self.update_geometry(rl);
 
@@ -182,7 +174,6 @@ impl Default for MainMenu {
                 .unwrap(),
             easy: false,
             geom: Vector2::ZERO,
-            fs: false,
         }
     }
 }

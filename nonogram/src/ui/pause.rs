@@ -38,13 +38,13 @@ impl Scene for Pause {
     #[draw(shapes)]
     fn draw(&self, rl: Connector2D) {
         let font = rl.get_default_font();
-        let screen = rl.get_render_size();
+        let screen = rl.get_render_rec();
         rl.clear_background(Color::WHEAT);
 
         let text = "Nonogram";
         let size = rl.measure_text_ex(font, text, 84.0, 2.0);
         let position = Vector2 {
-            x: (screen.x - size.x) / 2.0,
+            x: (screen.width - size.x) / 2.0,
             y: 0.0,
         };
         rl.draw_text_ex(font, text, position, 84.0, 2.0, Color::DARKCYAN);
@@ -53,7 +53,7 @@ impl Scene for Pause {
         let text = "PAUSED";
         let size = rl.measure_text_ex(font, text, 84.0, 2.0);
         let position = Vector2 {
-            x: (screen.x - size.x) / 2.0,
+            x: (screen.width - size.x) / 2.0,
             y: bottom,
         };
         rl.draw_text_ex(font, text, position, 84.0, 2.0, Color::BROWN);
@@ -62,7 +62,7 @@ impl Scene for Pause {
         let text = "F3 or Pause resume game";
         let size = rl.measure_text_ex(font, text, 32.0, 2.0);
         let position = Vector2 {
-            x: (screen.x - size.x) / 2.0,
+            x: (screen.width - size.x) / 2.0,
             y: bottom,
         };
         rl.draw_text_ex(font, text, position, 32.0, 2.0, Color::BLACK);
@@ -71,7 +71,7 @@ impl Scene for Pause {
         let text = "Escape to abort";
         let size = rl.measure_text_ex(font, text, 32.0, 2.0);
         let position = Vector2 {
-            x: (screen.x - size.x) / 2.0,
+            x: (screen.width - size.x) / 2.0,
             y: bottom,
         };
         rl.draw_text_ex(font, text, position, 32.0, 2.0, Color::BLACK);

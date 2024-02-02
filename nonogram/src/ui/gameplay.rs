@@ -241,9 +241,9 @@ impl Gameplay {
         );
     }
 
-    fn draw_info(&self, rl: Connector2D, screen: Vector2, font: Font) {
+    fn draw_info(&self, rl: Connector2D, screen: Rectangle, font: Font) {
         let size = rl.measure_text_ex(font, "F toggle fullscreen", 12.0, 1.0);
-        let x = screen.x - size.x - 4.0;
+        let x = screen.width - size.x - 4.0;
         let mut y = 28.0;
         rl.draw_text_ex(
             font,
@@ -302,12 +302,12 @@ impl Scene for Gameplay {
             // rl.toggle_fullscreen();
         }
 
-        let screen = rl.get_render_size();
+        let screen = rl.get_render_rec();
         self.board_rect = Rectangle {
             x: 0.0,
-            y: screen.y * 0.25,
-            width: screen.x * 0.75,
-            height: screen.y * 0.75,
+            y: screen.height * 0.25,
+            width: screen.width * 0.75,
+            height: screen.height * 0.75,
         };
         self.cell_size = Vector2 {
             x: self.board_rect.width / self.size.x,
@@ -316,14 +316,14 @@ impl Scene for Gameplay {
         self.hhints_rect = Rectangle {
             x: self.cell_size.x * 0.5,
             y: 0.0,
-            width: screen.x * 0.75,
-            height: screen.y * 0.25,
+            width: screen.width * 0.75,
+            height: screen.height * 0.25,
         };
         self.vhints_rect = Rectangle {
             x: self.board_rect.x + self.board_rect.width + self.cell_size.x * 0.5,
             y: self.board_rect.y,
-            width: screen.x * 0.25,
-            height: screen.y * 0.25,
+            width: screen.width * 0.25,
+            height: screen.height * 0.25,
         };
 
         let left_click = rl.is_mouse_button_released(MouseButton::Left);
@@ -407,7 +407,6 @@ impl Scene for Gameplay {
             return Ok(());
         }
         let font = rl.get_default_font();
-        let screen = rl.get_render_size();
         let mouse = rl.get_mouse_position();
 
         for y in 0..(self.size.y as usize) {
@@ -456,8 +455,8 @@ impl Scene for Gameplay {
 
         self.draw_lines(rl, font, mouse);
 
+        let screen = rl.get_render_rec();
         if self.board.is_done() {
-            let screen = rl.get_render_size();
             let text = VICTORY[self.vic_index as usize % VICTORY.len()];
             let size = rl.measure_text(text, 240) as f32;
             let shadow = Color::DARKGREEN.fade(0.8);
@@ -465,8 +464,8 @@ impl Scene for Gameplay {
                 font,
                 text,
                 Vector2 {
-                    x: 8.0 + (screen.x - size) / 2.0,
-                    y: 8.0 + (screen.y - size) / 2.0,
+                    x: 8.0 + (screen.width - size) / 2.0,
+                    y: 8.0 + (screen.height - size) / 2.0,
                 },
                 240.0,
                 0.0,
@@ -476,8 +475,8 @@ impl Scene for Gameplay {
                 font,
                 text,
                 Vector2 {
-                    x: (screen.x - size) / 2.0,
-                    y: (screen.y - size) / 2.0,
+                    x: (screen.width - size) / 2.0,
+                    y: (screen.height - size) / 2.0,
                 },
                 240.0,
                 0.0,
@@ -486,7 +485,7 @@ impl Scene for Gameplay {
         }
 
         let size = rl.measure_text_ex(font, "F toggle fullscreen", 12.0, 1.0);
-        let mut x = screen.x - size.x;
+        let mut x = screen.width - size.x;
         let time = {
             let secs = self.time_lapse as i32;
             let min = secs / 60;

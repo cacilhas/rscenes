@@ -4,6 +4,6 @@ mod fake_fullscreen;
 mod store;
 
 #[cfg(feature = "fake-fs")]
-pub use fake_fullscreen::FakeFullscreen;
+pub use fake_fullscreen::{start_fullscreen, FakeFullscreen};
 #[cfg(feature = "storage")]
 pub use store::XDGStore;

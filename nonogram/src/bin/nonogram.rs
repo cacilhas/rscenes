@@ -1,7 +1,10 @@
 extern crate kodumaro_nonogram;
 
 use kodumaro_nonogram::*;
-use rscenes::{extras::XDGStore, prelude::*};
+use rscenes::{
+    extras::{start_fullscreen, XDGStore},
+    prelude::*,
+};
 
 fn main() {
     // TraceLogLevel::Error.set_default();
@@ -24,12 +27,15 @@ fn main() {
     let mut scene = MainMenu::default();
     scene.geom.x = width as f32;
     scene.geom.y = height as f32;
-    scene.fs = fs;
     manager.set_init(Box::new(scene));
     manager.add_setup(setup!(|rs| rs.set_exit_key(KeyboardKey::Null)));
-    manager.add_setup(setup!(
-        |rs| rs.set_window_state(ConfigFlags::WindowResizable.into())
-    ));
+    if fs {
+        manager.add_setup(start_fullscreen(ConfigFlags::WindowResizable.into()));
+    } else {
+        manager.add_setup(setup!(
+            |rs| rs.set_window_state(ConfigFlags::WindowResizable.into())
+        ));
+    }
     manager.add_setup(setup!(|rs| rs.set_window_min_size(800, 600)));
     manager.add_setup(setup!(|rs| rs.init_audio_device()));
     manager.add_setup(setup!(|_rs| SfxManager::load_assets()));
