@@ -27,17 +27,18 @@ fn main() {
     let mut scene = MainMenu::default();
     scene.geom.x = width as f32;
     scene.geom.y = height as f32;
-    manager.set_init(Box::new(scene));
-    manager.add_setup(setup!(|rs| rs.set_exit_key(KeyboardKey::Null)));
-    if fs {
-        manager.add_setup(start_fullscreen(ConfigFlags::WindowResizable.into()));
-    } else {
-        manager.add_setup(setup!(
-            |rs| rs.set_window_state(ConfigFlags::WindowResizable.into())
-        ));
-    }
-    manager.add_setup(setup!(|rs| rs.set_window_min_size(800, 600)));
-    manager.add_setup(setup!(|rs| rs.init_audio_device()));
-    manager.add_setup(setup!(|_rs| SfxManager::load_assets()));
+    manager
+        .set_init(Box::new(scene))
+        .add_setup(setup!(|rl| rl.set_exit_key(KeyboardKey::Null)))
+        .add_setup(if fs {
+            start_fullscreen(ConfigFlags::WindowResizable.into())
+        } else {
+            Box::new(setup!(
+                |rl| rl.set_window_state(ConfigFlags::WindowResizable.into())
+            ))
+        })
+        .add_setup(setup!(|rl| rl.set_window_min_size(800, 600)))
+        .add_setup(setup!(|rl| rl.init_audio_device()))
+        .add_setup(setup!(|_rs| SfxManager::load_assets()));
     manager.start();
 }

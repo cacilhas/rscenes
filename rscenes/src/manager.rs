@@ -18,13 +18,15 @@ pub struct Rscenes {
 
 impl Rscenes {
     /// Add a callback to run on the initialisation
-    pub fn add_setup(&mut self, callback: impl SetupCallback) {
+    pub fn add_setup(&mut self, callback: impl SetupCallback) -> &mut Self {
         self.setups.push(Box::new(callback));
+        self
     }
 
     /// Add the initial scene
-    pub fn set_init(&mut self, scene: Box<dyn Scene>) {
+    pub fn set_init(&mut self, scene: Box<dyn Scene>) -> &mut Self {
         self.scenes.push(scene);
+        self
     }
 
     /// Start mainloop
