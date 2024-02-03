@@ -10,14 +10,15 @@ fn main() {
 
     let mut manager = Rscenes::default();
     manager.title = "Rscenes Test".to_owned();
-    manager.set_init(Box::new(BallsScene {
-        player: Player::default(),
-        foes: (0..4).map(|_| Foe::default()).collect::<Vec<_>>(),
-        game_over: false,
-        collision_sound: None,
-    }));
-    manager.add_setup(setup!(|con| con.init_audio_device()));
-    manager.start();
+    manager
+        .set_init(Box::new(BallsScene {
+            player: Player::default(),
+            foes: (0..4).map(|_| Foe::default()).collect::<Vec<_>>(),
+            game_over: false,
+            collision_sound: None,
+        }))
+        .add_setup(setup!(|con| con.init_audio_device()))
+        .start();
 }
 
 #[derive(Debug)]

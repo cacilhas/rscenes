@@ -39,6 +39,6 @@ fn main() {
         })
         .add_setup(setup!(|rl| rl.set_window_min_size(800, 600)))
         .add_setup(setup!(|rl| rl.init_audio_device()))
-        .add_setup(setup!(|_rs| SfxManager::load_assets()));
-    manager.start();
+        .add_setup(setup!(|_rs| SfxManager::load_assets()))
+        .start();
 }
