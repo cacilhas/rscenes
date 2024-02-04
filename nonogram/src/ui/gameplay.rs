@@ -442,20 +442,15 @@ impl Scene for Gameplay {
                             Color::DARKGRAY,
                         );
                     }
-                    Cell::Yes => rl.draw_rectangle(
-                        rec.x as i32,
-                        rec.y as i32,
-                        rec.width as i32,
-                        rec.height as i32,
-                        Color::DARKBLUE,
+                    Cell::Yes => rl.draw_rectangle_rec(
+                        rec,
+                        if self.board.is_done() {
+                            Color::DARKBLUE.tint(Color::DARKGRAY)
+                        } else {
+                            Color::DARKBLUE
+                        },
                     ),
-                    Cell::Closed => rl.draw_rectangle(
-                        rec.x as i32,
-                        rec.y as i32,
-                        rec.width as i32,
-                        rec.height as i32,
-                        Color::LIGHTPINK,
-                    ),
+                    Cell::Closed => rl.draw_rectangle_rec(rec, Color::LIGHTPINK),
                 }
             }
         }
@@ -464,6 +459,20 @@ impl Scene for Gameplay {
 
         let screen = rl.get_render_rec();
         if self.board.is_done() {
+            for y in 0..(self.size.y as usize) {
+                for x in 0..(self.size.x as usize) {
+                    if self.board.get(x, y).unwrap() == Cell::Yes {
+                        let rec = Rectangle {
+                            x: self.board_rect.x + (x as f32) * self.cell_size.x - 4.0,
+                            y: self.board_rect.y + (y as f32) * self.cell_size.y - 4.0,
+                            width: self.cell_size.x - 2.0,
+                            height: self.cell_size.y - 2.0,
+                        };
+
+                        rl.draw_rectangle_rec(rec, Color::DARKBLUE);
+                    }
+                }
+            }
             let text = VICTORY[self.vic_index as usize % VICTORY.len()];
             let size = rl.measure_text(text, 240) as f32;
             let shadow = Color::DARKGREEN.fade(0.8);
