@@ -30,6 +30,7 @@ fn main() {
     manager
         .set_init(Box::new(scene))
         .add_setup(setup!(|rl| rl.set_exit_key(KeyboardKey::Null)))
+        .add_setup(setup!(|rl| rl.set_target_fps(30)))
         .add_setup(if fs {
             start_fullscreen(ConfigFlags::WindowResizable.into())
         } else {

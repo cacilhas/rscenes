@@ -56,7 +56,7 @@ impl Scene for Pause {
             x: (screen.width - size.x) / 2.0,
             y: bottom,
         };
-        rl.draw_text_ex(font, text, position, 84.0, 2.0, Color::BROWN);
+        rl.draw_text_ex(font, text, position, 84.0, 2.0, Color::DARKRED);
         bottom += size.y + 64.0;
 
         let text = "F3 or Pause resume game";
