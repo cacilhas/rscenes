@@ -68,7 +68,7 @@ impl Scene for Pause {
         rl.draw_text_ex(font, text, position, 32.0, 2.0, Color::BLACK);
         bottom += size.y + 32.0;
 
-        let text = "Escape to abort";
+        let text = "Escape to quit game";
         let size = rl.measure_text_ex(font, text, 32.0, 2.0);
         let position = Vector2 {
             x: (screen.width - size.x) / 2.0,
