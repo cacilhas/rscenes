@@ -471,7 +471,7 @@ impl Scene for Gameplay {
                             height: self.cell_size.y - 2.0,
                         };
 
-                        rl.draw_rectangle_rec(rec, Color::DARKBLUE);
+                        rl.draw_rectangle_rounded(rec, 0.125, 8, Color::DARKBLUE);
                     }
                 }
             }
