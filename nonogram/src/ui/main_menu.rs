@@ -127,7 +127,7 @@ impl Scene for MainMenu {
         rl.draw_text_ex(font, "Nonogram", position, 84.0, 2.0, TITLE);
         let position = position.add(Vector2 {
             x: size.x + 8.0,
-            y: 10.0,
+            y: 24.0,
         });
         rl.draw_text_ex(font, "v. 4.0", position, 20.0, 2.0, FOREGROUND);
 
