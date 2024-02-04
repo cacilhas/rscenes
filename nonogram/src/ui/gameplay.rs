@@ -242,25 +242,32 @@ impl Gameplay {
     }
 
     fn draw_info(&self, rl: Connector2D, screen: Rectangle, font: Font) {
-        let size = rl.measure_text_ex(font, "F toggle fullscreen", 12.0, 1.0);
+        let size = rl.measure_text_ex(font, "F : toggle fullscreen", 12.0, 1.0);
         let x = screen.width - size.x - 4.0;
         let mut y = 28.0;
         rl.draw_text_ex(
             font,
-            "F2 mute/unmute",
+            "F2 : mute/unmute",
             Vector2 { x, y },
             12.0,
             1.0,
             Color::GRAY,
         );
         y += 14.0;
-        rl.draw_text_ex(font, "F3 pause", Vector2 { x, y }, 12.0, 1.0, Color::GRAY);
-        y += 14.0;
-        rl.draw_text_ex(font, "ESC abort", Vector2 { x, y }, 12.0, 1.0, Color::GRAY);
+        rl.draw_text_ex(font, "F3 : pause", Vector2 { x, y }, 12.0, 1.0, Color::GRAY);
         y += 14.0;
         rl.draw_text_ex(
             font,
-            "F toggle fullscreen",
+            "ESC : abort",
+            Vector2 { x, y },
+            12.0,
+            1.0,
+            Color::GRAY,
+        );
+        y += 14.0;
+        rl.draw_text_ex(
+            font,
+            "F : toggle fullscreen",
             Vector2 { x, y },
             12.0,
             1.0,
