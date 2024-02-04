@@ -427,20 +427,22 @@ impl Scene for Gameplay {
 
                 match self.board.get(x, y).unwrap() {
                     Cell::No => {
-                        rl.draw_line(
-                            rec.x as i32,
-                            rec.y as i32,
-                            (rec.x + rec.width) as i32,
-                            (rec.y + rec.height) as i32,
-                            Color::DARKGRAY,
-                        );
-                        rl.draw_line(
-                            rec.x as i32,
-                            (rec.y + rec.height) as i32,
-                            (rec.x + rec.width) as i32,
-                            rec.y as i32,
-                            Color::DARKGRAY,
-                        );
+                        if !self.board.is_done() {
+                            rl.draw_line(
+                                rec.x as i32,
+                                rec.y as i32,
+                                (rec.x + rec.width) as i32,
+                                (rec.y + rec.height) as i32,
+                                Color::DARKGRAY,
+                            );
+                            rl.draw_line(
+                                rec.x as i32,
+                                (rec.y + rec.height) as i32,
+                                (rec.x + rec.width) as i32,
+                                rec.y as i32,
+                                Color::DARKGRAY,
+                            );
+                        }
                     }
                     Cell::Yes => rl.draw_rectangle_rec(
                         rec,
