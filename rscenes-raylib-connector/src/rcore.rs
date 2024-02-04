@@ -525,7 +525,8 @@ impl RcoreImpl {
             let raw = LoadRandomSequence(count as u32, min, max);
             let res = array_from_c(raw, count, || {
                 "could not generate random sequence".to_owned()
-            })?.to_vec();
+            })?
+            .to_vec();
             UnloadRandomSequence(raw);
             Ok(res)
         }
@@ -573,7 +574,8 @@ impl RcoreImpl {
             let raw = LoadFileData(rl_str!(filename), &mut size);
             let res = array_from_c(raw, size as usize, || {
                 format!("couldn't load file data from {}", filename)
-            })?.to_vec();
+            })?
+            .to_vec();
             UnloadFileData(raw);
             Ok(res)
         }
@@ -1414,7 +1416,7 @@ pub trait Rcore: Debug {
     }
 
     /// Begin 3D mode with custom camera (3D)
-    fn begin_mode_3(&self, camera: Camera3D) {
+    fn begin_mode_3d(&self, camera: Camera3D) {
         RcoreImpl::__begin_mode_3D(camera)
     }
 
