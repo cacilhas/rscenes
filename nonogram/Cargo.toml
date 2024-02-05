@@ -1,13 +1,13 @@
 [package]
 name        = "kodumaro-nonogram"
-version     = "4.0.0"
+version     = "4.0.1"
 authors     = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info"]
 license     = "BSD-3-Clause"
 readme      = "README.md"
 homepage    = "https://crates.io/crates/kodumaro-nonogram"
-repository  = "https://github.com/cacilhas/nonogram"
-keywords    = ["raylib"]
-categories  = ["Games"]
+repository  = "https://github.com/cacilhas/rscenes/nonogram"
+keywords    = ["raylib", "rscenes"]
+categories  = ["games"]
 description = "A random nonogram game."
 edition     = "2021"
 
