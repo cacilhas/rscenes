@@ -14,12 +14,8 @@ edition       = "2021"
 
 [dependencies]
 resolution = "0.1"
-
-[dependencies.rscenes-macros]
-path = "../rscenes-macros"
-
-[dependencies.rscenes-raylib-connector]
-path = "../rscenes-raylib-connector"
+rscenes-macros = "1.0"
+rscenes-raylib-connector = "1.0"
 
 [dependencies.serde]
 version = "1.0"

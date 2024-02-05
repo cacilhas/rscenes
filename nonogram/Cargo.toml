@@ -23,7 +23,7 @@ strip = true
 fastrand = "2.0"
 
 [dependencies.rscenes]
-path = "../rscenes"
+version = "2.0"
 features = ["fake-fs", "storage"]
 
 [[bin]]

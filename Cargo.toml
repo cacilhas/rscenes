@@ -9,6 +9,4 @@ members = [
   "nonogram",
 ]
 
-exclude = [
-  "examples",
-]
+exclude = ["examples"]
