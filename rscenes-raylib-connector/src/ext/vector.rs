@@ -171,6 +171,7 @@ impl Vector3Ext for Vector3 {
     }
 
     fn rotate(self, angle: f32, axis: Self) -> Self {
+        let angle = angle % TAU;
         if angle * axis.sqr_length() * self.sqr_length() == 0.0 {
             // If any of self, angle, or axis is zero, there's nothing to do
             return self;
@@ -193,10 +194,10 @@ impl Vector3Ext for Vector3 {
 
         // Conjugate the quaternion
         let conj = Quaternion {
-            w: q.w,
             x: -q.x,
             y: -q.y,
             z: -q.z,
+            w: q.w,
         };
 
         // Apply the quaternion rotation to the vector
