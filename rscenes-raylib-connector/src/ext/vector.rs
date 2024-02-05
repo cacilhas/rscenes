@@ -1,6 +1,6 @@
-use std::f32::consts::TAU;
-
+use raylib_ffi::Quaternion;
 pub use raylib_ffi::{Vector2, Vector3};
+use std::f32::consts::TAU;
 
 pub trait Vector2Ext: Sized {
     const ZERO: Self;
@@ -176,8 +176,6 @@ impl Vector3Ext for Vector3 {
             return self;
         }
 
-        // TODO: it'll be way easier using raymath
-
         let axis = axis.normalize();
 
         // Calculate the sine and cosine of half the angle
@@ -186,33 +184,39 @@ impl Vector3Ext for Vector3 {
         let cos_half = half.cos();
 
         // Create the quaternion for the rotation
-        let w = cos_half;
-        let x = axis.x * sin_half;
-        let y = axis.y * sin_half;
-        let z = axis.z * sin_half;
+        let q = Quaternion {
+            x: axis.x * sin_half,
+            y: axis.y * sin_half,
+            z: axis.z * sin_half,
+            w: cos_half,
+        };
 
         // Conjugate the quaternion
-        let conj_w = w;
-        let conj_x = -x;
-        let conj_y = -y;
-        let conj_z = -z;
+        let conj = Quaternion {
+            w: q.w,
+            x: -q.x,
+            y: -q.y,
+            z: -q.z,
+        };
 
         // Apply the quaternion rotation to the vector
-        let dot_prod = self.x * x + self.y * y + self.z * z;
-        let cross_prod_x = self.y * z + self.z * y;
-        let cross_prod_y = self.z * x + self.x * z;
-        let cross_prod_z = self.x * y + self.y * x;
+        let dot_prod = self.x * q.x + self.y * q.y + self.z * q.z;
+        let cross_prod = Vector3 {
+            x: self.y * q.z + self.z * q.y,
+            y: self.z * q.x + self.x * q.z,
+            z: self.x * q.y + self.y * q.x,
+        };
 
         Self {
-            x: conj_w * self.x
-                + conj_x * dot_prod
-                + (conj_y * cross_prod_z - conj_z * cross_prod_y),
-            y: conj_w * self.y
-                + conj_y * dot_prod
-                + (conj_z * cross_prod_x - conj_x * cross_prod_z),
-            z: conj_w * self.z
-                + conj_z * dot_prod
-                + (conj_x * cross_prod_y - conj_y * cross_prod_x),
+            x: conj.w * self.x
+                + conj.x * dot_prod
+                + (conj.y * cross_prod.z - conj.z * cross_prod.y),
+            y: conj.w * self.y
+                + conj.y * dot_prod
+                + (conj.z * cross_prod.x - conj.x * cross_prod.z),
+            z: conj.w * self.z
+                + conj.z * dot_prod
+                + (conj.x * cross_prod.y - conj.y * cross_prod.x),
         }
     }
 
