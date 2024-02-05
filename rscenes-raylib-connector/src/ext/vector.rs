@@ -1,5 +1,5 @@
-use raylib_ffi::Quaternion;
-pub use raylib_ffi::{Vector2, Vector3};
+use super::quaternion::QuaternionExt;
+use raylib_ffi::{Quaternion, Vector2, Vector3};
 use std::f32::consts::TAU;
 
 pub trait Vector2Ext: Sized {
@@ -176,7 +176,6 @@ impl Vector3Ext for Vector3 {
             // If any of self, angle, or axis is zero, there's nothing to do
             return self;
         }
-
         let axis = axis.normalize();
 
         // Calculate the sine and cosine of half the angle
@@ -184,41 +183,13 @@ impl Vector3Ext for Vector3 {
         let sin_half = half.sin();
         let cos_half = half.cos();
 
-        // Create the quaternion for the rotation
         let q = Quaternion {
             x: axis.x * sin_half,
             y: axis.y * sin_half,
             z: axis.z * sin_half,
             w: cos_half,
         };
-
-        // Conjugate the quaternion
-        let conj = Quaternion {
-            x: -q.x,
-            y: -q.y,
-            z: -q.z,
-            w: q.w,
-        };
-
-        // Apply the quaternion rotation to the vector
-        let dot_prod = self.x * q.x + self.y * q.y + self.z * q.z;
-        let cross_prod = Vector3 {
-            x: self.y * q.z + self.z * q.y,
-            y: self.z * q.x + self.x * q.z,
-            z: self.x * q.y + self.y * q.x,
-        };
-
-        Self {
-            x: conj.w * self.x
-                + conj.x * dot_prod
-                + (conj.y * cross_prod.z - conj.z * cross_prod.y),
-            y: conj.w * self.y
-                + conj.y * dot_prod
-                + (conj.z * cross_prod.x - conj.x * cross_prod.z),
-            z: conj.w * self.z
-                + conj.z * dot_prod
-                + (conj.x * cross_prod.y - conj.y * cross_prod.x),
-        }
+        q.rotate(self)
     }
 
     fn sqr_length(self) -> f32 {

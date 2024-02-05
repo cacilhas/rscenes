@@ -27,6 +27,7 @@ pub mod assets {
     pub use crate::ext::model::ModelExt;
     pub use crate::ext::model_animation::ModelAnimationExt;
     pub use crate::ext::music::MusicExt;
+    pub use crate::ext::quaternion::QuaternionExt;
     pub use crate::ext::ray::RayExt;
     pub use crate::ext::sound::SoundExt;
     pub use crate::ext::texture::{RenderTextureExt, TextureCubemapExt, TextureExt};
@@ -37,9 +38,9 @@ pub mod assets {
     pub use raylib_ffi::{
         enums::*, AudioStream, AutomationEvent, AutomationEventList, BoneInfo, BoundingBox,
         Camera2D, Camera3D, Color, FilePathList, Font, GlyphInfo, Image, Material, MaterialMap,
-        Matrix, Mesh, Model, ModelAnimation, Music, NPatchInfo, Ray, RayCollision, Rectangle,
-        RenderTexture, Shader, Sound, Texture2D, TextureCubemap, Transform, Vector2, Vector3,
-        Vector4, VrDeviceInfo, VrStereoConfig, Wave,
+        Matrix, Mesh, Model, ModelAnimation, Music, NPatchInfo, Quaternion, Ray, RayCollision,
+        Rectangle, RenderTexture, Shader, Sound, Texture2D, TextureCubemap, Transform, Vector2,
+        Vector3, VrDeviceInfo, VrStereoConfig, Wave,
     };
 }
 
