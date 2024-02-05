@@ -12,7 +12,7 @@ More about it on [Itch.io](https://cacilhas.itch.io/nonogram).
 cargo install kodumaro-nonogram
 ```
 
-If you have [UPX](https://upx.github.io/) installed, you maybe want to run:
+If you have [UPX](https://upx.github.io/) installed, you may want to run:
 
 ```sh
 upx ~/.cargo/bin/nonogram
