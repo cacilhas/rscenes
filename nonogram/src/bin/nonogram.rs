@@ -32,10 +32,10 @@ fn main() {
         .add_setup(setup!(|rl| rl.set_exit_key(KeyboardKey::Null)))
         .add_setup(setup!(|rl| rl.set_target_fps(30)))
         .add_setup(if fs {
-            start_fullscreen(ConfigFlags::WindowResizable.into())
+            start_fullscreen(ConfigFlags::WindowResizable as usize)
         } else {
             Box::new(setup!(
-                |rl| rl.set_window_state(ConfigFlags::WindowResizable.into())
+                |rl| rl.set_window_state(ConfigFlags::WindowResizable as usize)
             ))
         })
         .add_setup(setup!(|rl| rl.set_window_min_size(800, 600)))
