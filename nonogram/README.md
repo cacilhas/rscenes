@@ -1,4 +1,4 @@
-# kodumaro-nonogram
+# Kodumaro Nonogram
 
 ![Nonogram](https://github.com/cacilhas/rscenes/raw/master/nonogram/nonogram.png)
 
