@@ -4,6 +4,8 @@ use proc_macro::{Span, TokenStream, TokenTree};
 use quote::quote;
 use syn::{parse_macro_input, parse_quote, FnArg, Ident, ItemFn, Pat, Type};
 
+/// Use #[draw(shapes)] to draw 2D shapes, #[draw(models)] to draw 3D models, and #[draw(hud)] to
+/// draw HUD.
 #[proc_macro_attribute]
 pub fn draw(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input: ItemFn = parse_macro_input!(item as ItemFn);
