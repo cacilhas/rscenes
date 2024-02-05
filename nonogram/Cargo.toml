@@ -1,0 +1,31 @@
+[package]
+name        = "kodumaro-nonogram"
+version     = "4.0.1"
+authors     = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info"]
+license     = "BSD-3-Clause"
+readme      = "README.md"
+homepage    = "https://crates.io/crates/kodumaro-nonogram"
+repository  = "https://github.com/cacilhas/rscenes/nonogram"
+keywords    = ["raylib", "rscenes"]
+categories  = ["games"]
+description = "A random nonogram game."
+edition     = "2021"
+
+[profile.release]
+opt-level     = "s"
+codegen-units = 1
+debug = false
+lto   = true
+rpath = false
+strip = true
+
+[dependencies]
+fastrand = "2.0"
+
+[dependencies.rscenes]
+version = "2.0"
+features = ["fake-fs", "storage"]
+
+[[bin]]
+name = "nonogram"
+path = "src/bin/nonogram.rs"

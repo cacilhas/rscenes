@@ -1,0 +1,16 @@
+[package]
+name          = "rscenes-raylib-connector"
+version       = "1.0.0"
+authors       = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info>"]
+license       = "BSD-3-Clause"
+readme        = "../README.md"
+description   = "Raylib connector for Rscenes 2"
+documentation = "https://docs.rs/rscenes-raylib-connector/latest"
+repository    = "https://github.com/cacilhas/rscenes"
+homepage      = "https://crates.io/crates/rscenes-raylib-connector"
+categories    = ["api-bindings", "game-engines", "graphics"]
+keywords      = ["raylib", "scenes"]
+edition       = "2021"
+
+[dependencies]
+raylib-ffi = "5.0"

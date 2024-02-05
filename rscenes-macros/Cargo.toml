@@ -1,0 +1,23 @@
+[package]
+name          = "rscenes-macros"
+version       = "1.0.1"
+authors       = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info"]
+license       = "BSD-3-Clause"
+readme        = "../README.md"
+description   = "Macros for Rscenes."
+documentation = "https://docs.rs/rscenes-macros/latest"
+repository    = "https://github.com/cacilhas/rscenes"
+homepage      = "https://crates.io/crates/rscenes"
+categories    = ["api-bindings", "game-engines", "graphics"]
+keywords      = ["raylib", "scenes"]
+edition       = "2021"
+
+[lib]
+proc-macro    = true
+
+[dependencies]
+quote = "1.0"
+
+[dependencies.syn]
+version = "2.0"
+features = ["full"]

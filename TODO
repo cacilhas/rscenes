@@ -1,0 +1,3 @@
+- Fix font load
+- Test 3D models
+- Reimplement rescenes-raylib-connector without raylib-ffi, using FFI directly
