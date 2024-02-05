@@ -25,6 +25,8 @@ pub trait Camera3DExt {
     fn update(&mut self, mode: CameraMode);
     /// Update camera movement/rotation
     fn update_pro(&mut self, movement: Vector3, rotation: Vector3, zoom: f32);
+    /// Rotate camera
+    fn rotate(&mut self, angle: f32, pivot: Vector3);
 }
 
 impl Camera3DExt for Camera3D {
@@ -44,5 +46,11 @@ impl Camera3DExt for Camera3D {
 
     fn update_pro(&mut self, movement: Vector3, rotation: Vector3, zoom: f32) {
         RcameraImpl::__update_camera_pro(self, movement, rotation, zoom)
+    }
+
+    fn rotate(&mut self, angle: f32, axis: Vector3) {
+        self.target = self
+            .position
+            .add(self.target.add(self.position.mul(-1.0)).rotate(angle, axis));
     }
 }
