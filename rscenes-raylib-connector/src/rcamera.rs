@@ -24,7 +24,7 @@ impl RcameraImpl {
 pub trait Rcamera: Debug {
     /// Update camera position for selected mode
     fn update_camera(&self, camera: &mut Camera3D, mode: CameraMode) {
-        RcameraImpl::__update_camera(camera, mode)
+        RcameraImpl::__update_camera(camera, mode as usize)
     }
 
     /// Update camera movement/rotation

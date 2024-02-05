@@ -57,12 +57,12 @@ impl TextureExt for Texture2D {
     }
 
     fn set_filter(self, filter: TextureFilter) -> Self {
-        RtexturesImpl::__set_texture_filter(self, filter);
+        RtexturesImpl::__set_texture_filter(self, filter as usize);
         self
     }
 
     fn set_wrap(self, wrap: TextureWrap) -> Self {
-        RtexturesImpl::__set_texture_wrap(self, wrap);
+        RtexturesImpl::__set_texture_wrap(self, wrap as usize);
         self
     }
 }
@@ -73,7 +73,7 @@ pub trait TextureCubemapExt: Sized {
 
 impl TextureCubemapExt for TextureCubemap {
     fn load(image: Image, layout: CubemapLayout) -> Result<Self, String> {
-        RtexturesImpl::__load_texture_cubemap(image, layout)
+        RtexturesImpl::__load_texture_cubemap(image, layout as usize)
     }
 }
 

@@ -18,7 +18,8 @@ impl RgesturesImpl {
         unsafe {
             let raw = GetGestureDetected() as usize;
             let mut res: Vec<Gesture> = vec![];
-            for &gesture in [Gesture::Tap,
+            for &gesture in [
+                Gesture::Tap,
                 Gesture::Doubletap,
                 Gesture::Hold,
                 Gesture::Drag,
@@ -27,10 +28,11 @@ impl RgesturesImpl {
                 Gesture::SwipeUp,
                 Gesture::SwipeDown,
                 Gesture::PinchIn,
-                Gesture::PinchOut]
+                Gesture::PinchOut,
+            ]
             .iter()
             {
-                let code: usize = gesture.into();
+                let code = gesture as usize;
                 if raw & code != 0 {
                     res.push(gesture);
                 }
@@ -69,7 +71,7 @@ pub trait Rgestures: Debug {
 
     /// Check whether a gesture have been detected
     fn is_gesture_detected(&self, gesture: Gesture) -> bool {
-        RgesturesImpl::__is_gesture_detected(gesture)
+        RgesturesImpl::__is_gesture_detected(gesture as usize)
     }
 
     /// Get latest detected gesture

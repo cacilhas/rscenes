@@ -348,7 +348,7 @@ impl ImageExt for Image {
     }
 
     fn format(&mut self, format: PixelFormat) -> &mut Self {
-        RtexturesImpl::__image_format(self, format);
+        RtexturesImpl::__image_format(self, format as usize);
         self
     }
 

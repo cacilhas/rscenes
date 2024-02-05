@@ -411,7 +411,7 @@ impl RcoreImpl {
         tpe: enums::ShaderUniformDataType,
     ) {
         unsafe {
-            let tpe: usize = tpe.into();
+            let tpe = tpe as usize;
             let value = value as *const T as *const c_void;
             SetShaderValue(shader, index, value, tpe as i32)
         }
@@ -424,7 +424,7 @@ impl RcoreImpl {
         tpe: enums::ShaderUniformDataType,
     ) {
         unsafe {
-            let tpe: usize = tpe.into();
+            let tpe = tpe as usize;
             let count = value.len() as i32;
             let value = value.as_ptr() as *const c_void;
             SetShaderValueV(shader, index, value, tpe as i32, count)
@@ -1447,7 +1447,7 @@ pub trait Rcore: Debug {
 
     /// Begin blending mode (alpha, additive, multiplied, subtract, custom)
     fn begin_blend_mode(&self, mode: BlendMode) {
-        RcoreImpl::__begin_blend_mode(mode)
+        RcoreImpl::__begin_blend_mode(mode as usize)
     }
 
     /// End blending mode (reset to default: alpha blending)
@@ -1697,7 +1697,7 @@ pub trait Rcore: Debug {
     /// Swap back buffer with front buffer (screen drawing)
     fn swap_screen_buffer(&self) {
         RcoreImpl::__trace_log(
-            TraceLogLevel::Warning,
+            TraceLogLevel::Warning as usize,
             "avoid rcore.swap_screen_buffer(), use rcore.end_drawing() instead",
         );
         RcoreImpl::__swap_screen_buffer()
@@ -1706,7 +1706,7 @@ pub trait Rcore: Debug {
     /// Register all input events
     fn poll_input_events(&self) {
         RcoreImpl::__trace_log(
-            TraceLogLevel::Warning,
+            TraceLogLevel::Warning as usize,
             "avoid rcore.poll_input_events(), use rcore.end_drawing() instead",
         );
         RcoreImpl::__poll_input_events()
@@ -1715,7 +1715,7 @@ pub trait Rcore: Debug {
     /// Wait for some time (halt program execution)
     fn wait_time(&self, seconds: f64) {
         RcoreImpl::__trace_log(
-            TraceLogLevel::Info,
+            TraceLogLevel::Info as usize,
             format!("halting execution for {} seconds", seconds),
         );
         RcoreImpl::__wait_time(seconds)
@@ -1757,12 +1757,12 @@ pub trait Rcore: Debug {
 
     /// Show trace log messages (LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR...)
     fn trace_log(&self, level: TraceLogLevel, text: impl Display) {
-        RcoreImpl::__trace_log(level, text)
+        RcoreImpl::__trace_log(level as usize, text)
     }
 
     /// Set the current threshold (minimum) log level
     fn set_trace_log_level(&self, level: TraceLogLevel) {
-        RcoreImpl::__set_trace_log_level(level)
+        RcoreImpl::__set_trace_log_level(level as usize)
     }
 
     // Files management methods
@@ -1852,27 +1852,27 @@ pub trait Rcore: Debug {
 
     /// Check whether a key has been pressed once
     fn is_key_pressed(&self, key: KeyboardKey) -> bool {
-        RcoreImpl::__is_key_pressed(key)
+        RcoreImpl::__is_key_pressed(key as usize)
     }
 
     /// Check whether a key has been pressed again (Only PLATFORM_DESKTOP)
     fn is_key_pressed_repeat(&self, key: KeyboardKey) -> bool {
-        RcoreImpl::__is_key_pressed_repeat(key)
+        RcoreImpl::__is_key_pressed_repeat(key as usize)
     }
 
     /// Check whether a key is being pressed
     fn is_key_down(&self, key: KeyboardKey) -> bool {
-        RcoreImpl::__is_key_down(key)
+        RcoreImpl::__is_key_down(key as usize)
     }
 
     /// Check whether a key has been released once
     fn is_key_released(&self, key: KeyboardKey) -> bool {
-        RcoreImpl::__is_key_released(key)
+        RcoreImpl::__is_key_released(key as usize)
     }
 
     /// Check whether a key is NOT being pressed
     fn is_key_up(&self, key: KeyboardKey) -> bool {
-        RcoreImpl::__is_key_up(key)
+        RcoreImpl::__is_key_up(key as usize)
     }
 
     /// Get key pressed, call it multiple times for keys queued, returns KeyboardKey::Null when the queue is empty
@@ -1887,7 +1887,7 @@ pub trait Rcore: Debug {
 
     /// Set a custom key to exit program (default is KeyboardKey::Escape)
     fn set_exit_key(&self, key: KeyboardKey) {
-        RcoreImpl::__set_exit_key(key)
+        RcoreImpl::__set_exit_key(key as usize)
     }
 
     // Input-related methods: gamepads
@@ -1904,22 +1904,22 @@ pub trait Rcore: Debug {
 
     /// Check whether a gamepad button has been pressed once
     fn is_gamepad_button_pressed(&self, gamepad: i32, button: GamepadButton) -> bool {
-        RcoreImpl::__is_gamepad_button_pressed(gamepad, button)
+        RcoreImpl::__is_gamepad_button_pressed(gamepad, button as usize)
     }
 
     /// Check whether a gamepad button is being pressed
     fn is_gamepad_button_down(&self, gamepad: i32, button: GamepadButton) -> bool {
-        RcoreImpl::__is_gamepad_button_down(gamepad, button)
+        RcoreImpl::__is_gamepad_button_down(gamepad, button as usize)
     }
 
     /// Check whether a gamepad button has been released once
     fn is_gamepad_button_released(&self, gamepad: i32, button: GamepadButton) -> bool {
-        RcoreImpl::__is_gamepad_button_released(gamepad, button)
+        RcoreImpl::__is_gamepad_button_released(gamepad, button as usize)
     }
 
     /// Check whether a gamepad button is NOT being pressed
     fn is_gamepad_button_up(&self, gamepad: i32, button: GamepadButton) -> bool {
-        RcoreImpl::__is_gamepad_button_up(gamepad, button)
+        RcoreImpl::__is_gamepad_button_up(gamepad, button as usize)
     }
 
     /// Get the last gamepad button pressed
@@ -1934,7 +1934,7 @@ pub trait Rcore: Debug {
 
     /// Get axis movement value for a gamepad axis
     fn get_gamepad_axis_movement(&self, gamepad: i32, axis: GamepadAxis) -> f32 {
-        RcoreImpl::__get_gamepad_axis_movement(gamepad, axis)
+        RcoreImpl::__get_gamepad_axis_movement(gamepad, axis as usize)
     }
 
     /// Set internal gamepad mappings (SDL_GameControllerDB)
@@ -1946,22 +1946,22 @@ pub trait Rcore: Debug {
 
     /// Check whether a mouse button has been pressed once
     fn is_mouse_button_pressed(&self, button: MouseButton) -> bool {
-        RcoreImpl::__is_mouse_button_pressed(button)
+        RcoreImpl::__is_mouse_button_pressed(button as usize)
     }
 
     /// Check whether a mouse button is being pressed
     fn is_mouse_button_down(&self, button: MouseButton) -> bool {
-        RcoreImpl::__is_mouse_button_down(button)
+        RcoreImpl::__is_mouse_button_down(button as usize)
     }
 
     /// Check whether a mouse button has been released once
     fn is_mouse_button_released(&self, button: MouseButton) -> bool {
-        RcoreImpl::__is_mouse_button_released(button)
+        RcoreImpl::__is_mouse_button_released(button as usize)
     }
 
     /// Check whether a mouse button is NOT being pressed
     fn is_mouse_button_up(&self, button: MouseButton) -> bool {
-        RcoreImpl::__is_mouse_button_up(button)
+        RcoreImpl::__is_mouse_button_up(button as usize)
     }
 
     /// Get mouse position X
@@ -2011,7 +2011,7 @@ pub trait Rcore: Debug {
 
     /// Set mouse cursor
     fn set_mouse_cursor(&self, cursor: MouseCursor) {
-        RcoreImpl::__set_mouse_cursor(cursor)
+        RcoreImpl::__set_mouse_cursor(cursor as usize)
     }
 
     // Input-related methods: touch

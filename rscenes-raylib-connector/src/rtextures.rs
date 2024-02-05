@@ -739,7 +739,7 @@ pub trait Rtextures: Debug {
         format: PixelFormat,
         header_size: i32,
     ) -> Result<Image, String> {
-        RtexturesImpl::__load_image_raw(filename, width, height, format, header_size)
+        RtexturesImpl::__load_image_raw(filename, width, height, format as usize, header_size)
     }
 
     /// Load image from SVG file data or string with specified size
@@ -911,7 +911,7 @@ pub trait Rtextures: Debug {
 
     /// Convert image data to desired format
     fn image_format(&self, image: &mut Image, format: PixelFormat) {
-        RtexturesImpl::__image_format(image, format)
+        RtexturesImpl::__image_format(image, format as usize)
     }
 
     /// Convert image to POT (power-of-two)
@@ -1234,7 +1234,7 @@ pub trait Rtextures: Debug {
         image: Image,
         layout: CubemapLayout,
     ) -> Result<TextureCubemap, String> {
-        RtexturesImpl::__load_texture_cubemap(image, layout)
+        RtexturesImpl::__load_texture_cubemap(image, layout as usize)
     }
 
     /// Load texture for rendering (framebuffer)
@@ -1281,12 +1281,12 @@ pub trait Rtextures: Debug {
 
     /// Set texture scaling filter mode
     fn set_texture_filter(&self, texture: Texture2D, filter: TextureFilter) {
-        RtexturesImpl::__set_texture_filter(texture, filter)
+        RtexturesImpl::__set_texture_filter(texture, filter as usize)
     }
 
     /// Set texture wrapping mode
     fn set_texture_wrap(&self, texture: Texture2D, wrap: TextureWrap) {
-        RtexturesImpl::__set_texture_wrap(texture, wrap)
+        RtexturesImpl::__set_texture_wrap(texture, wrap as usize)
     }
 
     // Texture drawing methods
@@ -1414,16 +1414,16 @@ pub trait Rtextures: Debug {
 
     /// Get Color from a source pixel pointer of certain format
     fn get_pixel_color(&self, ptr: &mut Vec<u8>, format: PixelFormat) -> Color {
-        RtexturesImpl::__get_pixel_color(ptr, format)
+        RtexturesImpl::__get_pixel_color(ptr, format as usize)
     }
 
     /// Set color formatted into destination pixel pointer
     fn set_pixel_color(&self, ptr: &mut Vec<u8>, color: Color, format: PixelFormat) {
-        RtexturesImpl::__set_pixel_color(ptr, color, format)
+        RtexturesImpl::__set_pixel_color(ptr, color, format as usize)
     }
 
     /// Get pixel data size in bytes for certain format
     fn get_pixel_data_size(&self, width: i32, height: i32, format: PixelFormat) -> i32 {
-        RtexturesImpl::__get_pixel_data_size(width, height, format)
+        RtexturesImpl::__get_pixel_data_size(width, height, format as usize)
     }
 }

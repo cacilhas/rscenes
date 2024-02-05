@@ -39,7 +39,7 @@ impl Camera3DExt for Camera3D {
     }
 
     fn update(&mut self, mode: CameraMode) {
-        RcameraImpl::__update_camera(self, mode)
+        RcameraImpl::__update_camera(self, mode as usize)
     }
 
     fn update_pro(&mut self, movement: Vector3, rotation: Vector3, zoom: f32) {

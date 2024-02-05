@@ -37,22 +37,22 @@ impl KeyboardKeyExt for KeyboardKey {
     }
 
     fn is_pressed(self) -> bool {
-        RcoreImpl::__is_key_pressed(self)
+        RcoreImpl::__is_key_pressed(self as usize)
     }
 
     fn is_pressed_repeat(self) -> bool {
-        RcoreImpl::__is_key_pressed_repeat(self)
+        RcoreImpl::__is_key_pressed_repeat(self as usize)
     }
 
     fn is_down(self) -> bool {
-        RcoreImpl::__is_key_down(self)
+        RcoreImpl::__is_key_down(self as usize)
     }
 
     fn is_released(self) -> bool {
-        RcoreImpl::__is_key_released(self)
+        RcoreImpl::__is_key_released(self as usize)
     }
 
     fn is_up(self) -> bool {
-        RcoreImpl::__is_key_up(self)
+        RcoreImpl::__is_key_up(self as usize)
     }
 }

@@ -9,10 +9,10 @@ pub trait TraceLogLevelExt: Sized {
 
 impl TraceLogLevelExt for TraceLogLevel {
     fn log(self, text: impl Display) {
-        RcoreImpl::__trace_log(self, text)
+        RcoreImpl::__trace_log(self as usize, text)
     }
 
     fn set_default(self) {
-        RcoreImpl::__set_trace_log_level(self)
+        RcoreImpl::__set_trace_log_level(self as usize)
     }
 }
