@@ -176,20 +176,7 @@ impl Vector3Ext for Vector3 {
             // If any of self, angle, or axis is zero, there's nothing to do
             return self;
         }
-        let axis = axis.normalize();
-
-        // Calculate the sine and cosine of half the angle
-        let half = angle * 0.5;
-        let sin_half = half.sin();
-        let cos_half = half.cos();
-
-        let q = Quaternion {
-            x: axis.x * sin_half,
-            y: axis.y * sin_half,
-            z: axis.z * sin_half,
-            w: cos_half,
-        };
-        q.rotate(self)
+        Quaternion::from_axis_angle(axis, angle).rotate(self)
     }
 
     fn sqr_length(self) -> f32 {

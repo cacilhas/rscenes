@@ -1,6 +1,12 @@
+use super::vector::Vector3Ext;
 use raylib_ffi::{Quaternion, Vector3};
+use std::f32::consts::TAU;
 
 pub trait QuaternionExt: Sized {
+    fn from_vector(vector: Vector3) -> Self;
+    fn from_axis_angle(axis: Vector3, angle: f32) -> Self;
+    fn to_vector(self) -> Vector3;
+    fn mul(self, rhs: Self) -> Self;
     fn conjugate(self) -> Self;
     fn dot(self, vector: Vector3) -> f32;
     fn cross(self, vector: Vector3) -> Vector3;
@@ -8,6 +14,44 @@ pub trait QuaternionExt: Sized {
 }
 
 impl QuaternionExt for Quaternion {
+    fn from_vector(vector: Vector3) -> Self {
+        Self {
+            x: vector.x,
+            y: vector.y,
+            z: vector.z,
+            w: 0.0,
+        }
+    }
+
+    fn from_axis_angle(axis: Vector3, angle: f32) -> Self {
+        let half = (angle % TAU) / 2.0;
+        let s = half.sin();
+        let axis = axis.normalize();
+        Self {
+            x: axis.x * s,
+            y: axis.y * s,
+            z: axis.z * s,
+            w: half.cos(),
+        }
+    }
+
+    fn to_vector(self) -> Vector3 {
+        Vector3 {
+            x: self.x,
+            y: self.y,
+            z: self.z,
+        }
+    }
+
+    fn mul(self, rhs: Self) -> Self {
+        Self {
+            x: self.w * rhs.x + self.x * rhs.w + self.y * rhs.z - self.z * rhs.y,
+            y: self.w * rhs.y - self.x * rhs.z + self.y * rhs.w + self.z * rhs.x,
+            z: self.w * rhs.z + self.x * rhs.y - self.y * rhs.x + self.z * rhs.w,
+            w: self.w * rhs.w - self.x * rhs.x - self.y * rhs.y - self.z * rhs.z,
+        }
+    }
+
     fn conjugate(self) -> Self {
         Self {
             x: -self.x,
@@ -30,20 +74,7 @@ impl QuaternionExt for Quaternion {
     }
 
     fn rotate(self, vector: Vector3) -> Vector3 {
-        let conj = self.conjugate();
-        let dot_prod = self.dot(vector);
-        let cross_prod = self.cross(vector);
-
-        Vector3 {
-            x: conj.w * vector.x
-                + conj.x * dot_prod
-                + (conj.y * cross_prod.z - conj.z * cross_prod.y),
-            y: conj.w * vector.y
-                + conj.y * dot_prod
-                + (conj.z * cross_prod.x - conj.x * cross_prod.z),
-            z: conj.w * vector.z
-                + conj.z * dot_prod
-                + (conj.x * cross_prod.y - conj.y * cross_prod.x),
-        }
+        let qv = Self::from_vector(vector);
+        self.mul(qv).mul(self.conjugate()).to_vector()
     }
 }
