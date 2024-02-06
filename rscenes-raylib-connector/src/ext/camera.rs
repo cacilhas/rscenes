@@ -35,6 +35,8 @@ pub trait Camera3DExt {
     fn rotate_local(&mut self, angle: f32, pivot: Vector3);
     /// Vector indicating the front direction
     fn front_vector(&self) -> Vector3;
+    /// Translate local up to global
+    fn up_vector_as_local(&self) -> Vector3;
 }
 
 impl Camera3DExt for Camera3D {
@@ -78,11 +80,17 @@ impl Camera3DExt for Camera3D {
     fn rotate_local(&mut self, angle: f32, pivot: Vector3) {
         self.rotate(
             angle,
-            pivot.local_to_global(self.front_vector(), Vector3::UP),
+            pivot.local_to_global(self.front_vector(), self.up_vector_as_local()),
         )
     }
 
     fn front_vector(&self) -> Vector3 {
         self.target.add(self.position.mul(-1.0))
+    }
+
+    fn up_vector_as_local(&self) -> Vector3 {
+        let front = self.front_vector().normalize();
+        let right = front.cross(self.up.normalize()).normalize();
+        right.cross(front).normalize()
     }
 }

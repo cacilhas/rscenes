@@ -117,6 +117,8 @@ pub trait Vector3Ext {
     fn rotate(self, angle: f32, axis: Self) -> Self;
     fn sqr_length(self) -> f32;
     fn length(self) -> f32;
+    fn to_quaternion(self, w: f32) -> Quaternion;
+    fn to_quaternion_with_rotation(self, angle: f32) -> Quaternion;
 }
 
 impl Vector3Ext for Vector3 {
@@ -209,37 +211,9 @@ impl Vector3Ext for Vector3 {
     }
 
     fn local_to_global(self, front: Self, up: Self) -> Self {
-        let right = front.cross(up).normalize();
-        let up = right.cross(front).normalize();
-        let quat = Matrix {
-            m0: right.x,
-            m4: up.x,
-            m8: front.x,
-            m12: 0.0,
-            m1: right.y,
-            m5: up.y,
-            m9: front.y,
-            m13: 0.0,
-            m2: right.z,
-            m6: up.z,
-            m10: front.z,
-            m14: 0.0,
-            m3: 0.0,
-            m7: 0.0,
-            m11: 0.0,
-            m15: 1.0,
-        }
-        .mul(Quaternion {
-            x: self.x,
-            y: self.y,
-            z: self.z,
-            w: 1.0,
-        });
-        Vector3 {
-            x: quat.x,
-            y: quat.y,
-            z: quat.z,
-        }
+        Matrix::from_vectors(front, up)
+            .mul(self.to_quaternion(0.1))
+            .to_vector()
     }
 
     fn normalize(self) -> Self {
@@ -253,7 +227,7 @@ impl Vector3Ext for Vector3 {
             // If any of self, angle, or axis is zero, there's nothing to do
             return self;
         }
-        Quaternion::from_axis_angle(axis, angle).rotate(self)
+        axis.to_quaternion_with_rotation(angle).rotate(self)
     }
 
     fn sqr_length(self) -> f32 {
@@ -262,5 +236,26 @@ impl Vector3Ext for Vector3 {
 
     fn length(self) -> f32 {
         self.sqr_length().sqrt()
+    }
+
+    fn to_quaternion(self, w: f32) -> Quaternion {
+        Quaternion {
+            x: self.x,
+            y: self.y,
+            z: self.z,
+            w,
+        }
+    }
+
+    fn to_quaternion_with_rotation(self, angle: f32) -> Quaternion {
+        let half = (angle % TAU) / 2.0;
+        let s = half.sin();
+        let axis = self.normalize();
+        Quaternion {
+            x: axis.x * s,
+            y: axis.y * s,
+            z: axis.z * s,
+            w: half.cos(),
+        }
     }
 }

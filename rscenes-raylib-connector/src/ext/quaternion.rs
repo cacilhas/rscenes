@@ -1,10 +1,7 @@
 use super::vector::Vector3Ext;
 use raylib_ffi::{Quaternion, Vector3};
-use std::f32::consts::TAU;
 
 pub trait QuaternionExt: Sized {
-    fn from_vector(vector: Vector3) -> Self;
-    fn from_axis_angle(axis: Vector3, angle: f32) -> Self;
     fn to_vector(self) -> Vector3;
     fn mul(self, rhs: Self) -> Self;
     fn conjugate(self) -> Self;
@@ -14,27 +11,6 @@ pub trait QuaternionExt: Sized {
 }
 
 impl QuaternionExt for Quaternion {
-    fn from_vector(vector: Vector3) -> Self {
-        Self {
-            x: vector.x,
-            y: vector.y,
-            z: vector.z,
-            w: 0.0,
-        }
-    }
-
-    fn from_axis_angle(axis: Vector3, angle: f32) -> Self {
-        let half = (angle % TAU) / 2.0;
-        let s = half.sin();
-        let axis = axis.normalize();
-        Self {
-            x: axis.x * s,
-            y: axis.y * s,
-            z: axis.z * s,
-            w: half.cos(),
-        }
-    }
-
     fn to_vector(self) -> Vector3 {
         Vector3 {
             x: self.x,
@@ -74,7 +50,7 @@ impl QuaternionExt for Quaternion {
     }
 
     fn rotate(self, vector: Vector3) -> Vector3 {
-        let qv = Self::from_vector(vector);
+        let qv = vector.to_quaternion(0.0);
         self.mul(qv).mul(self.conjugate()).to_vector()
     }
 }
