@@ -6,6 +6,7 @@ pub mod font;
 pub mod image;
 pub mod key;
 pub mod material;
+pub mod matrix;
 pub mod mesh;
 pub mod model;
 pub mod model_animation;

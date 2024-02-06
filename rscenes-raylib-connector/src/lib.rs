@@ -23,6 +23,7 @@ pub mod assets {
     pub use crate::ext::image::{ImageExt, ImageType};
     pub use crate::ext::key::KeyboardKeyExt;
     pub use crate::ext::material::MaterialExt;
+    pub use crate::ext::matrix::MatrixExt;
     pub use crate::ext::mesh::MeshExt;
     pub use crate::ext::model::ModelExt;
     pub use crate::ext::model_animation::ModelAnimationExt;

@@ -76,7 +76,10 @@ impl Camera3DExt for Camera3D {
     }
 
     fn rotate_local(&mut self, angle: f32, pivot: Vector3) {
-        self.rotate(angle, pivot.local_to_global(self.front_vector()))
+        self.rotate(
+            angle,
+            pivot.local_to_global(self.front_vector(), Vector3::UP),
+        )
     }
 
     fn front_vector(&self) -> Vector3 {

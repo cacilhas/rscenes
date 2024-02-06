@@ -1,5 +1,6 @@
+use super::matrix::MatrixExt;
 use super::quaternion::QuaternionExt;
-use raylib_ffi::{Quaternion, Vector2, Vector3};
+use raylib_ffi::{Matrix, Quaternion, Vector2, Vector3};
 use std::f32::consts::{PI, TAU};
 
 pub trait Vector2Ext: Sized {
@@ -111,7 +112,7 @@ pub trait Vector3Ext {
     fn add(self, rhs: Self) -> Self;
     fn eq(self, rhs: Self) -> bool;
     fn cross(self, rhs: Self) -> Self;
-    fn local_to_global(self, front: Self) -> Self;
+    fn local_to_global(self, front: Self, up: Self) -> Self;
     fn normalize(self) -> Self;
     fn rotate(self, angle: f32, axis: Self) -> Self;
     fn sqr_length(self) -> f32;
@@ -207,10 +208,38 @@ impl Vector3Ext for Vector3 {
         }
     }
 
-    fn local_to_global(self, front: Self) -> Self {
-        let right = front.cross(Vector3::UP).normalize();
+    fn local_to_global(self, front: Self, up: Self) -> Self {
+        let right = front.cross(up).normalize();
         let up = right.cross(front).normalize();
-        right.mul(self.x).add(up.mul(self.y)).add(front.mul(self.z))
+        let quat = Matrix {
+            m0: right.x,
+            m4: up.x,
+            m8: front.x,
+            m12: 0.0,
+            m1: right.y,
+            m5: up.y,
+            m9: front.y,
+            m13: 0.0,
+            m2: right.z,
+            m6: up.z,
+            m10: front.z,
+            m14: 0.0,
+            m3: 0.0,
+            m7: 0.0,
+            m11: 0.0,
+            m15: 1.0,
+        }
+        .mul(Quaternion {
+            x: self.x,
+            y: self.y,
+            z: self.z,
+            w: 1.0,
+        });
+        Vector3 {
+            x: quat.x,
+            y: quat.y,
+            z: quat.z,
+        }
     }
 
     fn normalize(self) -> Self {
