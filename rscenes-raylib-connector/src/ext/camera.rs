@@ -21,6 +21,8 @@ impl Camera2DExt for Camera2D {
 pub trait Camera3DExt {
     /// Return a new camera with default values
     fn empty() -> Self;
+    /// Move camera without change relative target
+    fn move_by(&mut self, movement: Vector3);
     /// Update camera position for selected mode
     fn update(&mut self, mode: CameraMode);
     /// Update camera movement/rotation
@@ -42,12 +44,17 @@ pub trait Camera3DExt {
 impl Camera3DExt for Camera3D {
     fn empty() -> Self {
         Self {
-            position: Vector3::BACK,
+            position: Vector3::BACK.mul(5.0),
             target: Vector3::ZERO,
             up: Vector3::UP,
             fovy: 100.0,
             projection: enums::CameraProjection::Perspective as i32,
         }
+    }
+
+    fn move_by(&mut self, movement: Vector3) {
+        self.position = self.position.add(movement);
+        self.target = self.target.add(movement);
     }
 
     fn update(&mut self, mode: CameraMode) {

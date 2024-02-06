@@ -40,8 +40,7 @@ impl Default for MazeScene {
         let mut generator = Generator::<SIZE, SIZE>::default();
         let rooms = generator.into_iter().collect::<Vec<_>>();
         let mut camera = Camera3D::empty();
-        camera.position.y = 1.6;
-        camera.target.y = 1.6;
+        camera.move_by(camera.position.mul(-1.0).add(Vector3::UP.mul(1.6)));
 
         Self {
             camera,
