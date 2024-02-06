@@ -70,20 +70,13 @@ impl Camera3DExt for Camera3D {
 
     fn set_y_elevation(&mut self, angle: f32) {
         let mut front = self.front_vector();
-        let hypotenuse = (front.x * front.x + front.y * front.y + front.z * front.z).sqrt();
+        let hypotenuse = front.length();
         front.y = angle.sin() * hypotenuse;
         self.target = front.add(self.position);
     }
 
     fn rotate_local(&mut self, angle: f32, pivot: Vector3) {
-        let front = self.front_vector();
-        let right = front.cross(Vector3::UP).normalize();
-        let up = right.cross(front).normalize();
-        let pivot = right
-            .mul(pivot.x)
-            .add(up.mul(pivot.y))
-            .add(front.mul(pivot.z));
-        self.rotate(angle, pivot)
+        self.rotate(angle, pivot.local_to_global(self.front_vector()))
     }
 
     fn front_vector(&self) -> Vector3 {

@@ -111,6 +111,7 @@ pub trait Vector3Ext {
     fn add(self, rhs: Self) -> Self;
     fn eq(self, rhs: Self) -> bool;
     fn cross(self, rhs: Self) -> Self;
+    fn local_to_global(self, front: Self) -> Self;
     fn normalize(self) -> Self;
     fn rotate(self, angle: f32, axis: Self) -> Self;
     fn sqr_length(self) -> f32;
@@ -204,6 +205,12 @@ impl Vector3Ext for Vector3 {
             y: self.z * rhs.x + self.x * rhs.z,
             z: self.x * rhs.y + self.y * rhs.x,
         }
+    }
+
+    fn local_to_global(self, front: Self) -> Self {
+        let right = front.cross(Vector3::UP).normalize();
+        let up = right.cross(front).normalize();
+        right.mul(self.x).add(up.mul(self.y)).add(front.mul(self.z))
     }
 
     fn normalize(self) -> Self {
