@@ -27,6 +27,10 @@ pub trait Camera3DExt {
     fn update_pro(&mut self, movement: Vector3, rotation: Vector3, zoom: f32);
     /// Rotate camera
     fn rotate(&mut self, angle: f32, pivot: Vector3);
+    /// Rotate to a specific direction
+    fn set_y_axis_rotation(&mut self, angle: f32);
+    /// Set elevation
+    fn set_y_elevation(&mut self, angle: f32);
     /// Rotate over local coordinates
     fn rotate_local(&mut self, angle: f32, pivot: Vector3);
     /// Vector indicating the front direction
@@ -54,6 +58,21 @@ impl Camera3DExt for Camera3D {
 
     fn rotate(&mut self, angle: f32, axis: Vector3) {
         self.target = self.position.add(self.front_vector().rotate(angle, axis));
+    }
+
+    fn set_y_axis_rotation(&mut self, angle: f32) {
+        let mut front = self.front_vector();
+        let leg = (front.x * front.x + front.z * front.z).sqrt();
+        front.x = angle.cos() * leg;
+        front.z = angle.sin() * leg;
+        self.target = front.add(self.position);
+    }
+
+    fn set_y_elevation(&mut self, angle: f32) {
+        let mut front = self.front_vector();
+        let hypotenuse = (front.x * front.x + front.y * front.y + front.z * front.z).sqrt();
+        front.y = angle.sin() * hypotenuse;
+        self.target = front.add(self.position);
     }
 
     fn rotate_local(&mut self, angle: f32, pivot: Vector3) {

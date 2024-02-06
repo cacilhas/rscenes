@@ -1,6 +1,6 @@
 use super::quaternion::QuaternionExt;
 use raylib_ffi::{Quaternion, Vector2, Vector3};
-use std::f32::consts::TAU;
+use std::f32::consts::{PI, TAU};
 
 pub trait Vector2Ext: Sized {
     const ZERO: Self;
@@ -14,6 +14,7 @@ pub trait Vector2Ext: Sized {
     const W: Self;
     const E: Self;
 
+    fn angle(self) -> f32;
     fn mul(self, value: f32) -> Self;
     fn add(self, rhs: Self) -> Self;
     fn eq(self, rhs: Self) -> bool;
@@ -35,6 +36,15 @@ impl Vector2Ext for Vector2 {
     const S: Self = Self::DOWN;
     const W: Self = Self::LEFT;
     const E: Self = Self::RIGHT;
+
+    fn angle(self) -> f32 {
+        let angle = self.y.atan2(self.x);
+        if angle < PI {
+            angle
+        } else {
+            TAU - angle
+        }
+    }
 
     fn mul(self, value: f32) -> Self {
         Self {
@@ -95,6 +105,8 @@ pub trait Vector3Ext {
     const UP: Self;
     const DOWN: Self;
 
+    fn y_axis_rotation(self) -> f32;
+    fn y_elevation_angle(self) -> f32;
     fn mul(self, value: f32) -> Self;
     fn add(self, rhs: Self) -> Self;
     fn eq(self, rhs: Self) -> bool;
@@ -146,6 +158,25 @@ impl Vector3Ext for Vector3 {
         y: -1.0,
         z: 0.0,
     };
+
+    fn y_axis_rotation(self) -> f32 {
+        let angle = self.z.atan2(self.x);
+        if angle < PI {
+            angle
+        } else {
+            TAU - angle
+        }
+    }
+
+    fn y_elevation_angle(self) -> f32 {
+        let adjacent_leg = (self.x * self.x + self.z * self.z).sqrt();
+        let angle = self.y.atan2(adjacent_leg);
+        if angle < PI {
+            angle
+        } else {
+            TAU - angle
+        }
+    }
 
     fn mul(self, value: f32) -> Self {
         Self {
