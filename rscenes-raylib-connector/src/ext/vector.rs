@@ -244,11 +244,7 @@ impl Vector3Ext for Vector3 {
 
     fn normalize(self) -> Self {
         let length = self.length();
-        Self {
-            x: self.x / length,
-            y: self.y / length,
-            z: self.z / length,
-        }
+        self.mul(1.0 / length)
     }
 
     fn rotate(self, angle: f32, axis: Self) -> Self {
