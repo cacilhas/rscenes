@@ -105,6 +105,10 @@ pub trait Vector3Ext {
     const RIGHT: Self;
     const UP: Self;
     const DOWN: Self;
+    const N: Self;
+    const S: Self;
+    const W: Self;
+    const E: Self;
 
     fn y_axis_rotation(self) -> f32;
     fn y_elevation_angle(self) -> f32;
@@ -162,6 +166,10 @@ impl Vector3Ext for Vector3 {
         y: -1.0,
         z: 0.0,
     };
+    const N: Self = Self::FORTH;
+    const S: Self = Self::BACK;
+    const W: Self = Self::LEFT;
+    const E: Self = Self::RIGHT;
 
     fn y_axis_rotation(self) -> f32 {
         let angle = self.z.atan2(self.x);
