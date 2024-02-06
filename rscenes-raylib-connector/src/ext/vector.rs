@@ -17,6 +17,7 @@ pub trait Vector2Ext: Sized {
     fn mul(self, value: f32) -> Self;
     fn add(self, rhs: Self) -> Self;
     fn eq(self, rhs: Self) -> bool;
+    fn cross(self, rhs: Self) -> f32;
     fn normalize(self) -> Self;
     fn rotate(self, angle: f32) -> Self;
     fn sqr_length(self) -> f32;
@@ -51,6 +52,10 @@ impl Vector2Ext for Vector2 {
 
     fn eq(self, rhs: Self) -> bool {
         self.x == rhs.x && self.y == rhs.y
+    }
+
+    fn cross(self, rhs: Self) -> f32 {
+        self.x * rhs.y + self.y * rhs.x
     }
 
     fn normalize(self) -> Self {
@@ -93,6 +98,7 @@ pub trait Vector3Ext {
     fn mul(self, value: f32) -> Self;
     fn add(self, rhs: Self) -> Self;
     fn eq(self, rhs: Self) -> bool;
+    fn cross(self, rhs: Self) -> Self;
     fn normalize(self) -> Self;
     fn rotate(self, angle: f32, axis: Self) -> Self;
     fn sqr_length(self) -> f32;
@@ -159,6 +165,14 @@ impl Vector3Ext for Vector3 {
 
     fn eq(self, rhs: Self) -> bool {
         self.x == rhs.x && self.y == rhs.y && self.z == rhs.z
+    }
+
+    fn cross(self, rhs: Self) -> Self {
+        Self {
+            x: self.y * rhs.z + self.z * rhs.y,
+            y: self.z * rhs.x + self.x * rhs.z,
+            z: self.x * rhs.y + self.y * rhs.x,
+        }
     }
 
     fn normalize(self) -> Self {
