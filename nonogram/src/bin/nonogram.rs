@@ -1,10 +1,7 @@
 extern crate kodumaro_nonogram;
 
 use kodumaro_nonogram::*;
-use rscenes::{
-    extras::{start_fullscreen, XDGStore},
-    prelude::*,
-};
+use rscenes::{extras::XDGStore, prelude::*};
 
 fn main() {
     // TraceLogLevel::Error.set_default();
@@ -31,15 +28,17 @@ fn main() {
         .set_init(Box::new(scene))
         .add_setup(setup!(|rl| rl.set_exit_key(KeyboardKey::Null)))
         .add_setup(setup!(|rl| rl.set_target_fps(30)))
-        .add_setup(if fs {
-            start_fullscreen(ConfigFlags::WindowResizable as usize)
-        } else {
-            Box::new(setup!(
-                |rl| rl.set_window_state(ConfigFlags::WindowResizable as usize)
-            ))
-        })
         .add_setup(setup!(|rl| rl.set_window_min_size(800, 600)))
         .add_setup(setup!(|rl| rl.init_audio_device()))
+        .add_setup(setup!(move |rl| {
+            if fs {
+                rl.set_window_state(
+                    ConfigFlags::FullscreenMode as usize | ConfigFlags::WindowResizable as usize,
+                );
+            } else {
+                rl.set_window_state(ConfigFlags::WindowResizable as usize);
+            }
+        }))
         .add_setup(setup!(|_rs| SfxManager::load_assets()))
         .start();
 }

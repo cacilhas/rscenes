@@ -1,9 +1,6 @@
 use super::gameplay::Gameplay;
 use crate::{game::board::BoardStruct, persist::Persist};
-use rscenes::{
-    extras::{FakeFullscreen, XDGStore},
-    prelude::*,
-};
+use rscenes::{extras::XDGStore, prelude::*};
 
 const LB_5X5: usize = 0;
 const LB_10X10: usize = 1;
@@ -32,16 +29,8 @@ pub struct MainMenu {
     pub geom: Vector2,
 }
 
-impl FakeFullscreen for MainMenu {
-    fn get_geometry_mut(&mut self) -> &mut Vector2 {
-        &mut self.geom
-    }
-}
-
 impl Scene for MainMenu {
     fn on_update(&mut self, rl: PlainConnector, _: f32) -> Result<State, String> {
-        self.update_geometry(rl);
-
         let font = rl.get_default_font();
         let screen_width = rl.get_render_width() as f32;
         let size = rl.measure_text_ex(font, "Nonogram", 84.0, 2.0);
@@ -66,22 +55,19 @@ impl Scene for MainMenu {
 
         if rl.is_mouse_button_released(MouseButton::Left) {
             if rl.check_collision_point_rec(mouse, self.buttons[LB_5X5]) {
-                return Ok(State::Next(Box::new(Gameplay::new(
-                    Box::new(BoardStruct::<5, 5>::random(self.easy)),
-                    self.geom,
-                ))));
+                return Ok(State::Next(Box::new(Gameplay::new(Box::new(
+                    BoardStruct::<5, 5>::random(self.easy),
+                )))));
             }
             if rl.check_collision_point_rec(mouse, self.buttons[LB_10X10]) {
-                return Ok(State::Next(Box::new(Gameplay::new(
-                    Box::new(BoardStruct::<10, 10>::random(self.easy)),
-                    self.geom,
-                ))));
+                return Ok(State::Next(Box::new(Gameplay::new(Box::new(
+                    BoardStruct::<10, 10>::random(self.easy),
+                )))));
             }
             if rl.check_collision_point_rec(mouse, self.buttons[LB_15X15]) {
-                return Ok(State::Next(Box::new(Gameplay::new(
-                    Box::new(BoardStruct::<15, 15>::random(self.easy)),
-                    self.geom,
-                ))));
+                return Ok(State::Next(Box::new(Gameplay::new(Box::new(
+                    BoardStruct::<15, 15>::random(self.easy),
+                )))));
             }
             if rl.check_collision_point_rec(mouse, self.buttons[LB_EASY]) {
                 self.easy = !self.easy;
@@ -89,8 +75,7 @@ impl Scene for MainMenu {
         }
 
         if KeyboardKey::F.is_released() {
-            self.toggle_fake_fullscreen(rl);
-            // rl.toggle_fullscreen();
+            rl.toggle_fullscreen();
         }
 
         if KeyboardKey::Escape.is_released() {
@@ -104,7 +89,7 @@ impl Scene for MainMenu {
         let geom: Persist = (
             (self.geom.x as i32).max(800),
             (self.geom.y as i32).max(600),
-            self.is_fullscreen_faked(rl),
+            rl.is_window_fullscreen(),
         );
         if let Err(err) = XDGStore::save("nonogram", "window", geom) {
             TraceLogLevel::Error.log(format!("error saving geometry: {:?}", err));
