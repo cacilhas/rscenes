@@ -16,6 +16,7 @@ pub struct Gameplay {
     hhints: Vec<String>,
     vhints: Vec<String>,
     size: Vector2,
+    highlight: bool,
     board_rect: Rectangle,
     hhints_rect: Rectangle,
     vhints_rect: Rectangle,
@@ -24,12 +25,13 @@ pub struct Gameplay {
     vic_index: f32,
     mute: bool,
     done: bool,
+    mouse_position: (usize, usize),
     left_click: bool,
     right_click: bool,
 }
 
 impl Gameplay {
-    pub fn new(board: Box<dyn Board>) -> Self {
+    pub fn new(board: Box<dyn Board>, highlight: bool) -> Self {
         let (w, h) = board.size();
         let size = Vector2 {
             x: w as f32,
@@ -63,6 +65,7 @@ impl Gameplay {
             size,
             hhints,
             vhints,
+            highlight,
             board_rect: Rectangle {
                 x: 0.0,
                 y: 0.0,
@@ -86,6 +89,7 @@ impl Gameplay {
             vic_index: 0.0,
             mute: false,
             done: false,
+            mouse_position: (0, 0),
             left_click: false,
             right_click: false,
         }
@@ -99,7 +103,7 @@ impl Gameplay {
         }
     }
 
-    fn draw_lines(&self, rl: Connector2D, font: Font, mouse: Vector2) {
+    fn draw_lines(&self, rl: Connector2D, font: Font) {
         let factor = match self.board.size() {
             (_, 5) => 0.5,
             _ => 0.625,
@@ -111,21 +115,11 @@ impl Gameplay {
         } * factor
             - 2.0;
 
-        self.draw_vertical_lines(
-            rl,
-            font,
-            font_size,
-            (((mouse.x - self.hhints_rect.x) / self.cell_size.x) + 0.5).floor() as usize,
-        );
-        self.draw_horizontal_lines(
-            rl,
-            font,
-            font_size,
-            ((mouse.y - self.vhints_rect.y) / self.cell_size.y).floor() as usize,
-        );
+        self.draw_vertical_lines(rl, font, font_size);
+        self.draw_horizontal_lines(rl, font, font_size);
     }
 
-    fn draw_vertical_lines(&self, rl: Connector2D, font: Font, font_size: f32, mouse_col: usize) {
+    fn draw_vertical_lines(&self, rl: Connector2D, font: Font, font_size: f32) {
         for i in 0..(self.size.x as usize) {
             let x = self.hhints_rect.x + (i as f32 * self.cell_size.x);
             let bg = if i % 2 == 0 {
@@ -133,7 +127,20 @@ impl Gameplay {
             } else {
                 Color::WHEAT
             };
-            let bg = if i == mouse_col { Color::LIGHTPINK } else { bg };
+            let bg = if i == self.mouse_position.0 {
+                if self.highlight {
+                    Color::RED
+                } else {
+                    Color::LIGHTPINK
+                }
+            } else {
+                bg
+            };
+            let hint = if self.highlight && i == self.mouse_position.0 {
+                Color::WHITE
+            } else {
+                Color::BLACK
+            };
             rl.draw_rectangle(
                 (x - self.cell_size.x / 2.0) as i32,
                 0,
@@ -143,7 +150,7 @@ impl Gameplay {
             );
             let mut y = 0.0;
             for text in self.hhints[i].split(' ') {
-                rl.draw_text_ex(font, text, Vector2 { x, y }, font_size, 1.0, Color::BLACK);
+                rl.draw_text_ex(font, text, Vector2 { x, y }, font_size, 1.0, hint);
                 y += font_size;
             }
             rl.draw_line_ex(
@@ -177,7 +184,7 @@ impl Gameplay {
         );
     }
 
-    fn draw_horizontal_lines(&self, rl: Connector2D, font: Font, font_size: f32, mouse_row: usize) {
+    fn draw_horizontal_lines(&self, rl: Connector2D, font: Font, font_size: f32) {
         for i in 0..(self.size.y as usize) {
             let y = self.vhints_rect.y + (i as f32 * self.cell_size.y) + 4.0;
             let bg = if i % 2 == 0 {
@@ -185,7 +192,20 @@ impl Gameplay {
             } else {
                 Color::WHEAT
             };
-            let bg = if i == mouse_row { Color::LIGHTPINK } else { bg };
+            let bg = if i == self.mouse_position.1 {
+                if self.highlight {
+                    Color::RED
+                } else {
+                    Color::LIGHTPINK
+                }
+            } else {
+                bg
+            };
+            let hint = if self.highlight && i == self.mouse_position.1 {
+                Color::WHITE
+            } else {
+                Color::BLACK
+            };
             rl.draw_rectangle(
                 self.board_rect.width as i32 + 2,
                 y as i32 - 4,
@@ -203,7 +223,7 @@ impl Gameplay {
                 },
                 font_size,
                 1.0,
-                Color::BLACK,
+                hint,
             );
             rl.draw_line_ex(
                 Vector2 {
@@ -239,6 +259,7 @@ impl Gameplay {
     fn draw_info(&self, rl: Connector2D, screen: Rectangle, font: Font) {
         let size = rl.measure_text_ex(font, "F : toggle fullscreen", 12.0, 1.0);
         let x = screen.width - size.x - 4.0;
+        let dy = 16.0;
         let mut y = 28.0;
         rl.draw_text_ex(
             font,
@@ -248,9 +269,9 @@ impl Gameplay {
             1.0,
             Color::GRAY,
         );
-        y += 14.0;
+        y += dy;
         rl.draw_text_ex(font, "F3 : pause", Vector2 { x, y }, 12.0, 1.0, Color::GRAY);
-        y += 14.0;
+        y += dy;
         rl.draw_text_ex(
             font,
             "ESC : abort",
@@ -259,10 +280,19 @@ impl Gameplay {
             1.0,
             Color::GRAY,
         );
-        y += 14.0;
+        y += dy;
         rl.draw_text_ex(
             font,
             "F : toggle fullscreen",
+            Vector2 { x, y },
+            12.0,
+            1.0,
+            Color::GRAY,
+        );
+        y += dy;
+        rl.draw_text_ex(
+            font,
+            "H : highlight hints",
             Vector2 { x, y },
             12.0,
             1.0,
@@ -295,6 +325,10 @@ impl Scene for Gameplay {
             rl.toggle_fullscreen();
         }
 
+        if KeyboardKey::H.is_released() {
+            self.highlight = !self.highlight;
+        }
+
         let screen = rl.get_render_rec();
         self.board_rect = Rectangle {
             x: 0.0,
@@ -318,6 +352,15 @@ impl Scene for Gameplay {
             width: screen.width * 0.25,
             height: screen.height * 0.25,
         };
+        let mouse = rl.get_mouse_position();
+        self.mouse_position = (
+            (((mouse.x - self.hhints_rect.x) / self.cell_size.x) + 0.5).floor() as usize,
+            if mouse.y < self.vhints_rect.y {
+                usize::MAX
+            } else {
+                ((mouse.y - self.vhints_rect.y) / self.cell_size.y).floor() as usize
+            },
+        );
 
         let left_click = rl.is_mouse_button_released(MouseButton::Left);
         let right_click = rl.is_mouse_button_released(MouseButton::Right);
@@ -343,19 +386,13 @@ impl Scene for Gameplay {
         } else if rl.is_window_focused() {
             self.time_lapse += dt;
 
-            let mouse = rl.get_mouse_position();
-
             for y in 0..(self.size.y as usize) {
                 for x in 0..(self.size.x as usize) {
-                    let rec = Rectangle {
-                        x: self.board_rect.x + (x as f32) * self.cell_size.x,
-                        y: self.board_rect.y + (y as f32) * self.cell_size.y,
-                        width: self.cell_size.x,
-                        height: self.cell_size.y,
-                    };
-
-                    if !self.board.is_done() {
-                        if self.left_click && rl.check_collision_point_rec(mouse, rec) {
+                    if self.mouse_position.0 == x
+                        && self.mouse_position.1 == y
+                        && !self.board.is_done()
+                    {
+                        if self.left_click {
                             match self.board.get(x, y)? {
                                 Cell::Yes => {
                                     self.board.set(x, y, Cell::Closed)?;
@@ -368,7 +405,7 @@ impl Scene for Gameplay {
                                 Cell::No => self.play(SfxType::ERROR),
                             }
                         }
-                        if self.right_click && rl.check_collision_point_rec(mouse, rec) {
+                        if self.right_click {
                             match self.board.get(x, y)? {
                                 Cell::No => {
                                     self.board.set(x, y, Cell::Closed)?;
@@ -400,7 +437,6 @@ impl Scene for Gameplay {
             return Ok(());
         }
         let font = rl.get_default_font();
-        let mouse = rl.get_mouse_position();
 
         for y in 0..(self.size.y as usize) {
             for x in 0..(self.size.x as usize) {
@@ -443,7 +479,7 @@ impl Scene for Gameplay {
             }
         }
 
-        self.draw_lines(rl, font, mouse);
+        self.draw_lines(rl, font);
 
         let screen = rl.get_render_rec();
         if self.board.is_done() {

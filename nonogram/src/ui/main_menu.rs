@@ -27,6 +27,7 @@ pub struct MainMenu {
     hover: [bool; 4],
     easy: bool,
     pub geom: Vector2,
+    pub highlight: bool,
 }
 
 impl Scene for MainMenu {
@@ -55,19 +56,22 @@ impl Scene for MainMenu {
 
         if rl.is_mouse_button_released(MouseButton::Left) {
             if rl.check_collision_point_rec(mouse, self.buttons[LB_5X5]) {
-                return Ok(State::Next(Box::new(Gameplay::new(Box::new(
-                    BoardStruct::<5, 5>::random(self.easy),
-                )))));
+                return Ok(State::Next(Box::new(Gameplay::new(
+                    Box::new(BoardStruct::<5, 5>::random(self.easy)),
+                    self.highlight,
+                ))));
             }
             if rl.check_collision_point_rec(mouse, self.buttons[LB_10X10]) {
-                return Ok(State::Next(Box::new(Gameplay::new(Box::new(
-                    BoardStruct::<10, 10>::random(self.easy),
-                )))));
+                return Ok(State::Next(Box::new(Gameplay::new(
+                    Box::new(BoardStruct::<10, 10>::random(self.easy)),
+                    self.highlight,
+                ))));
             }
             if rl.check_collision_point_rec(mouse, self.buttons[LB_15X15]) {
-                return Ok(State::Next(Box::new(Gameplay::new(Box::new(
-                    BoardStruct::<15, 15>::random(self.easy),
-                )))));
+                return Ok(State::Next(Box::new(Gameplay::new(
+                    Box::new(BoardStruct::<15, 15>::random(self.easy)),
+                    self.highlight,
+                ))));
             }
             if rl.check_collision_point_rec(mouse, self.buttons[LB_EASY]) {
                 self.easy = !self.easy;
@@ -164,6 +168,7 @@ impl Default for MainMenu {
                 .unwrap(),
             easy: false,
             geom: Vector2::ZERO,
+            highlight: false,
         }
     }
 }
