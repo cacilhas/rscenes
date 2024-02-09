@@ -1,6 +1,6 @@
 [package]
 name        = "kodumaro-nonogram"
-version     = "4.0.4"
+version     = "4.0.5"
 authors     = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info"]
 license     = "BSD-3-Clause"
 readme      = "README.md"
@@ -24,7 +24,7 @@ fastrand = "2.0"
 
 [dependencies.rscenes]
 version = "2.0"
-features = ["fake-fs", "storage"]
+features = ["storage"]
 
 [[bin]]
 name = "nonogram"

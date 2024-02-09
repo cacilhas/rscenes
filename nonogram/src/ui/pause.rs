@@ -1,29 +1,12 @@
-use rscenes::{extras::FakeFullscreen, prelude::*};
+use rscenes::prelude::*;
 
 #[derive(Debug)]
-pub struct Pause {
-    geom: Vector2,
-}
-
-impl Pause {
-    pub fn new(geom: Vector2) -> Self {
-        Self { geom }
-    }
-}
-
-impl FakeFullscreen for Pause {
-    fn get_geometry_mut(&mut self) -> &mut Vector2 {
-        &mut self.geom
-    }
-}
+pub struct Pause;
 
 impl Scene for Pause {
     fn on_update(&mut self, rl: PlainConnector, _: f32) -> Result<State, String> {
-        self.update_geometry(rl);
-
         if KeyboardKey::F.is_released() {
-            self.toggle_fake_fullscreen(rl);
-            // rl.toggle_fullscreen();
+            rl.toggle_fullscreen();
         }
 
         if KeyboardKey::F3.is_released() || KeyboardKey::Pause.is_released() {

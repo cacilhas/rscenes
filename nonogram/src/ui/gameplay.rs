@@ -3,10 +3,7 @@ use crate::{
     audio::{Sfx, SfxManager, SfxType},
     game::{Board, Cell},
 };
-use rscenes::{
-    extras::{FakeFullscreen, XDGStore},
-    prelude::*,
-};
+use rscenes::prelude::*;
 
 const VICTORY: [&str; 6] = ["W", "w", "v", ".", "v", "w"];
 const THICK_LINE: f32 = 2.0;
@@ -29,11 +26,10 @@ pub struct Gameplay {
     done: bool,
     left_click: bool,
     right_click: bool,
-    geom: Vector2,
 }
 
 impl Gameplay {
-    pub fn new(board: Box<dyn Board>, geom: Vector2) -> Self {
+    pub fn new(board: Box<dyn Board>) -> Self {
         let (w, h) = board.size();
         let size = Vector2 {
             x: w as f32,
@@ -92,7 +88,6 @@ impl Gameplay {
             done: false,
             left_click: false,
             right_click: false,
-            geom,
         }
     }
 
@@ -276,12 +271,6 @@ impl Gameplay {
     }
 }
 
-impl FakeFullscreen for Gameplay {
-    fn get_geometry_mut(&mut self) -> &mut Vector2 {
-        &mut self.geom
-    }
-}
-
 impl Scene for Gameplay {
     fn on_load(&mut self, _: PlainConnector) -> Result<(), String> {
         self.sfx = SfxManager::get_instance();
@@ -292,8 +281,6 @@ impl Scene for Gameplay {
     }
 
     fn on_update(&mut self, rl: PlainConnector, dt: f32) -> Result<State, String> {
-        self.update_geometry(rl);
-
         if KeyboardKey::F2.is_released() {
             self.mute = !self.mute;
         }
@@ -301,12 +288,11 @@ impl Scene for Gameplay {
         if KeyboardKey::F3.is_released()
             || KeyboardKey::Pause.is_released() && !self.board.is_done()
         {
-            return Ok(State::Next(Box::new(Pause::new(self.geom))));
+            return Ok(State::Next(Box::new(Pause)));
         }
 
         if KeyboardKey::F.is_released() {
-            self.toggle_fake_fullscreen(rl);
-            // rl.toggle_fullscreen();
+            rl.toggle_fullscreen();
         }
 
         let screen = rl.get_render_rec();
@@ -547,14 +533,5 @@ fn monospace(
             0.0,
             tint,
         );
-    }
-}
-
-impl Drop for Gameplay {
-    fn drop(&mut self) {
-        let geom = (self.geom.x as i32, self.geom.y as i32);
-        if let Err(err) = XDGStore::save("nonogram", "window", geom) {
-            TraceLogLevel::Error.log(format!("error saving geometry: {:?}", err));
-        }
     }
 }
