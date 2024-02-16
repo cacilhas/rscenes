@@ -23,14 +23,16 @@ impl XDGStore {
     pub fn save<T: Serialize>(app_name: &str, bundle: &str, data: T) -> Result<(), String> {
         let payload = serde_json::to_string(&data).map_err(|e| format!("{:?}", e))?;
         let mut file = bundle_file(app_name, bundle, RW::RW)?;
-        file.write_all(payload.as_bytes()).map_err(|e| format!("{:?}", e))?;
+        file.write_all(payload.as_bytes())
+            .map_err(|e| format!("{:?}", e))?;
         Ok(())
     }
 
     pub fn retrieve<T: DeserializeOwned>(app_name: &str, bundle: &str) -> Result<T, String> {
         let mut file = bundle_file(app_name, bundle, RW::RO)?;
         let mut content = String::new();
-        file.read_to_string(&mut content).map_err(|e| format!("{:?}", e))?;
+        file.read_to_string(&mut content)
+            .map_err(|e| format!("{:?}", e))?;
         let res: T = serde_json::from_str(&content).map_err(|e| format!("{:?}", e))?;
         Ok(res)
     }
@@ -46,7 +48,8 @@ fn bundle_file(app_name: &str, bundle: &str, mode: RW) -> Result<File, String> {
     match mode {
         RW::RO => File::open(storage),
         RW::RW => File::create(storage),
-    }.map_err(|e| format!("{:?}", e))
+    }
+    .map_err(|e| format!("{:?}", e))
 }
 
 enum RW {
@@ -67,6 +70,6 @@ fn xdg_data_home() -> PathBuf {
 
 #[cfg(target_os = "windows")]
 fn xdg_data_home() -> PathBuf {
-    let data_home = env::var("APPDATA").unwrap;
+    let data_home = env::var("APPDATA").unwrap();
     Path::new(&data_home).to_path_buf()
 }
