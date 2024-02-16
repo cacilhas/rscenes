@@ -29,7 +29,7 @@ Related pages:
 cargo install kodumaro-nonogram
 ```
 
-If you have [UPX][] installed, you may want to run:
+If you have [UPX][] installed, you may want to try:
 
 ```sh
 upx ~/.cargo/bin/nonogram
