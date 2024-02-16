@@ -1,6 +1,6 @@
 [package]
 name        = "kodumaro-nonogram"
-version     = "4.0.6"
+version     = "4.0.7"
 authors     = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info"]
 license     = "BSD-3-Clause"
 readme      = "README.md"

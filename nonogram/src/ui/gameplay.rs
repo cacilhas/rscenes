@@ -153,22 +153,24 @@ impl Gameplay {
                 rl.draw_text_ex(font, text, Vector2 { x, y }, font_size, 1.0, hint);
                 y += font_size;
             }
-            rl.draw_line_ex(
-                Vector2 {
-                    x: self.board_rect.x + (i as f32 * self.cell_size.x),
-                    y: self.board_rect.y,
-                },
-                Vector2 {
-                    x: self.board_rect.x + (i as f32 * self.cell_size.x),
-                    y: self.board_rect.y + (self.size.y * self.cell_size.y),
-                },
-                if i % 5 == 0 { BOLD_LINE } else { THICK_LINE },
-                if i % 5 == 0 {
-                    Color::BLACK
-                } else {
-                    Color::DARKGRAY
-                },
-            );
+            if !self.done {
+                rl.draw_line_ex(
+                    Vector2 {
+                        x: self.board_rect.x + (i as f32 * self.cell_size.x),
+                        y: self.board_rect.y,
+                    },
+                    Vector2 {
+                        x: self.board_rect.x + (i as f32 * self.cell_size.x),
+                        y: self.board_rect.y + (self.size.y * self.cell_size.y),
+                    },
+                    if i % 5 == 0 { BOLD_LINE } else { THICK_LINE },
+                    if i % 5 == 0 {
+                        Color::BLACK
+                    } else {
+                        Color::DARKGRAY
+                    },
+                );
+            }
         }
         rl.draw_line_ex(
             Vector2 {
@@ -225,22 +227,24 @@ impl Gameplay {
                 1.0,
                 hint,
             );
-            rl.draw_line_ex(
-                Vector2 {
-                    x: self.board_rect.x,
-                    y: self.board_rect.y + (i as f32 * self.cell_size.y),
-                },
-                Vector2 {
-                    x: self.board_rect.x + (self.size.y * self.cell_size.x),
-                    y: self.board_rect.y + (i as f32 * self.cell_size.y),
-                },
-                if i % 5 == 0 { BOLD_LINE } else { THICK_LINE },
-                if i % 5 == 0 {
-                    Color::BLACK
-                } else {
-                    Color::DARKGRAY
-                },
-            );
+            if !self.done {
+                rl.draw_line_ex(
+                    Vector2 {
+                        x: self.board_rect.x,
+                        y: self.board_rect.y + (i as f32 * self.cell_size.y),
+                    },
+                    Vector2 {
+                        x: self.board_rect.x + (self.size.y * self.cell_size.x),
+                        y: self.board_rect.y + (i as f32 * self.cell_size.y),
+                    },
+                    if i % 5 == 0 { BOLD_LINE } else { THICK_LINE },
+                    if i % 5 == 0 {
+                        Color::BLACK
+                    } else {
+                        Color::DARKGRAY
+                    },
+                );
+            }
         }
         rl.draw_line_ex(
             Vector2 {
